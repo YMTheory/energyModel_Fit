@@ -20,7 +20,7 @@ void draw_fit_electron()
         istringstream ss(line);
         ss >> tmp_E >> tmp_totpe  >> tmp_sigma;
         mTrueElectronNL->SetPoint(count, tmp_E, tmp_totpe/A/tmp_E);
-        mTrueElectronNL->SetPointError(count, 0, tmp_sigma/A/tmp_E);
+        mTrueElectronNL->SetPointError(count, 0, tmp_sigma*tmp_totpe/A/tmp_E);
         count++;
     }
     in.close();
@@ -28,9 +28,12 @@ void draw_fit_electron()
 
     // draw fitting ...
     TGraph* mFitElectronNL = new TGraph();
-    double kA = 9.799e-01;
-    double kB1 = 6.60101e-03;
-    double kC = 9.98625e-01;
+    double kA = 9.6e-1; //9.799e-01;
+    double kB1 = 3.8e-3;  //6.60101e-03;
+    double kC = 1.17;    //9.98625e-01;
+    //double kA = 9.799e-01;
+    //double kB1 = 6.60101e-03;
+    //double kC = 1.;
     //double kA = 0.9796;//9.56497e-01;
     //double kB1 = 6.5e-03; //6.51875e-06;
     //double kC = 1.e+00;
@@ -39,6 +42,7 @@ void draw_fit_electron()
         double energy = 7.98/798*(i+1);
         //pred_nl[i] =  getCerenkovPE(energy);
         pred_nl[i] = kA*Integral_BirkLaw(kB1,  energy) + kC*getCerenkovPE(energy)/A/energy;
+        //cout << "pred_nl " <<  energy << " " << pred_nl[i] << endl;
         mFitElectronNL->SetPoint(i, energy, pred_nl[i]);
     }
 
@@ -69,11 +73,11 @@ void draw_fit_electron()
     le->AddEntry(mFitElectronNL, "fitting");
     le->Draw("SAME");
 
-    TLatex latex;
-    latex.DrawLatex(3,0.95, "kA=9.79991e-01");
-    latex.DrawLatex(3,0.91, "kB=6.60101e-03");
-    latex.DrawLatex(3,0.87, "kC=9.98625e-01");
-    latex.Draw("SAME");
+    //TLatex latex;
+    //latex.DrawLatex(3,0.95, "kA=9.79991e-01");
+    //latex.DrawLatex(3,0.91, "kB=6.60101e-03");
+    //latex.DrawLatex(3,0.87, "kC=9.98625e-01");
+    //latex.Draw("SAME");
 
     return;
 }
@@ -149,7 +153,7 @@ double getCerenkovPE(double E)
         // get Cerenkov PE
         int num = Cerenkov.size();
         for(int i=1; i<num; i++){
-            if(Etrue[i-1]<=E and Etrue[i]>E){  return Cerenkov[i]; }
+            if(Etrue[i-1]<=E and Etrue[i]>E){  return Cerenkov[i-1]; }
         }
         cout << E << "   >>> Energy Beyond Range !! <<< " << endl; return -1;
     }

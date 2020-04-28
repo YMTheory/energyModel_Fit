@@ -2,37 +2,52 @@
 #define electronNLExperiment_h
 
 #include <vector>
+#include <string>
 #include "TGraph.h"
 #include "TGraphErrors.h"
+#include "junoExperiment.hh"
+#include "junoParameters.hh"
 
 using namespace std;
 
 class electronQuench;
 class electronCerenkov;
 
-class electronNLExperiment
+class electronNLExperiment //: public junoExperiment
 {
     public:
-        electronNLExperiment(electronQuench* aQuench, electronCerenkov* aCerenkov);
+        electronNLExperiment();
+        //electronNLExperiment(electronQuench* aQuench, electronCerenkov* aCerenkov);
         ~electronNLExperiment();
 
-    public:
-        void Calculate(double *apar);
+        static void    setEnergyScale (double val) {m_energyScale = val;}
+        static double  getEnergyScale ()           {return m_energyScale;}
 
-        void CalculateTrueElectronNL();
-        void CalculateFitElectronNL(double *apar);
-        
-        TGraphErrors* GetTrueElectronNL() { return mTrueElectronNL; }
-        TGraph* GetFitElectronNL() { return mFitElectronNL; }
+        static void LoadData   ();
+        static double GetChi2  (int nDoF = 0 );
+
+        static void Plot       ();
+
+    public:
+
+        static void UpdateDataElectronNL();
+        static void UpdateTheoElectronNL();
+        //
+        static TGraphErrors* GetTrueElectronNL() { return mTrueElectronNL; }
+        static TGraph* GetFitElectronNL() { return mFitElectronNL; }
     
     private:
-        TGraphErrors* mTrueElectronNL;
-        TGraph* mFitElectronNL;
+        static bool m_LoadData;
+        static bool m_CalcTheo;
+        static double m_energyScale;   // prior energy scale ...
+
+        static TGraphErrors* mTrueElectronNL;
+        static TGraph* mFitElectronNL;
 
         static electronQuench* mQuench;
         static electronCerenkov* mCerenkov;
 
-        vector<double> Etrue;
+        static vector<double> Etrue;
         
 };
 

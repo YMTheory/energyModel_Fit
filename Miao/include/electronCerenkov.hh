@@ -2,6 +2,7 @@
 #define _ELECTRONCERENKOV_H
 
 #include <vector>
+#include "junoParameters.hh"
 
 using namespace std;
 
@@ -12,13 +13,23 @@ class electronCerenkov
         ~electronCerenkov();
     
     public:
-        void read_Cerenkov();
+        static void setkC(double val)           {m_kC = val;}
+        static double getkC()                   {return m_kC;}
+        static void setEnergyScale(double val)  {m_energyScale = val;}
+        static double getEnergyScale()          {return m_energyScale;}
+
+        static void LoadCerenkov();
         
-        double getCerenkovPE(double E);
+        static double getCerenkovPE(double E);
 
     private:
-        vector<double> Etrue;
-        vector<double> Cerenkov;
+        static double m_kC;
+        static double m_energyScale;
+
+        static bool m_LoadCerenkov;
+
+        static std::vector<double> m_Etrue;
+        static std::vector<double> m_Cerenkov;
 
 };
 

@@ -3,22 +3,24 @@
 int main()
 {
     SetStyle();
+    
+    //electronNLExperiment* junoENLExp = new electronNLExperiment();
+    //junoENLExp->UpdateDataElectronNL();
+    //junoENLExp->UpdateTheoElectronNL();
+    //junoENLExp->Plot();
 
-    //junoEnergyModel::s_p0  = junoParameters::p0_start;
-    //junoEnergyModel::s_p1  = junoParameters::p1_start;
-    //junoEnergyModel::s_p2  = junoParameters::p2_start;
+    //electronNLChiFunction* junoEChiFCN = new electronNLChiFunction();
+    //junoEChiFCN->GetChiSquare();
+    //junoEChiFCN->Plot();
+    //junoEChiFCN->DrawContour(0,1);
 
-    //junoEnergyModel* junoEM  = new junoEnergyModel();
-    //junoEM->Load();  junoEM->Update();
-    //junoEM->SaveCurves();
+    //gammaNLExperiment* junoGNLExp = new gammaNLExperiment();
+    //junoGNLExp->UpdateTheoGammaNL();
+    //cout << junoGNLExp->GetChi2(0) << endl;
 
-    //junoGammaData* junoGD = new junoGammaData();
-    //junoGD->LoadData(junoParameters::gammaData_file);
-    //cout << junoGD->GetChi2() << endl;
-
-    //junoGlobalFit globalFit;
-    //globalFit.LoadData();
-	//globalFit.Fit(); 
+    gammaNLChiFunction* junoGChiFCN = new gammaNLChiFunction();
+    junoGChiFCN->GetChiSquare();
+    junoGChiFCN->Plot();
 
     return 1.0;
 }

@@ -10,16 +10,24 @@
 
 using namespace std;
 
+double electronCerenkov::m_kC = 1.0;
+double electronCerenkov::m_energyScale = 1481.06;
+bool electronCerenkov::m_LoadCerenkov = false;
+
+vector<double> electronCerenkov::m_Etrue;
+vector<double> electronCerenkov::m_Cerenkov;
+
 electronCerenkov::electronCerenkov()
 {;}
 
 electronCerenkov::~electronCerenkov()
 {;}
 
-void electronCerenkov::read_Cerenkov()
+void electronCerenkov::LoadCerenkov()
 {
+    cout << " >>> Loading Electron Cerenkov Shape <<< " << endl;
     ifstream in;
-    in.open("./data/absolutePE.txt");
+    in.open(junoParameters::cerenkovNL_File.c_str());
     if(!in){
         cout << " >>> Fail to Open Cerenkov File !! <<< " << endl;
     }
@@ -29,28 +37,30 @@ void electronCerenkov::read_Cerenkov()
     while(getline(in,line)){
         istringstream ss(line);
         ss >> tmp_Edep >> tmp_rel >> tmp_abs ;
-        Etrue.push_back(tmp_Edep/1000.);
-        Cerenkov.push_back(tmp_abs);
+        m_Etrue.push_back(tmp_Edep/1000.);
+        m_Cerenkov.push_back(tmp_abs);
     }
 
     in.close();
+
+    m_LoadCerenkov = true;
 }
 
 
 double electronCerenkov::getCerenkovPE(double E)
 {
-    read_Cerenkov();
+    if(!m_LoadCerenkov)   LoadCerenkov();
 
-    if(Cerenkov.size() == 0) {
+    if(m_Cerenkov.size() == 0) {
         cout << " >>> No Data in Cerenkov Vector <<< " << endl; return -1;
-    } else if (Cerenkov.size() != Etrue.size()){
-        cout << " >>> Vector Length are Different !! <<< " << endl; 
+    } else if (m_Cerenkov.size() != m_Etrue.size()){
+        cout << " >>> Cerenkov Vector Length are Different !! <<< " << endl; 
     } else {
 
         // get Cerenkov PE
-        int num = Cerenkov.size();
+        int num = m_Cerenkov.size();
         for(int i=1; i<num; i++){
-            if(Etrue[i-1]<=E and Etrue[i]>E){  return Cerenkov[i]; }
+            if(m_Etrue[i-1]<=E and m_Etrue[i]>E){  return m_kC * m_Cerenkov[i-1]/m_energyScale/E; }
         }
         cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
     }

@@ -4,6 +4,13 @@
 #include "TCanvas.h"
 #include "TGraph.h"
 
+#include "electronQuench.hh"
+#include "electronCerenkov.hh"
+#include "electronNLExperiment.hh"
+#include "electronNLChiFunction.hh"
+#include "gammaNLExperiment.hh"
+#include "gammaNLChiFunction.hh"
+
 using namespace std;
 
 void SetStyle()

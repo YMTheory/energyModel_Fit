@@ -1,59 +1,45 @@
 #include "gammaNLChiFunction.hh"
 #include "gammaNLExperiment.hh"
+#include "electronQuench.hh"
+#include "electronCerenkov.hh"
 
 #include <iostream>
 
 using namespace std;
 
 double gammaNLChiFunction::errGamma = 1.0;  // 100% error 
+double gammaNLChiFunction::m_chi2 = 0.;
 
-gammaNLExperiment* gammaNLChiFunction::mGammaNLExperiment = (gammaNLExperiment*)0;
-gammaNLChiFunction::gammaNLChiFunction(gammaNLExperiment* aGammaNLExperiment)
-{
-    mGammaNLExperiment = aGammaNLExperiment;
-}
+int gammaNLChiFunction::m_nParameter = 4;
+double gammaNLChiFunction::m_bestFit[20] = {0.};
+double gammaNLChiFunction::m_bestFitError[20] = {0.};
+
+bool gammaNLChiFunction::m_DoFit = false;
+
+gammaNLChiFunction::gammaNLChiFunction()
+{;}
 
 gammaNLChiFunction::~gammaNLChiFunction()
-{
-    delete mGammaNLExperiment;
+{;}
+
+double gammaNLChiFunction::GetChi2 ( double maxChi2 ) {
+    m_chi2 = 0;
+    m_chi2 += gammaNLExperiment::GetChi2(0);
+    m_chi2 += (gammaNLExperiment::m_gammaScale/junoParameters::m_gammaError, 2);
+    if(maxChi2>0 and m_chi2>maxChi2) return maxChi2;
+
+    return m_chi2;
 }
+
 
 void gammaNLChiFunction::ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Double_t *par, Int_t flag)
 {
-    double delta =0; double chisq = 0;
-
-    cout << "kA " << par[0] << " kB " << par[1] << " kC " << par[2] << " err " << par[4]  << endl;
-
-    // the first 3 parameters are model parameters ... 
-    int varId = 3;
-
-    double varGamma;
-    varGamma = (par[varId]);
-
-    mGammaNLExperiment->Calculate(par);
-    TGraph* mFitgammaNL = mGammaNLExperiment->GetFitGammaNL();
-    TGraphErrors* mTruegammaNL = mGammaNLExperiment->GetTrueGammaNL();
-
-    const int nPoints = mTruegammaNL->GetN();
-    double *Etrue = mTruegammaNL->GetX();
-    double *nl_obs = mTruegammaNL->GetY();
-    double *nl_err_obs = mTruegammaNL->GetEY();
-    double *nl_pred = mFitgammaNL->GetY();  
-    for(int iPoint=0; iPoint<nPoints; iPoint++){
-        //delta = (nl_pred[iPoint] - nl_obs[iPoint]) / nl_err_obs[iPoint];
-        cout << nl_pred[iPoint] << " " << nl_obs[iPoint] << " " << nl_err_obs[iPoint] << " " << varGamma << endl;
-        delta = (nl_pred[iPoint]*(1+varGamma) - nl_obs[iPoint]) / nl_err_obs[iPoint];
-        chisq += delta*delta;
-    }
-
-    chisq += ( varGamma / errGamma) * (varGamma/errGamma) ;
-    cout << "chisq ===>  " << chisq << endl;
-    fval = chisq;
+    SetParameters(par);
+    fval = GetChi2();
 }
 
 
-
-double gammaNLChiFunction::GetChiSquare()
+double gammaNLChiFunction::GetChiSquare(double maxChi2)
 {
     gammaNLMinuit = new TMinuit();
     gammaNLMinuit->SetFCN(ChisqFCN);
@@ -66,12 +52,12 @@ double gammaNLChiFunction::GetChiSquare()
     gammaNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.001, 0.5, 1.5, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 1e-3, 1e-2, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0.5, 1.5, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 1e-4, 1e-2, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.0, 2.0, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.1*errGamma, 0, 0, ierrflag); iPar++;
     
-    //gammaNLMinuit->FixParameter(2);
+    //gammaNLMinuit->FixParameter(1);
 
     // Minimization strategy
     gammaNLMinuit->SetErrorDef(1);
@@ -86,16 +72,40 @@ double gammaNLChiFunction::GetChiSquare()
     int nvpar, nparx, icstat;
     gammaNLMinuit->mnstat(min, edm, errdef, nvpar, nparx, icstat);
 
-    //gammaNLMinuit->SetErrorDef(1);
-    //TGraph* graph1 = (TGraph*) gammaNLMinuit->Contour(50,0,1);
-    //graph1->SetMarkerStyle(20);
-    //graph1->SetMarkerColor(kBlue+1);
-    //graph1->SetLineColor(kBlue+1);
+	for(int i=0; i<m_nParameter; i++)
+	{
+	    gammaNLMinuit->GetParameter(i, m_bestFit[i], m_bestFitError[i]);
+		//cout<<"curvalue: "<<curvalue<<"	curerror: "<<curerror<<endl;
+	}
 
-    //TCanvas* cc = new TCanvas();
-    //graph1->Draw("APL");
-    //cc->SaveAs("tmp.png");
+    m_DoFit = true;
 
+    cout << " ====================== " << endl;
+    cout << "    minChi2: " << min << endl;
+    cout << " ====================== " << endl;
     delete gammaNLMinuit;
     return min;
+}
+
+
+void gammaNLChiFunction::SetParameters(double *par) {
+    electronQuench::setkA             (par[0]);
+    electronQuench::setBirk1          (par[1]);
+    electronCerenkov::setkC           (par[2]);
+    gammaNLExperiment::setGammaScale  (par[3]);
+}
+
+
+void gammaNLChiFunction::Plot ()
+{
+    if(!m_DoFit) {
+        cout << " >>> Have Not Done Fitting Yet ! <<< " << endl; return;
+    }
+    int nPoints = m_nParameter;
+    double par[nPoints];
+    for(int iPoint=0; iPoint<nPoints; iPoint++) {
+        par[iPoint] = m_bestFit[iPoint];
+    }
+    SetParameters(par);
+    gammaNLExperiment::Plot();
 }

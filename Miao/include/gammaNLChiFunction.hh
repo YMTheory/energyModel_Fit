@@ -8,11 +8,15 @@ class gammaNLExperiment;
 class gammaNLChiFunction
 {
     public:
-        gammaNLChiFunction(gammaNLExperiment* aGammaNLExperiment);
+        gammaNLChiFunction();
         ~gammaNLChiFunction();
 
     public:
-        double GetChiSquare();
+        double GetChiSquare         (double maxChi2 = 100000);
+        static void SetParameters   (double *par);
+        static double GetChi2       (double maxChi2 = 100000);
+
+        static void   Plot           ();    
 
     private:
         static gammaNLExperiment* mGammaNLExperiment;
@@ -22,6 +26,13 @@ class gammaNLChiFunction
         TMinuit* gammaNLMinuit;
 
         static double errGamma;
+        static double m_chi2;
+
+        static int m_nParameter;
+        static double m_bestFit[20];
+        static double m_bestFitError[20];
+
+        static bool m_DoFit;
 };
 
 #endif
