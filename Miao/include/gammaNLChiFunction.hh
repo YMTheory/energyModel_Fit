@@ -17,6 +17,7 @@ class gammaNLChiFunction
         static double GetChi2       (double maxChi2 = 100000);
 
         static void   Plot           ();    
+        static void DrawContour      (unsigned int N1, unsigned int N2);
 
     private:
         static gammaNLExperiment* mGammaNLExperiment;

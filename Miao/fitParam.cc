@@ -20,7 +20,8 @@ int main()
 
     gammaNLChiFunction* junoGChiFCN = new gammaNLChiFunction();
     junoGChiFCN->GetChiSquare();
-    junoGChiFCN->Plot();
+    //junoGChiFCN->Plot();
+    junoGChiFCN->DrawContour(1,2);
 
     return 1.0;
 }

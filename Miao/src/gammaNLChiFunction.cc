@@ -55,9 +55,12 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
     gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 1e-4, 1e-2, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.0, 2.0, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.1*errGamma, 0, 0, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
+    //gammaNLMinuit->FixParameter(0);
     //gammaNLMinuit->FixParameter(1);
+    //gammaNLMinuit->FixParameter(2);
+    //gammaNLMinuit->FixParameter(3);
 
     // Minimization strategy
     gammaNLMinuit->SetErrorDef(1);
@@ -108,4 +111,76 @@ void gammaNLChiFunction::Plot ()
     }
     SetParameters(par);
     gammaNLExperiment::Plot();
+}
+
+void gammaNLChiFunction::DrawContour( unsigned int N1, unsigned int N2 )  {
+    if(!m_DoFit) {
+        cout << " >>> Not Fitting Yet ! <<< "; return; 
+    } else if(N1==N2) {
+        cout << " >>> Error: Two Same Parameter No <<< " << endl; return;
+    } else if(N1 >= m_nParameter or N2 >=m_nParameter) {
+        cout << " >>> Error: Parameter No Out of Range <<< "; return;
+    } else {
+        cout << " >>> Draw Contour Plot <<< " << endl;
+        if(N1 != 0 and N2 != 0) {   // draw kB+kC contour ...
+            //TH2F* contour_p1p2 = new TH2F("contour_p1p2", "", );
+            double chi2;
+            double p0 = m_bestFit[0];  double p3 = m_bestFit[3];
+            double p1 = m_bestFit[1]-3*m_bestFitError[1]; double p2 = m_bestFit[2]-3*m_bestFitError[2];
+            double p1_step = 0.00001;  double p2_step = 0.001;
+            while(p1<m_bestFit[1]+3*m_bestFitError[1]){
+                p2 = m_bestFit[2]-3*m_bestFitError[2];
+                while(p2<m_bestFit[2]+3*m_bestFitError[2]){
+                    electronQuench::setkA(p0);
+                    electronQuench::setBirk1(p1);
+                    electronCerenkov::setkC(p2);
+                    gammaNLExperiment::setGammaScale  (p3);
+                    chi2 = GetChi2();
+                    p2 += p2_step;
+                    cout << p1 << " " << p2 << " " << chi2 << endl;
+                } p1 += p1_step;                         
+            }
+        }
+
+        if(N1 != 1 and N2 != 1) {   // draw kB+kC contour ...
+            //TH2F* contour_p1p2 = new TH2F("contour_p1p2", "", );
+            double chi2;
+            double p0 = m_bestFit[0]-3*m_bestFitError[0];  double p1 = m_bestFit[1]; 
+            double p2 = m_bestFit[2]-3*m_bestFitError[2];  double p3 = m_bestFit[3];
+            double p0_step = 0.0001;  double p2_step = 0.001;
+            while(p0<m_bestFit[0]+3*m_bestFitError[0]){
+                p2 = m_bestFit[2]-3*m_bestFitError[2];
+                while(p2<m_bestFit[2]+3*m_bestFitError[2]){
+                    electronQuench::setkA(p0);
+                    electronQuench::setBirk1(p1);
+                    electronCerenkov::setkC(p2);
+                    gammaNLExperiment::setGammaScale  (p3);
+                    chi2 = GetChi2();
+                    p2 += p2_step;
+                    cout << p0 << " " << p2 << " " << chi2 << endl;
+                } p0 += p0_step;                         
+            }
+        }
+
+        if(N1 != 2 and N2 != 2) {   // draw kA+kB contour ...
+            //TH2F* contour_p1p2 = new TH2F("contour_p1p2", "", );
+            double chi2;
+            double p0 = m_bestFit[0]-5*m_bestFitError[0];  double p1= m_bestFit[1]-m_bestFitError[1]*5; 
+            double p2 = m_bestFit[2]; double p3 = m_bestFit[3];
+            double p0_step = 0.0001;  double p1_step = 0.00001;
+            while(p0<m_bestFit[0]+5*m_bestFitError[0]){
+                p1 = 4e-3;
+                while(p1<m_bestFit[1]+5*m_bestFitError[1]){
+                    electronQuench::setkA(p0);
+                    electronQuench::setBirk1(p1);
+                    electronCerenkov::setkC(p2);
+                    gammaNLExperiment::setGammaScale  (p3);
+                    chi2 = GetChi2();
+                    p1 += p1_step;
+                    cout << p0 << " " << p1 << " " << chi2 << endl;
+                } p0 += p0_step;                         
+            }
+        }
+
+    }
 }

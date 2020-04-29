@@ -3,10 +3,10 @@ void draw_gammaPeak()
     TFile* fGammaPdf = new TFile("Gamma_Electron.root", "RECREATE");
 
     TGraph* gGammaPdf = new TGraph();
-    string path = "/Users/yumiao/Documents/Works/github/energyModel_juno/nonlinearity/fit_param/data/naked_gamma/";
+    string path = "/Users/yumiao/Documents/Works/github/energyModel_Fit/Miao/data/naked_gamma/";
     string name1 = "primary_";  string name2 = ".txt";
-    string name[12] = {"1MeV", "2MeV", "4MeV", "6MeV", "8MeV", "Co60", "Cs137", "nH", "K40", "nC12", "Mn54", "Ge68"};
-    for(int i=0; i<12; i++)  {
+    string name[16] = {"1MeV", "2MeV", "4MeV", "6MeV", "8MeV", "Co60", "Cs137", "nH", "K40", "nC12", "Mn54", "Ge68", "nC12", "Tl208", "O16", "nFe56"};
+    for(int i=0; i<16; i++)  {
 
         gGammaPdf->Set(0);
 
