@@ -96,6 +96,11 @@ void gammaNLChiFunction::SetParameters(double *par) {
     electronQuench::setBirk1          (par[1]);
     electronCerenkov::setkC           (par[2]);
     gammaNLExperiment::setGammaScale  (par[3]);
+    
+    //electronQuench::setBirk1          (par[0]);
+    //electronCerenkov::setkC           (par[1]);
+    //gammaNLExperiment::setGammaScale  (par[2]);
+    //electronQuench::setkA             (1-par[1]*58.517/1481.06);
 }
 
 
@@ -162,7 +167,7 @@ void gammaNLChiFunction::DrawContour( unsigned int N1, unsigned int N2 )  {
             }
         }
 
-        if(N1 != 2 and N2 != 2) {   // draw kA+kB contour ...
+     /*   if(N1 != 2 and N2 != 2) {   // draw kA+kB contour ...
             //TH2F* contour_p1p2 = new TH2F("contour_p1p2", "", );
             double chi2;
             double p0 = m_bestFit[0]-5*m_bestFitError[0];  double p1= m_bestFit[1]-m_bestFitError[1]*5; 
@@ -180,7 +185,27 @@ void gammaNLChiFunction::DrawContour( unsigned int N1, unsigned int N2 )  {
                     cout << p0 << " " << p1 << " " << chi2 << endl;
                 } p0 += p0_step;                         
             }
+        } */
+
+        // for two parameters fitting
+        if(N1!=2 and N2!=2) {
+            double chi2;
+            double p0 = m_bestFit[0]-1*m_bestFitError[0];  double p1; double p2 = m_bestFit[2];
+            double p0_step = 0.00001; double p1_step = 0.001;
+            while(p0<m_bestFit[0]+3*m_bestFitError[0]) {
+                p1 = m_bestFit[1]-3*m_bestFitError[1];
+                while(p1<m_bestFit[1]+3*m_bestFitError[1]) {
+                    electronQuench::setBirk1(p0);
+                    electronCerenkov::setkC(p1);
+                    electronQuench::setkA(1-p1*58.517/1481.06);
+                    gammaNLExperiment::setGammaScale(p2);
+                    chi2 = GetChi2();
+                    p1 += p1_step;
+                    cout << p0 << " " << p1 << " " << chi2 << endl;
+                } p0 += p0_step;
+            }
         }
+
 
     }
 }

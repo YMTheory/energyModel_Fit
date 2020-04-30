@@ -2,11 +2,12 @@ void draw_contour()
 {
     gStyle->SetOptStat(0);
     double chimin = 3.16001;
-    double m_bestFit[3] = { 9.86065e-01, 6.00267e-03, 8.54511e-01};
- 
+    //double m_bestFit[3] = { 9.86065e-01, 6.00267e-03, 8.54511e-01};
+    double m_bestFit[3] = {0, 4.49276e-03, 1.07469e+00};
+
     // Draw kB, kC ... 
     
-    TH2F* contour = new TH2F("contour", "",154, 0.005232, 0.006772, 340, 0.6853, 1.025);
+    TH2F* contour = new TH2F("contour", "",17, 0.0039, 0.0056, 491, 0.830, 1.321);
     TGraph* sigma1 = new TGraph(); int num = 0;
 
     // read chi2 :
@@ -17,8 +18,8 @@ void draw_contour()
     while(getline(in,line)){
         istringstream ss(line);
         ss >> p1 >> p2 >> chi2;
-        int binX = int( (p1-0.005232+0.0000001)*100000 );
-        int binY = int((p2-0.6853+0.00001)*1000);
+        int binX = int( (p1-0.0039+0.0000001)*10000 );
+        int binY = int((p2-0.830+0.00001)*1000);
         //cout << p1 << " " << binX << " " <<p2 << " " << binY << " " << chi2 << endl;
         contour->SetBinContent(binX, binY, chi2);
         if(TMath::Abs(chi2-chimin)<=0.01)  {
