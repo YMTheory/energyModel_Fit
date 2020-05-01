@@ -27,6 +27,13 @@ class junoParameters
 
         static ScintillatorParameterization scintillatorParameterization;
 
+        static std::string B12_File;
+        static std::string B12Out_File;
+        static std::string B12Spec_File;
+
+        static std::string C11_File;
+        static std::string C11Out_File;
+        static std::string C11Spec_File;
 
 };
 

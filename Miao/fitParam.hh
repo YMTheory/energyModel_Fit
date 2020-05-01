@@ -10,6 +10,9 @@
 #include "electronNLChiFunction.hh"
 #include "gammaNLExperiment.hh"
 #include "gammaNLChiFunction.hh"
+#include "electronResol.hh"
+#include "electronResExperiment.hh"
+#include "electronResChiFunction.hh"
 
 using namespace std;
 

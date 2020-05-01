@@ -112,7 +112,6 @@ void electronNLChiFunction::SetParameters(double *par)
     electronQuench::setBirk1(par[1]);
     electronCerenkov::setkC (par[2]);
 
-    //std::cout << "parameters Setting .... " << endl;
     //std::cout << par[0] << " " << par[1] << " " << par[2] << endl;
 }
 
