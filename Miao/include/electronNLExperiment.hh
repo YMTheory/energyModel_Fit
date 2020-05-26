@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 #include "TGraph.h"
+#include "TH1.h"
 #include "TGraphErrors.h"
 #include "junoExperiment.hh"
 #include "junoParameters.hh"
@@ -38,6 +39,8 @@ class electronNLExperiment //: public junoExperiment
     
     private:
         static bool m_LoadData;
+        static bool m_LoadSingleData;
+        static bool m_LoadB12;
         static bool m_CalcTheo;
         static double m_energyScale;   // prior energy scale ...
 
@@ -48,6 +51,11 @@ class electronNLExperiment //: public junoExperiment
         static electronCerenkov* mCerenkov;
 
         static vector<double> Etrue;
+
+        static TH1D* mTrueB12Spec;
+        static TH1D* mFitB12Spec;
+        static std::vector<double> predB12;
+        static double B12_scale;
         
 };
 

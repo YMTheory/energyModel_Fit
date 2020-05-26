@@ -155,11 +155,13 @@ double gammaNLExperiment::CalculateGammaNL( int iSource )
 double gammaNLExperiment::GetChi2 ( int nDoF ) {
     m_CalcTheo = false;
 
+
     if (!m_LoadGammaData)      UpdateDataGammaNL();
     if (!m_LoadPrmElecDist)    LoadPrimaryElecDist();
     if (!m_CalcTheo)           UpdateTheoGammaNL();
 
     double chi2 = 0;
+
     if( mTrueGammaNL->GetN() != mFitGammaNL->GetN() ){
         cout << " >>> Two Data have Different Lengths <<< " << endl; return -1.;
     } else {

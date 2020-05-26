@@ -32,6 +32,8 @@ class electronQuench
 
         static double ScintillatorNL (double eTrue);
 
+        static void Plot ();
+
 
     private:
         static double m_birk1;
@@ -40,6 +42,13 @@ class electronQuench
 		static const unsigned int m_nSamples = 1000;
 		static constexpr double m_samplingResol  = 0.01;
 		static double  m_kBResid;
+        static double p0 ;
+        static double p1 ;
+        static double p2 ;
+        static double p3 ;
+
+        static double m_edep[1000];
+        static double m_nonl[1000];
 
 		static double m_quenchingShape1 [m_nKb][m_nSamples];
 		static double* m_quenchingShape1_lowKb;
@@ -54,6 +63,7 @@ class electronQuench
         static double ScintillatorShape    (double eTrue);
         static double SimulationNLShape    (double eTrue);
         static double IntegralNLShape      (double eTrue);
+        static double EmpiricalNLShape     (double eTrue);
 
 };
 

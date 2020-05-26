@@ -10,7 +10,7 @@ using namespace std;
 double gammaNLChiFunction::errGamma = 1.0;  // 100% error 
 double gammaNLChiFunction::m_chi2 = 0.;
 
-int gammaNLChiFunction::m_nParameter = 4;
+int gammaNLChiFunction::m_nParameter = 3;
 double gammaNLChiFunction::m_bestFit[20] = {0.};
 double gammaNLChiFunction::m_bestFitError[20] = {0.};
 
@@ -52,7 +52,7 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
     gammaNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
+    //gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 1e-4, 1e-2, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.0, 2.0, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
@@ -92,15 +92,17 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
 
 
 void gammaNLChiFunction::SetParameters(double *par) {
-    electronQuench::setkA             (par[0]);
-    electronQuench::setBirk1          (par[1]);
-    electronCerenkov::setkC           (par[2]);
-    gammaNLExperiment::setGammaScale  (par[3]);
+    // 4-parameter fitting
+    //electronQuench::setkA             (par[0]);
+    //electronQuench::setBirk1          (par[1]);
+    //electronCerenkov::setkC           (par[2]);
+    //gammaNLExperiment::setGammaScale  (par[3]);
     
-    //electronQuench::setBirk1          (par[0]);
-    //electronCerenkov::setkC           (par[1]);
-    //gammaNLExperiment::setGammaScale  (par[2]);
-    //electronQuench::setkA             (1-par[1]*58.517/1481.06);
+    // 3-parameter fitting
+    electronQuench::setBirk1          (par[0]);
+    electronCerenkov::setkC           (par[1]);
+    gammaNLExperiment::setGammaScale  (par[2]);
+    electronQuench::setkA             ((1-par[1]*58.517/1481.06)/0.9796);
 }
 
 

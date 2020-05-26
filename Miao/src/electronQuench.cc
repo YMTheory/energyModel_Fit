@@ -5,6 +5,7 @@
 #include <sstream>
 #include <TMath.h>
 #include <TGraph.h>
+#include <TF1.h>
 #include "junoParameters.hh"
 
 using namespace std;
@@ -12,6 +13,10 @@ using namespace std;
 double electronQuench::m_kA = 0.98;
 double electronQuench::m_birk1     = 6.5e-3;
 double electronQuench::m_kBResid  = 0;
+double electronQuench::p0 = 1.02561e+00;
+double electronQuench::p1 = 1.12245e-01;
+double electronQuench::p2 = 1.39421e+00;
+double electronQuench::p3 = 5.55117e-04;
 
 double electronQuench::m_quenchingShape1[m_nKb][m_nSamples] = {0};
 double* electronQuench::m_quenchingShape1_lowKb = &m_quenchingShape1[0][0];
@@ -22,6 +27,9 @@ bool electronQuench::m_loadNLData = false;
 
 vector<double> electronQuench::m_Etrue;
 vector<double> electronQuench::m_StopPow;
+
+double electronQuench::m_edep[1000] = {0.};
+double electronQuench::m_nonl[1000] = {0.};
 
 electronQuench::electronQuench()
 {;}
@@ -127,6 +135,8 @@ double electronQuench::ScintillatorShape (double eTrue)  {
         return IntegralNLShape (eTrue);
     } else if (junoParameters::scintillatorParameterization == kSimulation ) { 
         return SimulationNLShape (eTrue);
+    } else if (junoParameters::scintillatorParameterization == kEmpirical) {
+        return EmpiricalNLShape (eTrue);
     }
 }
 
@@ -146,3 +156,24 @@ double electronQuench::IntegralNLShape   (double eTrue)  {
     return Integral_BirkLaw(eTrue);
 }
 
+double electronQuench::EmpiricalNLShape  (double eTrue) {
+    return (p0+p3*eTrue)/(1+p1*TMath::Exp(-p2*eTrue));
+}
+
+
+void electronQuench::Plot() {
+    cout << " >>> Plot Quenching Curve <<< " << endl;
+    for(int i=0; i<1000; i++) {
+        m_edep[i] = 16./1000.*(i+1);
+        m_nonl[i] = electronQuench::ScintillatorNL(m_edep[i]);
+    }
+    
+    TFile* file = new TFile(junoParameters::quenchNL_outFile.c_str(), "recreate");
+    TGraph* gQuenchNL = new TGraph(1000, m_edep, m_nonl);
+    gQuenchNL->SetLineColor(kBlue+1);
+    gQuenchNL->SetMarkerColor(kBlue+1);
+    gQuenchNL->SetMarkerSize(0.2);
+    gQuenchNL->Write();
+    file->Close();
+
+}
