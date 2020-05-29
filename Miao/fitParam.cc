@@ -7,10 +7,14 @@ int main()
     //electronNLExperiment* junoENLExp = new electronNLExperiment();
     //junoENLExp->UpdateDataElectronNL();
     //junoENLExp->UpdateTheoElectronNL();
+    //std::cout << junoENLExp->GetChi2() << endl;
     //junoENLExp->Plot();
 
+    BetaPrediction* pred = new BetaPrediction();
+    pred->Plot();
+
     //electronNLChiFunction* junoEChiFCN = new electronNLChiFunction();
-    //junoEChiFCN->GetChiSquare();
+    //cout << junoEChiFCN->GetChiSquare() << endl;
     //junoEChiFCN->Plot();
     //junoEChiFCN->DrawContour(0,1);
 
@@ -27,9 +31,9 @@ int main()
     //cout << "chi2: " << junoElecResExp->GetChi2() << endl;
     //junoElecResExp->PlotC11();
 
-    electronResChiFunction* junoEResChiFCN = new electronResChiFunction();
-    junoEResChiFCN->GetChiSquare();
-    junoEResChiFCN->Plot();
+    //electronResChiFunction* junoEResChiFCN = new electronResChiFunction();
+    //junoEResChiFCN->GetChiSquare();
+    //junoEResChiFCN->Plot();
 
     return 1.0;
 }

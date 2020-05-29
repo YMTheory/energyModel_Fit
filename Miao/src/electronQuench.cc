@@ -93,7 +93,7 @@ void electronQuench::LoadNLData ()  {
     cout << " >>> Loading Quenching NL Data <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
     if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
-    for(int kbIdx=40; kbIdx<91; kbIdx++)  {
+    for(int kbIdx=50; kbIdx<71; kbIdx++)  {
         //cout << kbIdx << endl;
         stringstream ss; ss << kbIdx;
         TString name1 = "kB"+ss.str();

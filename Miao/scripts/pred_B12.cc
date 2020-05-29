@@ -30,6 +30,7 @@ void pred_B12()
 
     // Fermi function part: 
     double F1 = 2*(gamma+1)*TMath::Power(ROOT::Math::tgamma(2*gamma+1),-2)*TMath::Power((2*R),2*(gamma-1));  // energy-independent
+    cout << TMath::Power(ROOT::Math::tgamma(2*gamma+1),-2) << endl;
     // Table for expansions ...
     double Z0K0L0 = 1; 
     double Z1K1L0 = 3.141593;

@@ -13,6 +13,7 @@
 #include "electronResol.hh"
 #include "electronResExperiment.hh"
 #include "electronResChiFunction.hh"
+#include "BetaPrediction.hh"
 
 using namespace std;
 

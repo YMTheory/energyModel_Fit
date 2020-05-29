@@ -1,6 +1,7 @@
 #include "electronNLExperiment.hh"
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "BetaPrediction.hh"
 
 #include <iostream>
 #include <fstream>
@@ -77,8 +78,8 @@ void electronNLExperiment::LoadData ()  {
         cout << " >>> Loading B12 Spectrum <<< " << endl;
         TFile* B12file = TFile::Open(junoParameters::B12DataFile.c_str());
         if(!B12file) cout << " >>> No B12 NL file <<< " << std::endl;
-        mTrueB12Spec = (TH1D*)B12file->Get("Evis");
-        mFitB12Spec  = (TH1D*)B12file->Get("Edep");
+        mTrueB12Spec  = (TH1D*)B12file->Get("Evis");
+        mFitB12Spec   = (TH1D*)B12file->Get("Edep");
         
         ifstream in;
         in.open(junoParameters::B12PredFile.c_str());
@@ -112,9 +113,15 @@ void electronNLExperiment::UpdateTheoElectronNL()
         double nl_pred[data_num];
 
         for(int i=0; i<data_num; i++){
-            double fq = mQuench->ScintillatorNL(Edep[i]);
-            double fc = mCerenkov->getCerenkovPE(Edep[i]);
-            nl_pred[i] = fq + fc ;
+            double nonl;
+            if(junoParameters::scintillatorParameterization == kEmpirical) {
+                nonl = mQuench->ScintillatorNL(Edep[i]);
+            } else {
+                double fq = mQuench->ScintillatorNL(Edep[i]);
+                double fC = mCerenkov->getCerenkovPE(Edep[i]);
+                nonl = fq + fC;
+            }
+            nl_pred[i] = nonl;
             mFitElectronNL->SetPoint(i, Edep[i], nl_pred[i]);
             //cout << "TheoElecNL : " << Edep[i] << " " << fq << " " << fc << endl;
         }
@@ -122,11 +129,21 @@ void electronNLExperiment::UpdateTheoElectronNL()
 
     if( m_LoadB12 ) {  // B12 spectrum
         mFitB12Spec->Reset();
+        //mTempB12Spec->Reset();
+        //clock_t start  = clock();
+        //int nBins = mTempB12Spec->GetNbinsX();
+        //double *Ebin = mTempB12Spec->GetX();
+
         for (int k=0; k<predB12.size();k++){
-            double fq = mQuench->ScintillatorNL(predB12[k]);
-            double fC = mQuench->ScintillatorNL(predB12[k]);
-            double evis = fq*predB12[k];
-            //double evis = (fq+fC)*predB12[k];
+            double nonl;
+            if(junoParameters::scintillatorParameterization == kEmpirical) {
+                nonl = mQuench->ScintillatorNL(predB12[k]);
+            } else {
+                double fq = mQuench->ScintillatorNL(predB12[k]);
+                double fC = mCerenkov->getCerenkovPE(predB12[k]);
+                nonl = fq + fC;
+            }
+            double evis = nonl*predB12[k];
             mFitB12Spec->Fill(evis);
         }
         B12_scale = mTrueB12Spec->GetEntries() / mFitB12Spec->GetEntries();

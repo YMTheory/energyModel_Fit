@@ -32,6 +32,7 @@ class junoParameters
 
         static std::string B12DataFile;
         static std::string B12PredFile;
+        static std::string B12CalcFile;
 
         // energy resolution input/output file ...
         static std::string B12_File;

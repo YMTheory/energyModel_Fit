@@ -54,6 +54,7 @@ class electronNLExperiment //: public junoExperiment
 
         static TH1D* mTrueB12Spec;
         static TH1D* mFitB12Spec;
+        static TH1D* mTempB12Spec;
         static std::vector<double> predB12;
         static double B12_scale;
         

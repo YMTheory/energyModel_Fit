@@ -39,7 +39,7 @@ class electronQuench
         static double m_birk1;
         static double m_kA;
 		static const unsigned int m_nKb      = 100;
-		static const unsigned int m_nSamples = 1000;
+		static const unsigned int m_nSamples = 2000;
 		static constexpr double m_samplingResol  = 0.01;
 		static double  m_kBResid;
         static double p0 ;

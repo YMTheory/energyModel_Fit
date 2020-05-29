@@ -8,6 +8,8 @@
 #include <TGraph.h>
 #include <TFile.h>
 
+using namespace std;
+
 double B12prediction::predSpec(double betaE) {
     fermiFunc* fermi = new fermiFunc();
     finite_size* fs = new finite_size();
@@ -26,6 +28,7 @@ void B12prediction::Plot() {
         if(predSpec(E)>maxPoint) maxPoint = predSpec(E);
     }
     
+    cout << "Maximum: " << maxPoint << endl;
     for(int iPoint=0; iPoint<nPoints; iPoint++) {
         double E = g.E0/nPoints*(iPoint+1);
         graphSpec->SetPoint(iPoint, E, predSpec(E)/maxPoint);
