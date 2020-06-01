@@ -30,9 +30,13 @@ class junoParameters
 
         static ScintillatorParameterization scintillatorParameterization;
 
+        static bool fitB12;
         static std::string B12DataFile;
         static std::string B12PredFile;
         static std::string B12CalcFile;
+        static double b12FitMinE;
+        static double b12FitMaxE;
+        static double b12VertexCut;
 
         // energy resolution input/output file ...
         static std::string B12_File;

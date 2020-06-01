@@ -36,6 +36,7 @@ class electronNLExperiment //: public junoExperiment
         //
         static TGraphErrors* GetTrueElectronNL() { return mTrueElectronNL; }
         static TGraph* GetFitElectronNL() { return mFitElectronNL; }
+
     
     private:
         static bool m_LoadData;
@@ -57,6 +58,20 @@ class electronNLExperiment //: public junoExperiment
         static TH1D* mTempB12Spec;
         static std::vector<double> predB12;
         static double B12_scale;
+        static const int nBins_B12 = 100;
+        static constexpr double Elow_B12 = 0.;
+        static constexpr double Ehigh_B12 = 14.;
+
+        static const int mPoints = 100;  // fine-binning:small bins in each bin
+
+    private:
+        static double binCenter_B12data[100];
+        static double binContent_B12data[100];
+        static double binCenter_B12tmp[10000];
+        static double binContent_B12tmp[10000];
+        double eTrue_B12[1000];
+        double eVis_B12[1000];
+
         
 };
 

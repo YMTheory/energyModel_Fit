@@ -3,13 +3,22 @@
 #include <TMath.h>
 #include <TGraph.h>
 #include <TFile.h>
+#include <TF1.h>
 
 using namespace std;
 
 double BetaPrediction::gamma = TMath::Sqrt(1-(alpha*Z)*(alpha*Z));
 double BetaPrediction::R     = 0.0029*TMath::Power(A,1/3)+0.0063*TMath::Power(A,-1/3)-0.017*TMath::Power(A,-1);
+double BetaPrediction::K     = 1/4.3;
+TF1* BetaPrediction::B12Fcn;
 
-double BetaPrediction::predSpec(double betaE) {
+BetaPrediction* gBetaPredicion = (BetaPrediction*)0;
+
+BetaPrediction::BetaPrediction() {
+    B12Fcn = new TF1("B12Fcn", gBetaSpecFcn, 0, E0);
+}
+
+double BetaPrediction::predB12Spec(double betaE) {
     double betaW = betaE/0.511+1;
     double betaP = TMath::Sqrt(betaW*betaW-1);
     double sp = betaP*betaP*(W0-betaW)*(W0-betaW);
@@ -100,7 +109,7 @@ void BetaPrediction::Plot() {
     TGraph* graphPred = new TGraph();
     for(int ibin=0; ibin<m_bin; ibin++ ) {
         double E = E0/m_bin*(ibin+1);
-        graphPred->SetPoint(ibin, E, predSpec(E));
+        graphPred->SetPoint(ibin, E, predB12Spec(E));
     }
 
     graphPred->SetLineColor(kBlue);
@@ -112,4 +121,13 @@ void BetaPrediction::Plot() {
     graphPred->Write();
     file->Close();
 }
+
+
+double gBetaSpecFcn (double* x, double* p) {
+    double betaE = x[0];
+    if(gBetaPredicion == 0) gBetaPredicion = new BetaPrediction();
+    return gBetaPredicion->predB12Spec(betaE);
+}
+
+
 

@@ -14,6 +14,9 @@
 #include "electronResExperiment.hh"
 #include "electronResChiFunction.hh"
 #include "BetaPrediction.hh"
+#include "junoNLChiFunction.hh"
+#include "junoSpectrum.hh"
+#include "junoB12Data.hh"
 
 using namespace std;
 

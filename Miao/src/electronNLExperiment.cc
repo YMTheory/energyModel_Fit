@@ -13,6 +13,7 @@
 #include <TMultiGraph.h>
 #include <TLegend.h>
 #include <TH1.h>
+#include <TRandom.h>
 
 using namespace std;
 
@@ -22,11 +23,18 @@ bool electronNLExperiment::m_LoadB12 = true;
 bool electronNLExperiment::m_CalcTheo = false;
 double electronNLExperiment::m_energyScale = 1481.06;
 
+
+double electronNLExperiment::binCenter_B12data[100];
+double electronNLExperiment::binContent_B12data[100];
+double electronNLExperiment::binCenter_B12tmp[10000];
+double electronNLExperiment::binContent_B12tmp[10000];
+
 TGraphErrors* electronNLExperiment::mTrueElectronNL;
 TGraph*       electronNLExperiment::mFitElectronNL;
 
 TH1D* electronNLExperiment::mTrueB12Spec;
-TH1D* electronNLExperiment::mFitB12Spec;
+TH1D* electronNLExperiment::mFitB12Spec ;
+TH1D* electronNLExperiment::mTempB12Spec ;
 std::vector<double> electronNLExperiment::predB12;
 double electronNLExperiment::B12_scale;
 
@@ -44,7 +52,6 @@ electronNLExperiment::electronNLExperiment()
 
 electronNLExperiment::~electronNLExperiment()
 {;}
-
 
 
 void electronNLExperiment::LoadData ()  {
@@ -79,7 +86,10 @@ void electronNLExperiment::LoadData ()  {
         TFile* B12file = TFile::Open(junoParameters::B12DataFile.c_str());
         if(!B12file) cout << " >>> No B12 NL file <<< " << std::endl;
         mTrueB12Spec  = (TH1D*)B12file->Get("Evis");
-        mFitB12Spec   = (TH1D*)B12file->Get("Edep");
+        for(int i=0; i<nBins_B12; i++) {
+            binCenter_B12data[i] = mTrueB12Spec->GetBinCenter(i);
+            binContent_B12data[i] = mTrueB12Spec->GetBinContent(i);
+        }
         
         ifstream in;
         in.open(junoParameters::B12PredFile.c_str());
@@ -128,26 +138,72 @@ void electronNLExperiment::UpdateTheoElectronNL()
     }
 
     if( m_LoadB12 ) {  // B12 spectrum
+
+        cout << " >>> Calculate B12 Prediction Spectrum ..." << endl;
+        mTempB12Spec = new TH1D("mTempB12Spec", "", nBins_B12*mPoints, Elow_B12, Ehigh_B12);
+        //mFitB12Spec = new TH1D("B12FitSpec", "", nBins_B12*mPoints, Elow_B12, Ehigh_B12);
+
         mFitB12Spec->Reset();
+        double binE;
+        double binW = (Ehigh_B12 - Elow_B12) / nBins_B12;
+        for(int j=0; j<nBins_B12; j++) {
+            binE = Elow_B12 + binW*j;
+            double events = 0;
+            vector<double> specPoint;
+            for(int iPoint=1; iPoint<mPoints+1; iPoint++)
+            {
+                BetaPrediction::setK(0.116);
+                double value = BetaPrediction::predB12Spec(binE+binW*iPoint/mPoints);
+                value = value*(binW/mPoints);
+                mTempB12Spec->SetBinContent(j*mPoints+iPoint+1, value);
+                //cout << binE+binW*iPoint/mPoints << " " << value << endl;
+            }  
+        }
+
+        int nBins = mTempB12Spec->GetNbinsX();   
+        double binW1  = mTempB12Spec->GetBinWidth(1); 
+        double mLow = mTempB12Spec->GetBinCenter(1); 
+        double mUp  = mTempB12Spec->GetBinCenter(nBins);
+
+        for (int iBin=1; iBin<nBins+1; iBin++ ) {
+            double eTru = mTempB12Spec->GetBinCenter(iBin);
+            double fq = electronQuench::ScintillatorNL(eTru);
+            double fc = electronCerenkov::getCerenkovPE(eTru);
+            double nonl = fq + fc;
+            double evis = eTru * (fq+fc);
+            for(int j=1; j<nBins+1; j++) {
+                double binLowEdge = mTempB12Spec->GetBinLowEdge(j);
+                double binUpEdge  = binLowEdge + binW1; 
+                if(evis>=binLowEdge and evis<binUpEdge) { 
+                    mFitB12Spec->AddBinContent(j, mTempB12Spec->GetBinContent(iBin)); //cout<<j<<mTrue->GetBinContent(iBin)<<endl; 
+                    break; }
+            }
+        }
+
+        mFitB12Spec->Rebin(mPoints);
+        
+        cout << "fitspec: " << mFitB12Spec->GetNbinsX() << endl;
+
+
         //mTempB12Spec->Reset();
         //clock_t start  = clock();
         //int nBins = mTempB12Spec->GetNbinsX();
         //double *Ebin = mTempB12Spec->GetX();
 
-        for (int k=0; k<predB12.size();k++){
-            double nonl;
-            if(junoParameters::scintillatorParameterization == kEmpirical) {
-                nonl = mQuench->ScintillatorNL(predB12[k]);
-            } else {
-                double fq = mQuench->ScintillatorNL(predB12[k]);
-                double fC = mCerenkov->getCerenkovPE(predB12[k]);
-                nonl = fq + fC;
-            }
-            double evis = nonl*predB12[k];
-            mFitB12Spec->Fill(evis);
-        }
-        B12_scale = mTrueB12Spec->GetEntries() / mFitB12Spec->GetEntries();
-        mFitB12Spec->Scale(B12_scale);
+        //for (int k=0; k<predB12.size();k++){
+        //    double nonl;
+        //    if(junoParameters::scintillatorParameterization == kEmpirical) {
+        //        nonl = mQuench->ScintillatorNL(predB12[k]);
+        //    } else {
+        //        double fq = mQuench->ScintillatorNL(predB12[k]);
+        //        double fC = mCerenkov->getCerenkovPE(predB12[k]);
+        //        nonl = fq + fC;
+        //    }
+        //    double evis = nonl*predB12[k];
+        //    mFitB12Spec->Fill(evis);
+        //}
+        //B12_scale = mTrueB12Spec->GetEntries() / mFitB12Spec->GetEntries();
+        //mFitB12Spec->Scale(B12_scale);
     }
 
 
@@ -155,12 +211,16 @@ void electronNLExperiment::UpdateTheoElectronNL()
     
 }
 
+
+
 double electronNLExperiment::GetChi2 ( int nDoF )  {
     // every time should update theoNL
     m_CalcTheo = false;
 
     if (!m_LoadData) UpdateDataElectronNL();
     if (!m_CalcTheo) UpdateTheoElectronNL();
+    cout << "In Chi2 Calc: " << mTrueB12Spec->GetNbinsX() << endl;
+    cout << "In Chi2 Calc: " << mFitB12Spec->GetNbinsX() << endl;
     double chi2 = 0;
     double nData = 0;
     
@@ -184,8 +244,11 @@ double electronNLExperiment::GetChi2 ( int nDoF )  {
     }
 
     if( m_LoadB12 ) {
+        cout << " >>> calculate B12 data Chi2 " << endl;
         const int nBins = mTrueB12Spec->GetNbinsX();
-        for(int iBin=0; iBin<nBins; iBin++) {
+        cout << mFitB12Spec->GetNbinsX() << endl;
+        for(int iBin=1; iBin<nBins+1; iBin++) {
+            cout << iBin << " " << mTrueB12Spec->GetBinContent(iBin) << " " << mFitB12Spec->GetBinContent(iBin) << endl;
             double delta = mTrueB12Spec->GetBinContent(iBin)-mFitB12Spec->GetBinContent(iBin);
             double error2 = mTrueB12Spec->GetBinCenter(iBin);
             if(error2!=0) {chi2 += TMath::Power(delta, 2)/error2; nData++;}
@@ -249,8 +312,8 @@ void electronNLExperiment::Plot () {
         TLegend* leg=new TLegend();
         leg->SetBorderSize(0);
         leg->SetFillColor(-1);
-        leg->AddEntry(mTrueB12Spec, "B12Spec Data", "PE");
-        leg->AddEntry(mFitB12Spec,  "B12Spec Fit" , "PE");
+        leg->AddEntry(mTrueB12Spec, "B12Spec Data", "l");
+        leg->AddEntry(mFitB12Spec,  "B12Spec Fit" , "l");
         leg->SetTextSize(19);
         leg->Draw("SAME");
         
