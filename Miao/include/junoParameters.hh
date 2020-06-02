@@ -43,9 +43,13 @@ class junoParameters
         static std::string B12Out_File;
         static std::string B12Spec_File;
 
+        static bool fitC11;
+        static std::string C11DataFile;
         static std::string C11_File;
         static std::string C11Out_File;
         static std::string C11Spec_File;
+        static double c11FitMinE;
+        static double c11FitMaxE;
 
 };
 

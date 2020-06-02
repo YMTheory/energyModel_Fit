@@ -2,6 +2,7 @@
 #define junoNLChiFunction_h
 
 #include "junoB12Data.hh"
+#include "junoC11Data.hh"
 #include <TMinuit.h>
 
 class junoNLChiFunction 
@@ -25,12 +26,14 @@ class junoNLChiFunction
         static double m_chi2;
         static double m_chi2Min;
         static double m_chi2B12;
+        static double m_chi2C11;
         static int m_nParameter;
         static double m_bestFit[20];
         static double m_bestFitError[20];
         static bool m_DoFit;
         
         static junoB12Data* m_b12Data;
+        static junoC11Data* m_c11Data;
 
 } ;
 

@@ -5,6 +5,7 @@
 #include "electronCerenkov.hh"
 #include "BetaPrediction.hh"
 #include "junoB12Data.hh"
+#include "junoC11Data.hh"
 #include "junoParameters.hh"
 
 #include <iostream>
@@ -12,10 +13,12 @@
 using namespace std;
 
 junoB12Data* junoNLChiFunction::m_b12Data = 0;
+junoC11Data* junoNLChiFunction::m_c11Data = 0;
 
 double junoNLChiFunction::m_chi2    = 0.;
 double junoNLChiFunction::m_chi2Min = 100000;
 double junoNLChiFunction::m_chi2B12 = 0;
+double junoNLChiFunction::m_chi2C11 = 0;
 
 int junoNLChiFunction::m_nParameter = 3;
 double junoNLChiFunction::m_bestFit[20] = {0.};
@@ -26,6 +29,8 @@ bool junoNLChiFunction::m_DoFit = false;
 junoNLChiFunction::junoNLChiFunction() {
     m_b12Data = new junoB12Data();
     m_b12Data->SetParameters();
+    m_c11Data = new junoC11Data();
+    m_c11Data->SetParameters();
 }
 
 junoNLChiFunction::~junoNLChiFunction() {
@@ -36,17 +41,24 @@ void junoNLChiFunction::LoadData()
 {
 	std::cout << " ---> Start loading data " << std::endl;
     m_b12Data   ->LoadData(junoParameters::B12DataFile);
+    m_c11Data   ->LoadData("./data/electron/C11.root");
 }
 
 
 double junoNLChiFunction::GetChi2(double maxChi2) {
     m_chi2 = 0;
     m_chi2B12 = 0;
+    m_chi2C11 = 0;
     //m_chi2 += electronNLExperiment::GetChi2(0);
 
     if(junoParameters::fitB12) {
         m_chi2B12 = m_b12Data ->GetChi2();
         m_chi2 += m_chi2B12;
+    }
+
+    if(junoParameters::fitC11) {
+        m_chi2C11 = m_c11Data ->GetChi2();
+        m_chi2 += m_chi2C11;
     }
     m_chi2 += gammaNLExperiment::GetChi2(0);
 
@@ -65,10 +77,11 @@ void junoNLChiFunction::ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Do
 void junoNLChiFunction::SetParameters(double* par)
 {
     //BetaPrediction::setK                (par[0]);   // B12 Spec Normalization
-    electronQuench::setBirk1            (par[0]);
-    electronCerenkov::setkC             (par[1]);
-    gammaNLExperiment::setGammaScale    (par[2]);
-    electronQuench::setkA               ((1-par[2]*58.517/1481.06)/0.9796);
+    electronQuench::setkA               (par[0]);
+    electronQuench::setBirk1            (par[1]);
+    electronCerenkov::setkC             (par[2]);
+    gammaNLExperiment::setGammaScale    (par[3]);
+    //electronQuench::setkA               ((1-par[2]*58.517/1481.06)/0.9796);
 }
 
 
@@ -86,10 +99,10 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     junoNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    //junoNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0.7, 1.2, ierrflag); iPar++;
     //junoNLMinuit->mnparm(iPar, "K", 0.116, 0.1,1.13, 0.001, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 1e-4, 1e-2, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.0, 2.0, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5e-3, 7e-3, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.7, 1.2, ierrflag); iPar++;
     junoNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
     //junoNLMinuit->FixParameter(0);
@@ -102,7 +115,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     arglist[0]=2;
     junoNLMinuit->mnexcm("SET STR",arglist,1,ierrflag);
 
-    arglist[0] = 10000; //maxCalls
+    arglist[0] = 1000; //maxCalls
     arglist[1] = 0.01; // tolerance
     junoNLMinuit->mnexcm("MIGrad", arglist, 1, ierrflag);
 
@@ -142,7 +155,9 @@ void junoNLChiFunction::Plot()
     if(junoParameters::fitB12) {
         m_b12Data->Plot();
     }
-
+    if(junoParameters::fitC11) {
+        m_c11Data->Plot(); // 
+    }
 }
 
 

@@ -93,7 +93,7 @@ void electronQuench::LoadNLData ()  {
     cout << " >>> Loading Quenching NL Data <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
     if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
-    for(int kbIdx=50; kbIdx<71; kbIdx++)  {
+    for(int kbIdx=50; kbIdx<81; kbIdx++)  {
         //cout << kbIdx << endl;
         stringstream ss; ss << kbIdx;
         TString name1 = "kB"+ss.str();
@@ -144,7 +144,7 @@ double electronQuench::SimulationNLShape (double eTrue)  {
     if( !m_loadNLData ) LoadNLData();
     Update();
     if (m_birk1 ==0 ) return 1.0;
-    int idx = int(eTrue/m_samplingResol)-1;
+    int idx = int(eTrue/m_samplingResol);
 
     double quenchNL  =  m_kA * ( m_kBResid    *m_quenchingShape1_lowKb[idx] 
                     +(1-m_kBResid) *m_quenchingShape1_higKb[idx] );

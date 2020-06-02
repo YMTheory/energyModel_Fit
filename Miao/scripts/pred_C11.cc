@@ -12,7 +12,7 @@ TGraph* relative_corr(double *p1, double *p2) {
     return gRela;
 }
 
-void pred_B12()
+void pred_C11()
 {
     double K = 1; // global normalization
 
@@ -22,10 +22,10 @@ void pred_B12()
     double p = 0; // total integral 
     double W = TMath::Sqrt(p*p+1);
     double alpha = 1/137.036;
-    double Z = 12; double A = 5;
+    double Z = -11; double A = 6;
     double gamma = TMath::Sqrt((1-(alpha*Z)*(alpha*Z)));
     double R = 0.0029*TMath::Power(A,1/3)+0.0063*TMath::Power(A,-1/3)-0.017*TMath::Power(A,-1);
-    double E0 = 13.4; //MeV
+    double E0 = 0.96; //MeV
     double W0 = E0/0.511+1;  //MeV
 
     // Fermi function part: 
@@ -59,7 +59,7 @@ void pred_B12()
     double KE[100]; double spec[100]; double fm_spec[100]; double fsc_spec[100]; double wi_spec[100]; double se_spec[100]; double wm_spec[100];
     double scale1 = 0;
 
-    TH1F* hh0 = new TH1F("hh0", "", 100, 0, 14);
+    TH1F* hh0 = new TH1F("hh0", "", 100, 0.0, E0);
     for(int i=0; i<100; i++) {
         double betaE = hh0->GetBinCenter(i+1);    //E0/100.*(i+1);
         double betaW = betaE/0.511+1;
@@ -223,28 +223,65 @@ void pred_B12()
         hh0->SetBinContent(i+1, wm_spec[i]);
     }
 
-    TTree * newTree = new TTree("T","T");
-    Int_t m_num;
-    newTree->Branch("num", &m_num, "num/I");
-    Double_t m_branch;
-    newTree->Branch("BR", &m_branch, "BR/D");
-    Int_t m_numPhoton;
-    newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
-    Double_t m_photonE[100];
-    newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+    TCanvas* cc = new TCanvas();
+    cc->cd(); cc->SetGrid();
 
-    m_num = 0;
-    m_branch = 0.971908;
-    m_numPhoton = 0;
-    newTree->Fill();
-
-    TFile* file = new TFile("B12_theo.root", "recreate");
-    hh0->Write();
-    newTree->Write();
-    file->Close();
+    hh0->SetStats(0);
+    hh0->SetMarkerStyle(20);
+    hh0->SetMarkerSize(0.80);
+    hh0->SetMarkerColor(kBlue+1);
+    hh0->SetLineColor(kBlue+1);
+    hh0->SetLineWidth(2);
+    hh0->SetTitle("C11 Positron KE Spectrum; energy/MeV; ");
+    hh0->Draw("PX0");
 
 
-    // scale all spectra 
+    TH1D* hSimul = new TH1D("hh0", "", 100, 0, E0);
+    ifstream in;
+    in.open("./C11_edep.txt");
+    string line; double tmp;
+    while(getline(in, line)) {
+        istringstream ss(line);
+        ss >> tmp;
+        hSimul->Fill(tmp);
+    }
+    double scale2 = hSimul->GetEntries();
+    hSimul->SetStats(0);
+    hSimul->Scale(scale1/scale2);
+    hSimul->SetLineColor(kRed+1);
+    hSimul->SetLineWidth(2);
+    hSimul->SetMarkerColor(kRed+1);
+    hSimul->SetMarkerStyle(20);
+    hSimul->SetMarkerSize(0.8);
+    hSimul->Draw("PX0 SAME");
+
+    TLegend* led = new TLegend();
+    led->AddEntry(hh0, "Calculation", "L");
+    led->AddEntry(hSimul, "gendecay sim", "L");
+    led->Draw("SAME");
+
+    //TTree * newTree = new TTree("T","T");
+    //Int_t m_num;
+    //newTree->Branch("num", &m_num, "num/I");
+    //Double_t m_branch;
+    //newTree->Branch("BR", &m_branch, "BR/D");
+    //Int_t m_numPhoton;
+    //newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
+    //Double_t m_photonE[100];
+    //newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+
+    //m_num = 0;
+    //m_branch = 0.99767;
+    //m_numPhoton = 0;
+    //newTree->Fill();
+
+    //TFile* file = new TFile("C11_theo.root", "recreate");
+    //hSimul->Write();
+    //newTree->Write();
+    //file->Close();
+
+
+     //scale all spectra 
     //double s1 = spec[500];
     //double s2 = fm_spec[500];
     //double s3 = fsc_spec[500];
@@ -273,7 +310,7 @@ void pred_B12()
     //gSeCorr->SetLineColor(kGreen+1);
     //gWmCorr->SetLineColor(kPink+1);
 
-    //gFmCorr->SetTitle("B12 Spectrum; beta kinetic energy/MeV; a.u");
+    //gFmCorr->SetTitle("C11 Spectrum; beta kinetic energy/MeV; a.u");
     //gFmCorr->Draw("AL");
     //gFsCorr->Draw("L SAME");
     //gWiCorr->Draw("L SAME");
@@ -292,7 +329,7 @@ void pred_B12()
     //TCanvas* c2 = new TCanvas(); c2->cd();
 
     //TGraph* gSpec = new TGraph(1000, KE, spec);
-    //TGraph* gFmSpec = new TGraph(1000, KE, fm_spec);
+    //TGraph* gFmSpec = new TGaph(1000, KE, fm_spec);
     //TGraph* gFscSpec = new TGraph(1000, KE, fsc_spec);
     //TGraph* gWiSpec = new TGraph(1000, KE, wi_spec);
     //TGraph* gSeSpec = new TGraph(1000, KE, se_spec);
@@ -305,7 +342,7 @@ void pred_B12()
     //gSeSpec->SetLineColor(kGreen+1);
     //gWmSpec->SetLineColor(kPink+1);
 
-    //gFmSpec->SetTitle("B12 Spectrum; beta kinetic energy/MeV; a.u");
+    //gFmSpec->SetTitle("C11 Spectrum; beta kinetic energy/MeV; a.u");
     //gFmSpec->Draw("AL");
     //gFscSpec->Draw("L SAME");
     //gSpec->Draw("L SAME");
@@ -323,18 +360,4 @@ void pred_B12()
     //led->Draw("SAME");
 
     //
-    //TH1D* hSimul = new TH1D("Simul", "", 200, 0, E0);
-    //ifstream in;
-    //in.open("./B12_edep.txt");
-    //string line; double tmp;
-    //while(getline(in, line)) {
-    //    istringstream ss(line);
-    //    ss >> tmp;
-    //    hSimul->Fill(tmp);
-    //}
-    //double scale2 = hSimul->GetEntries();
-    //hSimul->Scale(scale1/scale2/5);
-    //hSimul->SetLineColor(kMagenta);
-    //hSimul->Draw("SAME");
-
 }

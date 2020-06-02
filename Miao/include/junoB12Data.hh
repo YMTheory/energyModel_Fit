@@ -16,6 +16,8 @@ class junoB12Data : public junoSpectrum
     void  SetParameters();
     void  InitTheo     ();
     void  InitData     (string fileName);
+    void setNuWM      (double nuWM) {m_nuWM = nuWM;}
+    double getNuWM    () {return m_nuWM;}
 
     void Plot          ();
     
@@ -24,7 +26,9 @@ class junoB12Data : public junoSpectrum
     static unsigned int s_nMaxGam;
     static unsigned int s_nMaxBins;
     static unsigned int s_nMaxBinsData;
-    
+
+    static double m_nuWM;
+
 };
 
 

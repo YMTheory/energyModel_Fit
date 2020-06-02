@@ -9,7 +9,7 @@
 
 using namespace std;
 
-
+double junoB12Data::m_nuWM               = 0.0048;
 unsigned int junoB12Data::s_nMaxBins     = 14400;
 //unsigned int junoB12Data::s_nMaxBins     = 28800;
 //unsigned int junoB12Data::s_nMaxBinsData = 80;
@@ -26,6 +26,7 @@ void junoB12Data::SetParameters()
 	m_fitMax       = junoParameters::b12FitMaxE;
 	m_name         = "B12";
 	m_title        = "B12";
+    is_positron    = false;
 }
 
 void junoB12Data::InitTheo ()

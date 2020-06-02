@@ -5,7 +5,6 @@ int main()
     SetStyle();
     
     //junoB12Data* m_b12data = new junoB12Data();
-    //m_b12data->InitTheo();
     //m_b12data->SetParameters();
     //m_b12data->LoadData("./data/electron/B12.root");
     //cout << "Chi2: " << m_b12data->GetChi2(1) << endl;
@@ -41,7 +40,13 @@ int main()
     junoNLChiFunction* junoNLChiFcn = new junoNLChiFunction();
     junoNLChiFcn->LoadData();
     junoNLChiFcn->GetChiSquare();
-    //junoNLChiFcn->Plot();
+    junoNLChiFcn->Plot();
+
+    //junoC11Data* m_c11data = new junoC11Data();
+    //m_c11data->SetParameters();
+    //m_c11data->LoadData("./data/electron/C11.root");
+    //cout << "C11 chi2: " << m_c11data->GetChi2() << endl;
+    //m_c11data->Plot();
 
     return 1.0;
 }

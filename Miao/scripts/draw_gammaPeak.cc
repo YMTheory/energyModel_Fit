@@ -5,8 +5,8 @@ void draw_gammaPeak()
     TGraph* gGammaPdf = new TGraph();
     string path = "/Users/yumiao/Documents/Works/github/energyModel_Fit/Miao/data/naked_gamma/";
     string name1 = "primary_";  string name2 = ".txt";
-    string name[16] = {"1MeV", "2MeV", "4MeV", "6MeV", "8MeV", "Co60", "Cs137", "nH", "K40", "nC12", "Mn54", "Ge68", "nC12", "Tl208", "O16", "nFe56"};
-    for(int i=0; i<16; i++)  {
+    string name[17] = {"511keV", "1MeV", "2MeV", "4MeV", "6MeV", "8MeV", "Co60", "Cs137", "nH", "K40", "nC12", "Mn54", "Ge68", "nC12", "Tl208", "O16", "nFe56"};
+    for(int i=0; i<17; i++)  {
 
         gGammaPdf->Set(0);
 

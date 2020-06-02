@@ -18,6 +18,9 @@ class junoSpectrum
         void    LoadData  (string fileName);
         double  GetChi2   (int nDoF = 0);
 
+        double EvisGamma  ();
+
+
         static double s_n12Ratio;
         TH1F m_eTruH;
         TH1F m_eVisH;
@@ -73,6 +76,11 @@ class junoSpectrum
         double GetEVisGamma             (double eTruGam);
 
         int m_nData;
+    
+        bool is_positron;
+        static double m_pdf_eTru[50];  // for annihilation e+
+        static double m_pdf_prob[50];
+        static double m_max_eTru;
 
 
 };

@@ -23,14 +23,18 @@ bool JUNOP::fitB12                    = true;
 std::string JUNOP::B12DataFile        = "data/electron/B12.root";
 std::string JUNOP::B12PredFile        = "data/electron/B12_beta.txt";   
 std::string JUNOP::B12CalcFile        = "output/electron/B12_Calc.root";
-double JUNOP::b12FitMinE      = 4;
-double JUNOP::b12FitMaxE      = 14;
-double JUNOP::b12VertexCut    = 0.80;
+double JUNOP::b12FitMinE              = 4;
+double JUNOP::b12FitMaxE              = 14;
+double JUNOP::b12VertexCut            = 0.80;
 
+bool JUNOP::fitC11                    = true;
 std::string JUNOP::B12_File           = "data/electron/B12_file.root";
 std::string JUNOP::B12Out_File        = "output/electron/B12Fit.root";
 std::string JUNOP::B12Spec_File       = "data/electron/B12_nonl.txt";
 
+std::string JUNOP::C11DataFile        = "data/electron/C11.root";
 std::string JUNOP::C11_File           = "data/electron/C11_file.root";
 std::string JUNOP::C11Out_File        = "output/electron/C11Fit.root";
 std::string JUNOP::C11Spec_File       = "data/electron/C11_nonl.txt";
+double JUNOP::c11FitMinE              = 0.9;
+double JUNOP::c11FitMaxE              = 1.8;
