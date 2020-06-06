@@ -22,7 +22,7 @@ void pred_C11()
     double p = 0; // total integral 
     double W = TMath::Sqrt(p*p+1);
     double alpha = 1/137.036;
-    double Z = -11; double A = 6;
+    double Z = -6; double A = 11;
     double gamma = TMath::Sqrt((1-(alpha*Z)*(alpha*Z)));
     double R = 0.0029*TMath::Power(A,1/3)+0.0063*TMath::Power(A,-1/3)-0.017*TMath::Power(A,-1);
     double E0 = 0.96; //MeV
@@ -59,7 +59,7 @@ void pred_C11()
     double KE[100]; double spec[100]; double fm_spec[100]; double fsc_spec[100]; double wi_spec[100]; double se_spec[100]; double wm_spec[100];
     double scale1 = 0;
 
-    TH1F* hh0 = new TH1F("hh0", "", 100, 0.0, E0);
+    TH1F* hh0 = new TH1F("hh", "", 100, 0.0, E0);
     for(int i=0; i<100; i++) {
         double betaE = hh0->GetBinCenter(i+1);    //E0/100.*(i+1);
         double betaW = betaE/0.511+1;
@@ -181,7 +181,7 @@ void pred_C11()
         double C = 1 + C0 +C1*betaW + C2*betaW*betaW;
 
         // screening correciton 
-        double Z_bar = Z - 1;
+        double Z_bar = Z + 1;
         double V0 = alpha*alpha*TMath::Power(Z_bar, 0.75)*1.4584000;  // linear interpolation from table
         double betaW_bar = betaW-V0;
         double betaP_bar = TMath::Sqrt(betaW_bar*betaW_bar-1);
@@ -223,8 +223,8 @@ void pred_C11()
         hh0->SetBinContent(i+1, wm_spec[i]);
     }
 
-    TCanvas* cc = new TCanvas();
-    cc->cd(); cc->SetGrid();
+    //TCanvas* cc = new TCanvas();
+    //cc->cd(); cc->SetGrid();
 
     hh0->SetStats(0);
     hh0->SetMarkerStyle(20);
@@ -233,10 +233,10 @@ void pred_C11()
     hh0->SetLineColor(kBlue+1);
     hh0->SetLineWidth(2);
     hh0->SetTitle("C11 Positron KE Spectrum; energy/MeV; ");
-    hh0->Draw("PX0");
+    //hh0->Draw("PX0");
 
 
-    TH1D* hSimul = new TH1D("hh0", "", 100, 0, E0);
+    TH1D* hSimul = new TH1D("hh0", "", 40, 0, 3);
     ifstream in;
     in.open("./C11_edep.txt");
     string line; double tmp;
@@ -260,25 +260,27 @@ void pred_C11()
     led->AddEntry(hSimul, "gendecay sim", "L");
     led->Draw("SAME");
 
-    //TTree * newTree = new TTree("T","T");
-    //Int_t m_num;
-    //newTree->Branch("num", &m_num, "num/I");
-    //Double_t m_branch;
-    //newTree->Branch("BR", &m_branch, "BR/D");
-    //Int_t m_numPhoton;
-    //newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
-    //Double_t m_photonE[100];
-    //newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+    TTree * newTree = new TTree("T","T");
+    Int_t m_num;
+    newTree->Branch("num", &m_num, "num/I");
+    Double_t m_branch;
+    newTree->Branch("BR", &m_branch, "BR/D");
+    Int_t m_numPhoton;
+    newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
+    Double_t m_photonE[100];
+    newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+    int m_photonName[100];
+    newTree->Branch("photonName", m_photonName, "photonName[numPhoton]/I");
 
-    //m_num = 0;
-    //m_branch = 0.99767;
-    //m_numPhoton = 0;
-    //newTree->Fill();
+    m_num = 0;
+    m_branch = 0.99767;
+    m_numPhoton = 0;
+    newTree->Fill();
 
-    //TFile* file = new TFile("C11_theo.root", "recreate");
-    //hSimul->Write();
-    //newTree->Write();
-    //file->Close();
+    TFile* file = new TFile("C11_theo.root", "recreate");
+    hSimul->Write();
+    newTree->Write();
+    file->Close();
 
 
      //scale all spectra 

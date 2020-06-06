@@ -9,6 +9,8 @@
 #include <TCanvas.h>
 #include <TLegend.h>
 #include <TGraph.h>
+#include <TStyle.h>
+#include <TPad.h>
 
 using namespace std;
 
@@ -66,6 +68,7 @@ void junoC11Data::Plot()
     cout << " >>> Plot C11 Fitting Results <<< " << endl;
     TH1D* hData = new TH1D("hData", "", m_nBinsData, m_eMin, m_eMax);
     TH1D* hTheo = new TH1D("hTheo", "", m_nBinsData, m_eMin, m_eMax);
+    TH1D* hRela = new TH1D("hRela", "", m_nBinsData, m_eMin, m_eMax);
 
     hData->SetStats(0);
     hData->SetLineColor(kBlue+1);
@@ -79,22 +82,45 @@ void junoC11Data::Plot()
     hTheo->SetMarkerSize(0.8);
     hTheo->SetMarkerStyle(20);
     hTheo->SetMarkerColor(kRed+1);
+    hRela->SetStats(0);
+    hRela->SetLineColor(kPink+2);
+    hRela->SetLineWidth(2);
+    hRela->SetMarkerSize(0.8);
+    hRela->SetMarkerStyle(20);
+    hRela->SetMarkerColor(kPink+2);
 
 
     for(int i=0; i<m_nBinsData; i++) {
         hData->SetBinContent(i+1, m_eData[i]);
         hTheo->SetBinContent(i+1, m_eTheo[i]);
+        if(m_eTheo[i]!=0) {
+            hRela->SetBinContent(i+1, m_eData[i]/m_eTheo[i]);
+            hRela->SetBinError(i+1, m_eDataErr[i]/m_eTheo[i]);
+        } else {
+            hRela->SetBinContent(i+1, 0);
+            hRela->SetBinError(i+1, 0);
+        }
     }
 
     TCanvas * tmpC = new TCanvas();
-    tmpC->cd();
-    hData->GetYaxis()->SetRangeUser(0,13000);
+    Float_t small = 1e-5;
+    tmpC->Divide(1,2, small, small);
+    gStyle->SetPadBorderMode(0);
+    gStyle->SetFrameBorderMode(0);
+    tmpC->cd(1);
+    gPad->SetBottomMargin(small);
+    hData->GetYaxis()->SetRangeUser(0,12500);
     hData->Draw("PEX0");
     hTheo->Draw("PEX0 SAME");
     TLegend* ll = new TLegend();
     ll->AddEntry(hData, "C11 Data(Sim)", "l");
     ll->AddEntry(hTheo, "C11 Theo", "l");
     ll->Draw("SAME");
+    tmpC->cd(2);
+    gPad->SetTopMargin(small);
+    gPad->SetTickx();
+    hRela->Draw("PEX0");
+
     TFile* file = new TFile(junoParameters::C11Out_File.c_str(), "recreate");
     tmpC->Write();
     file->Close();

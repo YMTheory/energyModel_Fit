@@ -22,7 +22,7 @@ void pred_C10()
     double p = 0; // total integral 
     double W = TMath::Sqrt(p*p+1);
     double alpha = 1/137.036;
-    double Z = -10; double A = 6;
+    double Z = -6; double A = 10;
     double gamma = TMath::Sqrt((1-(alpha*Z)*(alpha*Z)));
     double R = 0.0029*TMath::Power(A,1/3)+0.0063*TMath::Power(A,-1/3)-0.017*TMath::Power(A,-1);
     double E0 = 2.626-0.718353; //MeV
@@ -59,8 +59,8 @@ void pred_C10()
     double KE[100]; double spec[100]; double fm_spec[100]; double fsc_spec[100]; double wi_spec[100]; double se_spec[100]; double wm_spec[100];
     double scale1 = 0;
 
-    TH1F* hh0 = new TH1F("hh0", "", 100, 0.0, E0);
-    for(int i=0; i<100; i++) {
+    TH1F* hh0 = new TH1F("hh", "", 60, 0.0, 4);
+    for(int i=0; i<60; i++) {
         double betaE = hh0->GetBinCenter(i+1);    //E0/100.*(i+1);
         double betaW = betaE/0.511+1;
         double betaP = TMath::Sqrt(betaW*betaW-1);
@@ -237,7 +237,7 @@ void pred_C10()
     hh0->Draw("PX0");
 
 
-    TH1D* hSimul = new TH1D("Simul", "", 100, 0, E0);
+    TH1D* hSimul = new TH1D("hh0", "", 60, 0, E0);
     ifstream in;
     in.open("./c10_edep.txt");
     string line; double tmp;
@@ -277,7 +277,7 @@ void pred_C10()
     //m_numPhoton = 0;
     //newTree->Fill();
 
-    //TFile* file = new TFile("C11_theo.root", "recreate");
+    //TFile* file = new TFile("C10_theo.root", "recreate");
     //hSimul->Write();
     //newTree->Write();
     //file->Close();

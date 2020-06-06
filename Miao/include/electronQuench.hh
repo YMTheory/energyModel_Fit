@@ -8,6 +8,7 @@
 #include <TMath.h>
 #include <TGraph.h>
 #include <TFile.h>
+#include <TH1.h>
 #include "junoParameters.hh"
 
 using namespace std;
@@ -38,9 +39,9 @@ class electronQuench
     private:
         static double m_birk1;
         static double m_kA;
-		static const unsigned int m_nKb      = 100;
-		static const unsigned int m_nSamples = 2000;
-		static constexpr double m_samplingResol  = 0.01;
+		static const unsigned int m_nKb          = 100;
+		static const unsigned int m_nSamples     = 1000;
+		static constexpr double m_samplingResol  = 0.05;   // bining: 20keV/bin
 		static double  m_kBResid;
         static double p0 ;
         static double p1 ;

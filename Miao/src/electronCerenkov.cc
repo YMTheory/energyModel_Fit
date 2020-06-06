@@ -60,7 +60,11 @@ double electronCerenkov::getCerenkovPE(double E)
         // get Cerenkov PE
         int num = m_Cerenkov.size();
         for(int i=1; i<num; i++){
-            if(m_Etrue[i-1]<=E and m_Etrue[i]>E){  return m_kC * m_Cerenkov[i-1]/m_energyScale/E; }
+            if(m_Etrue[i-1]<=E and m_Etrue[i]>E){  
+                double m_Resid = m_Etrue[i] - E;
+                return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]))/m_energyScale/E;
+                //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
+            }
         }
         cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
     }

@@ -27,6 +27,7 @@ class junoParameters
         static std::string gammaOut_File;
 
         static double m_gammaError;
+        static bool fitGammaSources;
 
         static ScintillatorParameterization scintillatorParameterization;
 
@@ -50,6 +51,14 @@ class junoParameters
         static std::string C11Spec_File;
         static double c11FitMinE;
         static double c11FitMaxE;
+
+        static bool fitC10;
+        static std::string C10DataFile;
+        static std::string C10Out_File;
+        static double c10FitMinE;
+        static double c10FitMaxE;
+
+        static double m_gammaScale;
 
 };
 

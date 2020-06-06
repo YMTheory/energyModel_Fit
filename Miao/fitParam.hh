@@ -18,6 +18,7 @@
 #include "junoSpectrum.hh"
 #include "junoB12Data.hh"
 #include "junoC11Data.hh"
+#include "junoC10Data.hh"
 
 using namespace std;
 

@@ -10,9 +10,11 @@
 
 using namespace std;
 
-double junoSpectrum::m_pdf_eTru[50];
-double junoSpectrum::m_pdf_prob[50];
+double junoSpectrum::m_pdf_eTru[2000];
+double junoSpectrum::m_pdf_prob[2000];
 double junoSpectrum::m_max_eTru;
+
+double junoSpectrum::m_gammaScale = 0;
 
 junoSpectrum::junoSpectrum( int nMaxBins,
                             int nMaxBinsData,
@@ -50,9 +52,11 @@ junoSpectrum::junoSpectrum( int nMaxBins,
 		m_eTruBck[branchIdx] = new double[nMaxBins];
 	}
 	m_eTruGam   = new double*[nMaxBr];
+    m_eTruGamStr= new int*[nMaxBr];
 	for (int branchIdx = 0; branchIdx < nMaxBr; branchIdx++)
 	{
 		m_eTruGam[branchIdx] = new double[nMaxGam];
+        m_eTruGamStr[branchIdx] = new int[nMaxGam];
 	}
 
 }
@@ -125,6 +129,7 @@ void junoSpectrum::TheoHistTree(string filename, int isotope)
 	TFile *file = new TFile(filename.c_str());
 	TTree *tree = (TTree*)file->Get("T");
     double eGamma[10];
+    int eGammaStr[10];
 	int nGamma,branchNumber;
 	double branchRatio;
 	double weight,weight1;
@@ -132,19 +137,21 @@ void junoSpectrum::TheoHistTree(string filename, int isotope)
 	tree->SetBranchAddress("BR"       ,&branchRatio);
 	tree->SetBranchAddress("numPhoton",&nGamma);
 	tree->SetBranchAddress("photonE"  ,eGamma);
+    tree->SetBranchAddress("photonName", eGammaStr);
     //if(m_name=="B12")
     std::cout << " R*******eading theory hist " << std::endl;
     std::cout << "total branch number : " << tree->GetEntries() << endl;
 	for (int branchIdx=0;branchIdx!=tree->GetEntries();branchIdx++){
 		tree->GetEntry(branchIdx);
 		//if(m_name=="B12")
-			std::cout << " ------> " << branchIdx  << " with " << nGamma << std::endl;
+            std::cout << " ------> " << branchIdx  << " with " << nGamma  << " gamma and branch ratio: "<< branchRatio  <<  std::endl;
 		/// gammas
 		for (int gamIdx=0;gamIdx!=nGamma;gamIdx++)
 		{
-			m_eTruGam[branchIdx][gamIdx] = eGamma[gamIdx]/energyScale;
-			if(m_name=="B12")
-				std::cout <<  eGamma[gamIdx] << std::endl;
+			m_eTruGam[branchIdx][gamIdx]    = eGamma[gamIdx]/energyScale;
+            m_eTruGamStr[branchIdx][gamIdx] = eGammaStr[gamIdx];
+			std::cout <<  eGamma[gamIdx] << " " << eGammaStr[gamIdx] << std::endl;
+			//if(m_name=="B12")
 		}
 		/// electrons
 		TH1F* electronHist = (TH1F*)file->Get(Form("hh%d",branchNumber));
@@ -167,7 +174,6 @@ void junoSpectrum::TheoHistTree(string filename, int isotope)
 
 void junoSpectrum::DataHist(string fileName)
 {
-	std::cout << " ----> Reading " << m_name << " data from " << fileName << std::endl;
 	TFile* file = new TFile(fileName.c_str());
 	TH1F* sigH  = (TH1F*)file->Get("Michel");
     for (int i=0; i!=m_nBinsData;i++)
@@ -203,7 +209,8 @@ void junoSpectrum::Normalize()
 			nData += m_eData[i];
 		}
 	}
-    double scale = nData/nTheo;  
+    double scale = 1;
+    if( nTheo!=0 ) { scale = nData/nTheo; }
 	for (int i = 0; i < m_nBinsData; i++)
     {
 		m_eTheo[i] *= scale;
@@ -232,7 +239,6 @@ void junoSpectrum::ApplyScintillatorNL()
 	double eVisElec;
 	vector<double> eVisGam;
 	double eVisAnn = 2.* 0.511;
-	//double eVisAnn = 2.*GetEVisGamma(0.511);
 
 	for(int branchIdx=0; branchIdx<m_nBr; branchIdx++)
 	{
@@ -246,15 +252,18 @@ void junoSpectrum::ApplyScintillatorNL()
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;
 			//if(m_eTruGam[branchIdx][gamIdx]<1000)
 			//if(m_eTruGam[branchIdx][gamIdx]>0)
-			eVisGam[branchIdx] += m_eTruGam[branchIdx][gamIdx];
+			//eVisGam[branchIdx] += m_eTruGam[branchIdx][gamIdx];
+            eVisGam[branchIdx] += EvisGamma(to_string(m_eTruGamStr[branchIdx][gamIdx]))*m_eTruGam[branchIdx][gamIdx] * (1+m_gammaScale);
 			//eVisGam[branchIdx] += GetEVisGamma(m_eTruGam[branchIdx][gamIdx]);
 					//eVisGam[branchIdx] = 0.9;
 		}
+
 		//if(m_eTruAlp[branchIdx]>0) {
 			////std::cout << " ALPEVIS = " << m_eTruAlp[branchIdx]*dybEnergyModel::AlphaNL(m_eTruAlp[branchIdx]) << std::endl;
 			//eVisGam[branchIdx] += m_eTruAlp[branchIdx]*dybEnergyModel::AlphaNL(m_eTruAlp[branchIdx]/3.);
 		//}
-	}
+    }
+    //if(m_name == "B12") eVisGam[1] = 4.47167;
 
 	/// apply scintillator NL
 	for(int i=0; i<m_nBins; i++)
@@ -262,11 +271,13 @@ void junoSpectrum::ApplyScintillatorNL()
 		eTru     = m_binCenter[i];
         eVisElec = eTru;
         eVisElec = eTru * (electronQuench::ScintillatorNL(eTru)+electronCerenkov::getCerenkovPE(eTru));
-        if(is_positron) eVisElec += 2*EvisGamma();
+        if(is_positron) eVisElec += 2*EvisGamma("511")*0.511 * (1+m_gammaScale);
+        //if(is_positron) eVisElec += 2*0.467167;
         //cout << eTru << " " << electronQuench::getBirk1() << " " << electronQuench::ScintillatorNL(eTru)<< " " << electronCerenkov::getkC() << " " << eVisElec << endl;
 		for(int branchIdx=0; branchIdx<m_nBr; branchIdx++)
 		{
 			eVis    = eVisElec + eVisGam[branchIdx];
+            if(m_name=="B12" and branchIdx==2) eVis += 0.5; // 3-alpha branch
 			eVisBck = eVis     + eVisAnn;
 			//newBinSig = int(eVisSig/m_binWidth);
 			//newBinBck = int(eVisBck/m_binWidth);
@@ -307,32 +318,30 @@ double junoSpectrum::GetChi2(int nDoF)
     m_nData = 0;
     for(int i=0; i < m_nBinsData; i++) {
         if(i*binWidthData<m_fitMin or binWidthData*i>m_fitMax-0.1) continue;
-        //cout << m_eData[i] << " " << m_eDataErr[i] << " " << m_eTheo[i] << endl;
         if( m_eDataErr[i]!=0 ) {
             chi2 += pow( (m_eData[i] - m_eTheo[i])/m_eDataErr[i], 2); 
             m_nData++;
         }
     }
+    cout << m_name << "  chi2: " << chi2 << " with nData : " << m_nData << endl;
 	if(nDoF>0) chi2 /= double(m_nData - nDoF);
-    cout << m_name << " Chi2: " << chi2 << endl;
 	return chi2;
 }
 
 
 
-double junoSpectrum::EvisGamma()
+double junoSpectrum::EvisGamma(string eTru)
 { 
     TFile file(junoParameters::gammaPdf_File.c_str(), "read");
-    string pdfName = "gamma511keV";
-    TGraph* gGammaPdf = (TGraph*)file.Get(pdfName.c_str());
+    string pdfName = "gamma"+eTru+"keV";
+    TH1D* gGammaPdf = (TH1D*)file.Get(pdfName.c_str());
     if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
+    //cout << "Read " << pdfName << " P.d.f ..." << endl;
 
-    double *tmp_eTru = gGammaPdf->GetX();
-    double *tmp_prob = gGammaPdf->GetY();
-    for(int i=0; i<gGammaPdf->GetN(); i++)  {
-        m_pdf_eTru[i] = tmp_eTru[i];
-        m_pdf_prob[i] = tmp_prob[i];
-        if (m_pdf_eTru[i] > 0) m_max_eTru = i;    // max energy cut ... 
+    for(int i=0; i<gGammaPdf->GetNbinsX(); i++)  {
+        m_pdf_eTru[i] = gGammaPdf->GetBinCenter(i+1);
+        m_pdf_prob[i] = gGammaPdf->GetBinContent(i+1);
+        if (m_pdf_prob[i] > 0) m_max_eTru = i;    // max energy cut ... 
     }
     file.Close();
     
@@ -352,7 +361,7 @@ double junoSpectrum::EvisGamma()
     } 
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
-    return numerator/denominator*0.511;
+    return numerator/denominator;
 
 }
 

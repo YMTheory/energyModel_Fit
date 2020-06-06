@@ -6,6 +6,7 @@
 #include <TMath.h>
 #include <TGraph.h>
 #include <TF1.h>
+#include <TH1.h>
 #include "junoParameters.hh"
 
 using namespace std;
@@ -93,18 +94,20 @@ void electronQuench::LoadNLData ()  {
     cout << " >>> Loading Quenching NL Data <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
     if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
-    for(int kbIdx=50; kbIdx<81; kbIdx++)  {
+    for(int kbIdx=50; kbIdx<91; kbIdx++)  {
         //cout << kbIdx << endl;
         stringstream ss; ss << kbIdx;
         TString name1 = "kB"+ss.str();
 
-        TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
+        //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
+        TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
         if(!quench1G) { cout << "No Such a Graph in Quench.root File" << endl; return;  }
-        double* quench1 = quench1G->GetY();
+        //double* quench1 = quench1G->GetY();
 
         for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)
         {
-			m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
+			//m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
+            m_quenchingShape1[kbIdx][sampleIdx] = quench1G->GetBinContent(sampleIdx+1);
         }
         delete quench1G;
     }

@@ -8,6 +8,7 @@
 #include <sstream>
 #include <TMath.h>
 #include <TGraph.h>
+#include <TH1.h>
 #include <TGraphErrors.h>
 #include <TCanvas.h>
 #include <TMultiGraph.h>
@@ -19,7 +20,7 @@ bool gammaNLExperiment::m_LoadGammaData = false;
 bool gammaNLExperiment::m_LoadPrmElecDist = false;
 bool gammaNLExperiment::m_CalcTheo = false;
 
-double gammaNLExperiment::m_gammaScale = 0.0;
+double gammaNLExperiment::m_gammaScale = 0.00;
 
 double gammaNLExperiment::m_pdf_eTru[m_nMaxSources][m_nMaxPdf] = {0.};
 double gammaNLExperiment::m_pdf_prob[m_nMaxSources][m_nMaxPdf] = {0.};
@@ -66,10 +67,10 @@ void gammaNLExperiment::LoadData () {
         istringstream ss(line);
         ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError;
         source_name.push_back(tmp_name);
-        //mTrueGammaNL->SetPoint(num, tmp_E, (1+m_gammaScale)*tmp_Evis/tmp_E);
-        //mTrueGammaNL->SetPointError(num, 0, (1+m_gammaScale)*tmp_EvisError*tmp_Evis/tmp_E);
-        mTrueGammaNL->SetPoint(num, tmp_E, tmp_Evis/tmp_E);
-        mTrueGammaNL->SetPointError(num, 0, tmp_EvisError*tmp_Evis/tmp_E);
+        mTrueGammaNL->SetPoint(num, tmp_E, (1+m_gammaScale)*tmp_Evis/tmp_E);
+        mTrueGammaNL->SetPointError(num, 0, (1+m_gammaScale)*tmp_EvisError*tmp_Evis/tmp_E);
+        //mTrueGammaNL->SetPoint(num, tmp_E, tmp_Evis/tmp_E);
+        //mTrueGammaNL->SetPointError(num, 0, tmp_EvisError*tmp_Evis/tmp_E);
         num++;
     }
     in.close();
@@ -85,23 +86,33 @@ void gammaNLExperiment::UpdateDataGammaNL()
 
 void gammaNLExperiment::LoadPrimaryElecDist ()  {
 
+    cout << " >>> Load primaryElectronDistribution <<< " << endl;
+
     if( !m_LoadGammaData )  UpdateDataGammaNL();  // load gamma data firstly ...
 
     TFile file(junoParameters::gammaPdf_File.c_str(), "read");
     const int nSources = source_name.size();
     for (int iSource = 0; iSource<nSources; iSource++) {
-        string pdfName = "gamma"+source_name[iSource];
-        TGraph* gGammaPdf = (TGraph*)file.Get(pdfName.c_str());
+        string pdfName = "gamma"+source_name[iSource]; cout << "calib source name: " << pdfName << endl;
+        //TGraph* gGammaPdf = (TGraph*)file.Get(pdfName.c_str());
+        TH1D* gGammaPdf = (TH1D*)file.Get(pdfName.c_str());
         if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
         
         // make sure all sources with data have corresponding pdf ... 
-        double *tmp_eTru = gGammaPdf->GetX();
-        double *tmp_prob = gGammaPdf->GetY();
-        for(int i=0; i<gGammaPdf->GetN(); i++)  {
-            m_pdf_eTru[iSource][i] = tmp_eTru[i];
-            m_pdf_prob[iSource][i] = tmp_prob[i];
-            if (m_pdf_eTru[iSource][i] > 0) m_max_eTru[iSource] = i;    // max energy cut ... 
+        //double *tmp_eTru = gGammaPdf->GetX();
+        //double *tmp_prob = gGammaPdf->GetY();
+        //for(int i=0; i<gGammaPdf->GetN(); i++)  {
+        //    m_pdf_eTru[iSource][i] = tmp_eTru[i];
+        //    m_pdf_prob[iSource][i] = tmp_prob[i];
+        //    if (m_pdf_eTru[iSource][i] > 0) m_max_eTru[iSource] = i;    // max energy cut ... 
+        //}
+
+        for(int i=0; i<gGammaPdf->GetNbinsX(); i++) {
+            m_pdf_eTru[iSource][i] = gGammaPdf->GetBinCenter(i+1);
+            m_pdf_prob[iSource][i] = gGammaPdf->GetBinContent(i+1);
+            if (m_pdf_prob[iSource][i] > 0) m_max_eTru[iSource] = i;    // max energy cut ... 
         }
+
     }
     file.Close();
     m_LoadPrmElecDist = true;  
@@ -147,6 +158,12 @@ double gammaNLExperiment::CalculateGammaNL( int iSource )
     } 
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
+    if(iSource==9) {
+        for(int i=0;i<m_max_eTru[iSource]; i++) {
+            //cout << m_pdf_eTru[iSource][i] << " " << " " << electronQuench::ScintillatorNL(m_pdf_eTru[iSource][i]) << " "<< electronCerenkov::getCerenkovPE(m_pdf_eTru[iSource][i]) << " " << electronQuench::ScintillatorNL(m_pdf_eTru[iSource][i])+electronCerenkov::getCerenkovPE(m_pdf_eTru[iSource][i]) << endl;
+        }
+    }
+
     return numerator/denominator;
 
 }

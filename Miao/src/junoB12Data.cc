@@ -6,6 +6,8 @@
 #include <TH1.h>
 #include <TCanvas.h>
 #include <TLegend.h>
+#include <TStyle.h>
+#include <TPad.h>
 
 using namespace std;
 
@@ -32,7 +34,7 @@ void junoB12Data::SetParameters()
 void junoB12Data::InitTheo ()
 {
 	std::cout << " calculating theoretical B12 shape " << std::endl;
-	TheoHistTree("data/electron/theo/B12_hist.root");
+	TheoHistTree("data/electron/theo/B12_theo.root");
 }
 
 void junoB12Data::InitData(string fileName)
@@ -61,6 +63,7 @@ void junoB12Data::Plot()
 
     TH1D* hData = new TH1D("hData", "", m_nBinsData, m_eMin, m_eMax);
     TH1D* hTheo = new TH1D("hTheo", "", m_nBinsData, m_eMin, m_eMax);
+    TH1D* hRela = new TH1D("hRela", "", m_nBinsData, m_eMin, m_eMax);
 
     hData->SetStats(0);
     hData->SetLineColor(kBlue+1);
@@ -74,21 +77,44 @@ void junoB12Data::Plot()
     hTheo->SetMarkerSize(0.8);
     hTheo->SetMarkerStyle(20);
     hTheo->SetMarkerColor(kRed+1);
+    hRela->SetStats(0);
+    hRela->SetLineColor(kPink+2);
+    hRela->SetLineWidth(2);
+    hRela->SetMarkerSize(0.8);
+    hRela->SetMarkerStyle(20);
+    hRela->SetMarkerColor(kPink+2);
 
 
     for(int i=0; i<m_nBinsData; i++) {
         hData->SetBinContent(i+1, m_eData[i]);
         hTheo->SetBinContent(i+1, m_eTheo[i]);
+        if(m_eTheo[i]!=0) {
+            hRela->SetBinContent(i+1, m_eData[i]/m_eTheo[i]);
+            hRela->SetBinError(i+1, m_eDataErr[i]/m_eTheo[i]);
+        } else {
+            hRela->SetBinContent(i+1, 0);
+            hRela->SetBinError(i+1, 0);
+        }
     }
 
     TCanvas * tmpC = new TCanvas();
-    tmpC->cd();
+    Float_t small = 1e-5;
+    tmpC->Divide(1,2, small, small);
+    gStyle->SetPadBorderMode(0);
+    gStyle->SetFrameBorderMode(0);
+    tmpC->cd(1);
+    gPad->SetBottomMargin(small);
     hData->Draw("PEX0");
     hTheo->Draw("PEXO SAME");
     TLegend* ll = new TLegend();
     ll->AddEntry(hData, "B12 Data(Sim)", "l");
     ll->AddEntry(hTheo, "B12 Theo", "l");
     ll->Draw("SAME");
+    tmpC->cd(2);
+    gPad->SetTopMargin(small);
+    gPad->SetTickx();
+    hRela->Draw("PEX0");
+
     TFile* file = new TFile(junoParameters::B12Out_File.c_str(), "recreate");
     tmpC->Write();
     file->Close();

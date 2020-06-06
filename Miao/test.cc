@@ -8,22 +8,16 @@ void test(){
         ss >> tmp_E >> tmp_nl;
         g1->SetPoint(i, tmp_E, tmp_nl); i++;
     }
-    g1->Draw("AP");
+    g1->SetMarkerSize(0.5);
+    g1->SetMarkerColor(kBlue+1);
+    g1->Draw("APL");
 
-    double p0 = 1.02561e+00;
-    double p1 = 1.12245e-01;
-    double p2 = 1.39421e+00;
-    double p3 = 5.55117e-04;
+    TFile* file = TFile::Open("./data/Gamma_Electron1.root");
+    TH1D* hnFe56 = (TH1D*)file->Get("gammanFe56");
+    hnFe56->SetMarkerSize(0.5);
+    hnFe56->SetMarkerColor(kRed+1);
+    hnFe56->SetLineColor(kRed+1);
+    hnFe56->Draw("PEX0 SAME");
 
-    TGraph* g2 = new TGraph(); i = 0;
-    for(int i=0; i<10000; i++) {
-        double xx = 16/10000.*i ;
-        double yy =(p0+p3*xx)/(1+p1*TMath::Exp(-p2*xx));
-        g2->SetPoint(i, xx, yy);
-    }
-    
-    g2->SetMarkerColor(kRed);
-    //g2->Draw("P SAME");
-    g2->Draw("AP");
 }
 

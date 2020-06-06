@@ -22,10 +22,10 @@ void pred_B12()
     double p = 0; // total integral 
     double W = TMath::Sqrt(p*p+1);
     double alpha = 1/137.036;
-    double Z = 12; double A = 5;
+    double Z =5; double A = 12;
     double gamma = TMath::Sqrt((1-(alpha*Z)*(alpha*Z)));
     double R = 0.0029*TMath::Power(A,1/3)+0.0063*TMath::Power(A,-1/3)-0.017*TMath::Power(A,-1);
-    double E0 = 13.4; //MeV
+    double E0 = 13.37; //MeV
     double W0 = E0/0.511+1;  //MeV
 
     // Fermi function part: 
@@ -59,9 +59,9 @@ void pred_B12()
     double KE[100]; double spec[100]; double fm_spec[100]; double fsc_spec[100]; double wi_spec[100]; double se_spec[100]; double wm_spec[100];
     double scale1 = 0;
 
-    TH1F* hh0 = new TH1F("hh0", "", 100, 0, 14);
+    TH1F* hh2 = new TH1F("hh2", "", 100, 0, 14);
     for(int i=0; i<100; i++) {
-        double betaE = hh0->GetBinCenter(i+1);    //E0/100.*(i+1);
+        double betaE = hh2->GetBinCenter(i+1);    //E0/100.*(i+1);
         double betaW = betaE/0.511+1;
         double betaP = TMath::Sqrt(betaW*betaW-1);
         KE[i] = betaE;
@@ -220,28 +220,45 @@ void pred_B12()
 
         scale1 += wm_spec[i];
         
-        hh0->SetBinContent(i+1, wm_spec[i]);
+        hh2->SetBinContent(i+1, wm_spec[i]);
     }
 
-    TTree * newTree = new TTree("T","T");
-    Int_t m_num;
-    newTree->Branch("num", &m_num, "num/I");
-    Double_t m_branch;
-    newTree->Branch("BR", &m_branch, "BR/D");
-    Int_t m_numPhoton;
-    newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
-    Double_t m_photonE[100];
-    newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+    for(int i=0; i<100; i++) {
+        double bin = 0;
+        if(hh2->GetBinCenter(i+1)<=E0)
+            bin = wm_spec[i];
+        cout << bin << "," ;
 
-    m_num = 0;
-    m_branch = 0.971908;
-    m_numPhoton = 0;
-    newTree->Fill();
+    }
 
-    TFile* file = new TFile("B12_theo.root", "recreate");
-    hh0->Write();
-    newTree->Write();
-    file->Close();
+    hh2->SetStats(0);
+    hh2->SetLineColor(kBlue);
+    hh2->SetLineWidth(2);
+    hh2->SetMarkerSize(0.8);
+    hh2->SetMarkerColor(kBlue+1);
+    hh2->SetMarkerStyle(20);
+    hh2->SetTitle("B12 Spectrum; beta kinetic energy/MeV; a.u");
+    hh2->Draw("PEX0");
+
+    //TTree * newTree = new TTree("T","T");
+    //Int_t m_num;
+    //newTree->Branch("num", &m_num, "num/I");
+    //Double_t m_branch;
+    //newTree->Branch("BR", &m_branch, "BR/D");
+    //Int_t m_numPhoton;
+    //newTree->Branch("numPhoton", &m_numPhoton, "numPhoton/I");
+    //Double_t m_photonE[100];
+    //newTree->Branch("photonE", &m_photonE, "photonE[numPhoton]/D");
+
+    //m_num = 0;
+    //m_branch = 0.971908;
+    //m_numPhoton = 0;
+    //newTree->Fill();
+
+    //TFile* file = new TFile("B12_theo2.root", "recreate");
+    //hh2->Write();
+    //newTree->Write();
+    //file->Close();
 
 
     // scale all spectra 
@@ -323,7 +340,7 @@ void pred_B12()
     //led->Draw("SAME");
 
     //
-    //TH1D* hSimul = new TH1D("Simul", "", 200, 0, E0);
+    //TH1D* hSimul = new TH1D("Simul", "", 100, 0, E0);
     //ifstream in;
     //in.open("./B12_edep.txt");
     //string line; double tmp;
@@ -333,8 +350,16 @@ void pred_B12()
     //    hSimul->Fill(tmp);
     //}
     //double scale2 = hSimul->GetEntries();
-    //hSimul->Scale(scale1/scale2/5);
+    //hSimul->Scale(scale1/scale2);
+    //hSimul->SetLineWidth(2);
     //hSimul->SetLineColor(kMagenta);
-    //hSimul->Draw("SAME");
+    //hSimul->SetMarkerColor(kMagenta);
+    //hSimul->SetMarkerStyle(20);
+    //hSimul->SetMarkerSize(0.8);
+    //hSimul->Draw("PEX0 SAME");
 
+    //TLegend* led = new TLegend();
+    //led->AddEntry(hh2, "Calculation", "L");
+    //led->AddEntry(hSimul, "gendecay sim", "L");
+    //led->Draw("SAME");
 }

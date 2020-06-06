@@ -18,7 +18,9 @@ class junoSpectrum
         void    LoadData  (string fileName);
         double  GetChi2   (int nDoF = 0);
 
-        double EvisGamma  ();
+        double EvisGamma  (string eTru);
+        static double getGammaScale()                    {return m_gammaScale;}
+        static void setGammaScale  (double gammaScale)   { m_gammaScale = gammaScale; }
 
 
         static double s_n12Ratio;
@@ -38,6 +40,7 @@ class junoSpectrum
         /// gamma energies      
         double** m_eTruGam;
         double*  m_eTruAlp;
+        int** m_eTruGamStr;
         /// continuous beta spectra
         double*  m_binCenter;
         double** m_eTru   ;
@@ -78,9 +81,11 @@ class junoSpectrum
         int m_nData;
     
         bool is_positron;
-        static double m_pdf_eTru[50];  // for annihilation e+
-        static double m_pdf_prob[50];
+        static double m_pdf_eTru[2000];  // for annihilation e+
+        static double m_pdf_prob[2000];
         static double m_max_eTru;
+
+        static double m_gammaScale;
 
 
 };
