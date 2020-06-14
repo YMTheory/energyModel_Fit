@@ -16,3 +16,8 @@ double electronResol::energySmear(double Evis) {
     double Esmear = gRandom->Gaus(Evis, Evis*resol);
     return Esmear;
 }
+
+double electronResol::Resolution(double Evis) {
+    double resol = TMath::Sqrt(m_pA*m_pA/Evis+m_pB*m_pB+m_pC*m_pC/Evis/Evis);
+    return resol;
+}

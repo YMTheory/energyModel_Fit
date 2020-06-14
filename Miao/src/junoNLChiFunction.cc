@@ -128,9 +128,9 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     junoNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    junoNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0.7, 1.2, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6.0e-3, 8.5e-3, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.9, 1.30, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kA", 0.96, 0.001, 0.9, 1.0, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kB", 7.5e-3, 1e-5, 5.0e-3, 9.0e-3, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kC", 1.1, 0.001, 0.8, 1.20, ierrflag); iPar++;
     junoNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
     //junoNLMinuit->FixParameter(0);
@@ -208,18 +208,18 @@ bool junoNLChiFunction::GridSearch()
 {
     double m_like = 1000;
     // begin with some initial values
-    double tmp_init_kA = 0.9;
-    double tmp_init_kB = 6.0e-3;
-    double tmp_init_kC = 1.;
+    double tmp_init_kA = 0.97;
+    double tmp_init_kB = 6.5e-3;
+    double tmp_init_kC = 1.0;
 
     int tag_kA = 4;
     int tag_kB = 4;
     int tag_kC = 4;
 
     // parameters limits:
-    double kAHigh = 1.2;
-    double kALow  = 0.8;
-    double kBHigh = 8.5e-3;
+    double kAHigh = 1.1;
+    double kALow  = 0.9;
+    double kBHigh = 7.5e-3;
     double kBLow  = 5.5e-3;
     double kCHigh = 1.3;
     double kCLow  = 0.8; 
@@ -227,10 +227,10 @@ bool junoNLChiFunction::GridSearch()
     double delta = 1e10;
 
     for(int init_val = 0;init_val < 1;init_val++){
-        double step_kA = 0.01;
-        double step_kB = 1e-4;
-        double step_kC = 0.01;
-        for(int iteration = 0; iteration < 100; iteration++){
+        double step_kA = 0.001;
+        double step_kB = 1e-5;
+        double step_kC = 0.001;
+        for(int iteration = 0; iteration < 300; iteration++){
             for(int bin_kA = -1; bin_kA<2; bin_kA++){
                 for(int bin_kB=1; bin_kB<2; bin_kB++) {
                     for(int bin_kC=1; bin_kC<2; bin_kC++) {
@@ -272,6 +272,7 @@ bool junoNLChiFunction::GridSearch()
         final_kC = tmp_init_kC;
     }
     m_DoFit = true;
+    m_gridSearch = true;
     return true;
 }
 

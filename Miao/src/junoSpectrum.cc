@@ -271,7 +271,7 @@ void junoSpectrum::ApplyScintillatorNL()
 		eTru     = m_binCenter[i];
         eVisElec = eTru;
         eVisElec = eTru * (electronQuench::ScintillatorNL(eTru)+electronCerenkov::getCerenkovPE(eTru));
-        if(is_positron) eVisElec += 2*EvisGamma("511")*0.511 * (1+m_gammaScale);
+        if(is_positron) eVisElec += 2*EvisGamma("511")*0.511 * (1+m_gammaScale) ;
         //if(is_positron) eVisElec += 2*0.467167;
         //cout << eTru << " " << electronQuench::getBirk1() << " " << electronQuench::ScintillatorNL(eTru)<< " " << electronCerenkov::getkC() << " " << eVisElec << endl;
 		for(int branchIdx=0; branchIdx<m_nBr; branchIdx++)

@@ -41,7 +41,7 @@ class electronQuench
         static double m_kA;
 		static const unsigned int m_nKb          = 100;
 		static const unsigned int m_nSamples     = 1000;
-		static constexpr double m_samplingResol  = 0.05;   // bining: 20keV/bin
+		static constexpr double m_samplingResol  = 0.05;   // bining: 50keV/bin
 		static double  m_kBResid;
         static double p0 ;
         static double p1 ;

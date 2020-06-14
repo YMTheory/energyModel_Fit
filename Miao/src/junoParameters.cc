@@ -6,7 +6,7 @@ typedef ScintillatorParameterization SP;
 SP JUNOP::scintillatorParameterization = kSimulation; /*kEmpirical;*/ /*kIntegral;*/
 
 std::string JUNOP::stopPow_File       = "data/electron/StopPow1.txt";
-std::string JUNOP::quenchNL_File      = "data/electron/Quench2.root";
+std::string JUNOP::quenchNL_File      = "data/electron/Quench3.root";
 std::string JUNOP::cerenkovNL_File    = "data/electron/Cer.dat";
 std::string JUNOP::quenchNL_outFile   = "output/electron/QuenchNL.root";
 std::string JUNOP::cerenkov_outFile   = "output/electron/CerenkovNL.root";
@@ -28,7 +28,7 @@ double JUNOP::b12FitMinE              = 4;
 double JUNOP::b12FitMaxE              = 14;
 double JUNOP::b12VertexCut            = 0.80;
 
-bool JUNOP::fitC11                    = false;
+bool JUNOP::fitC11                    = true;
 std::string JUNOP::B12_File           = "data/electron/B12_file.root";
 std::string JUNOP::B12Out_File        = "output/electron/B12Fit.root";
 std::string JUNOP::B12Spec_File       = "data/electron/B12_nonl.txt";
@@ -40,7 +40,7 @@ std::string JUNOP::C11Spec_File       = "data/electron/C11_nonl.txt";
 double JUNOP::c11FitMinE              = 0.9;
 double JUNOP::c11FitMaxE              = 1.8;
 
-bool JUNOP::fitC10                    = true;
+bool JUNOP::fitC10                    = false;
 std::string JUNOP::C10DataFile        = "data/electron/C10.root";
 std::string JUNOP::C10Out_File        = "output/electron/C10Fit.root";
 double JUNOP::c10FitMinE              = 1.6;

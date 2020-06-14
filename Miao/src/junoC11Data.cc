@@ -109,6 +109,7 @@ void junoC11Data::Plot()
     gStyle->SetFrameBorderMode(0);
     tmpC->cd(1);
     gPad->SetBottomMargin(small);
+    hData->GetXaxis()->SetRangeUser(m_fitMin, m_fitMax);
     hData->GetYaxis()->SetRangeUser(0,12500);
     hData->Draw("PEX0");
     hTheo->Draw("PEX0 SAME");
@@ -119,6 +120,7 @@ void junoC11Data::Plot()
     tmpC->cd(2);
     gPad->SetTopMargin(small);
     gPad->SetTickx();
+    hRela->GetXaxis()->SetRangeUser(m_fitMin, m_fitMax);
     hRela->Draw("PEX0");
 
     TFile* file = new TFile(junoParameters::C11Out_File.c_str(), "recreate");

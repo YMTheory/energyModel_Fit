@@ -17,6 +17,7 @@ class electronResol
         static double getpC()         {return m_pC;}
 
         static double energySmear(double Evis);
+        static double Resolution(double Evis);
 
     private:
         static double m_pA;

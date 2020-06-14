@@ -101,7 +101,7 @@ void electronQuench::LoadNLData ()  {
 
         //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
         TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
-        if(!quench1G) { cout << "No Such a Graph in Quench.root File" << endl; return;  }
+        if(!quench1G) { cout << "No Such A Histogram in Quench.root File" << endl; return;  }
         //double* quench1 = quench1G->GetY();
 
         for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)

@@ -105,6 +105,7 @@ void junoC10Data::Plot()
     gStyle->SetFrameBorderMode(0);
     tmpC->cd(1);
     gPad->SetBottomMargin(small);
+    hData->GetXaxis()->SetRangeUser(m_fitMin, m_fitMax);
     hData->Draw("PEX0");
     hTheo->Draw("PEXO SAME");
     TLegend* ll = new TLegend();
@@ -114,6 +115,7 @@ void junoC10Data::Plot()
     tmpC->cd(2);
     gPad->SetTopMargin(small);
     gPad->SetTickx();
+    hRela->GetXaxis()->SetRangeUser(m_fitMin, m_fitMax);
     hRela->Draw("PEX0");
 
     TFile* file = new TFile(junoParameters::C10Out_File.c_str(), "recreate");

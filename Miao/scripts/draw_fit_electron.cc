@@ -8,7 +8,7 @@ void draw_fit_electron()
 
     double A = 1481.06;
     ifstream in;
-    in.open("./data/electron_total.txt");
+    in.open("../data/electron/electron_total.txt");
     if(!in){
         cout << " >>> Fail to Open Electron totPE File !! <<< " << endl;
     }

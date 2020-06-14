@@ -19,6 +19,8 @@
 #include "junoB12Data.hh"
 #include "junoC11Data.hh"
 #include "junoC10Data.hh"
+#include "gammaResol.hh"
+#include "gammaResChiFunction.hh"
 
 using namespace std;
 
