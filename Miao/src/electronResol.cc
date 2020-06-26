@@ -7,8 +7,8 @@
 
 using namespace std;
 
-double electronResol::m_pA = 0.026;
-double electronResol::m_pB = 0.0068;
+double electronResol::m_pA = 2.57576e-02;
+double electronResol::m_pB = 6.86431e-03;
 double electronResol::m_pC = 0.;
 
 double electronResol::energySmear(double Evis) {

@@ -45,6 +45,9 @@ class gammaResChiFunction
         static double final_pA;
         static double final_pB;
         static double final_pC;
+        static double final_kA;
+        static double final_kB;
+        static double final_kC;
 
         static std::map<std::string, gammaResol*> mapGammaResol;
         static std::string source_name[20];

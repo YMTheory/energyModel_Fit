@@ -14,7 +14,7 @@ int main()
     //electronNLExperiment* junoENLExp = new electronNLExperiment();
     //junoENLExp->UpdateDataElectronNL();
     //junoENLExp->UpdateTheoElectronNL();
-    //std::cout << junoENLExp->GetChi2() << endl;
+    ////std::cout << junoENLExp->GetChi2() << endl;
     //junoENLExp->Plot();
 
     //electronNLChiFunction* junoEChiFCN = new electronNLChiFunction();
@@ -40,10 +40,10 @@ int main()
     //junoEResChiFCN->GetChiSquare();
     //junoEResChiFCN->Plot();
 
-    junoNLChiFunction* junoNLChiFcn = new junoNLChiFunction();
-    junoNLChiFcn->LoadData();
-    //cout << junoNLChiFcn->GetChi2() << endl; 
-    junoNLChiFcn->GetChiSquare();
+    //junoNLChiFunction* junoNLChiFcn = new junoNLChiFunction();
+    //junoNLChiFcn->LoadData();
+    ////cout << junoNLChiFcn->GetChi2() << endl; 
+    //junoNLChiFcn->GetChiSquare();
     //junoNLChiFcn->Plot();
     //junoNLChiFcn->GridSearch();
     //junoNLChiFcn->ScanContour();
@@ -56,13 +56,15 @@ int main()
     //m_C10data->Plot();
     //cout << "visible energy for 0.511MeV gamma: " <<  m_C10data->EvisGamma("511")*0.511 << endl;
     
-    //gammaResChiFunction* gammaRes = new gammaResChiFunction();
-    //gammaRes->GetChiSquare();
+    gammaResChiFunction* gammaRes = new gammaResChiFunction();
+    //cout << "chi2 : \n" << gammaRes->GetChi2() << endl;
+    gammaRes->GetChiSquare();
     //gammaRes->GridSearch();
-    //gammaRes->Plot();
+    gammaRes->Plot();
 
-    //gammaResol * gResol = new gammaResol("Cs137", 100, 700, 1100);
+    //gammaResol * gResol = new gammaResol("Co60", 100, 700, 1100);
     //gResol->calcGammaNPE();
+    //cout << "initial chi2 value: " << gResol->GetChi2() << endl;
     //gResol->Plot();
     //delete gResol;
     //cout << "Predicted Resolution : " << gResol->GetResolPred() << endl; 

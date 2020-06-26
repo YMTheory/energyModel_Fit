@@ -1,11 +1,15 @@
 #include "gammaResol.hh"
 #include "electronResol.hh"
+#include "electronQuench.hh"
+#include "electronCerenkov.hh"
+#include "junoParameters.hh"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <sstream>
 
 #include <TH1.h>
+#include <TF1.h>
 #include <TFile.h>
 #include <TRandom.h>
 #include <TMath.h>
@@ -21,10 +25,12 @@ gammaResol::gammaResol(std::string name,
     m_maxPE = maxPE;
     m_nbins = nbins;
 
-    m_loadNL    = false;
-    m_loadRes   = false;
+    m_loadData   = false;
 
-    h_totalPE = new TH1D(m_name.c_str(), "", m_nbins, m_minPE, m_maxPE);
+    m_FitNL      = true;
+    m_FitRes     = false;
+
+    h_totalPE = new TH1D(m_name.c_str(), "", 10000, 0, 13000);
 }
 
 gammaResol::~gammaResol(){
@@ -35,15 +41,17 @@ gammaResol::~gammaResol(){
 void gammaResol::LoadElecNLData()
 {
     ifstream in; in.open("/Users/yumiao/Documents/Works/Simulation/Nonlinearity/electron/MC_NonL.txt");
-    string line; double tmp_nonl; int num = 0;
+
+    string line; double tmp_nonl, tmp_E; int num = 0;
     while(getline(in,line)) {
         istringstream ss(line);
-        ss >> tmp_nonl;
-        elecNonl[num] = tmp_nonl; num++;
+        ss >> tmp_E >>tmp_nonl;
+        elecEtrue[num] = tmp_E;
+        elecNonl[num] = tmp_nonl/1481.06*m_scale; 
+        num++;
     }
     in.close();
 
-    m_loadNL = true;
 }
 
 
@@ -62,17 +70,53 @@ void gammaResol::LoadResData()
     }
 
     in.close();
-    m_loadRes = true;
 }
+
+
+void gammaResol::LoadGammaNLData()
+{
+    //cout << " >>> Loading Naked Gamma Data <<< " << endl;
+
+    ifstream in;
+    in.open(junoParameters::gammaLSNL_File);
+    string line;
+
+    int num = 0;
+    string tmp_name; double tmp_E, tmp_Evis, tmp_EvisError;
+    while(getline(in,line)){
+        istringstream ss(line);
+        ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError ;
+        if(tmp_name == m_name) {
+            m_Etrue = tmp_E;
+            m_nonlData = tmp_Evis/tmp_E;
+            m_nonlDataErr = tmp_EvisError*tmp_Evis/tmp_E;
+        }
+    }
+    in.close();
+    
+}
+
+
+void gammaResol::LoadData()
+{
+    LoadElecNLData    ();
+    LoadGammaNLData   ();
+    LoadResData       ();
+
+    m_loadData = true;
+}
+
+
 
 
 void gammaResol::calcGammaNPE()
 {
-    if(!m_loadNL) LoadElecNLData();
+    if(!m_loadData) LoadData();
     
-    string filename = "./data/naked_gamma/"+m_name+".txt";
+    string filename = "./data/naked_gamma/"+m_name+"_all.txt";
     ifstream in; in.open(filename.c_str());
     if(!in) {cout << "No such file : " << filename << endl;}
+    //cout << " >>> Reading " << filename << endl;
     Double_t tmp_elec; Int_t index = 0;
     string line; int num = 0;
     while(getline(in,line)) {
@@ -81,74 +125,62 @@ void gammaResol::calcGammaNPE()
         while(ss>>tmp_elec) {
             EprmElec.push_back(tmp_elec); num++;
         }
-        double tmp_Evis = 0;  double tmp_Esigma = 0.;
+        double tmp_Evis = 0;  double tmp_Esigma = 0.; double tmp_Etrue = 0;
         for(int j=0; j<num; j++) {
-            int idx = int(EprmElec[j]/m_NLResol);
-            double elec_nonl = elecNonl[idx];
-            tmp_Evis += elec_nonl*EprmElec[j];
+            int idx ;
+            if(EprmElec[j]<0.01) { idx = int(EprmElec[j]/0.001)+1; }
+            else {idx = int(EprmElec[j]/0.01)+10;}
+            double elec_nonl;
+            if(idx==0) {elec_nonl = elecNonl[idx];}
+            else {elec_nonl = interpolate_nonl(idx, EprmElec[j]);}
+            double elec_nonl1 = electronQuench::ScintillatorNL(EprmElec[j])+electronCerenkov::getCerenkovPE(EprmElec[j]);
+            //cout << EprmElec[j] << " " << elec_nonl << " " << elec_nonl1 << endl;
+            tmp_Etrue += EprmElec[j];
+            tmp_Evis += elec_nonl1*EprmElec[j];
             tmp_Esigma += TMath::Power(electronResol::Resolution(EprmElec[j])*EprmElec[j],2);
             //tmp_Evis += EprmElec[j];
         }
 
-        //Evis_calc[index] = tmp_Evis; index++;
+        
         m_mean[index] = tmp_Evis*m_scale; 
         m_sigma[index] = TMath::Sqrt(tmp_Esigma)*m_scale;
-        index++;
+        //cout << tmp_Etrue << " " << tmp_Evis << " " << m_mean[index] << endl;
+        //cout << "prepare distributions: " << index << " " << m_mean[index] <<  " " << m_sigma[index] << endl;
         EprmElec.clear();
+        index++; if(index==5000) break;
 
     }
     in.close();
 
+    // 2-layer sample gamma totalPE distribution...
     double mean = 0; double sigma = 0;
-    double* m_sampleTotPE = new double[m_nSamples];
+    //double* m_sampleTotPE = new double[m_nSamples];
     for(int iSample=0; iSample<m_nSamples; iSample++) {
-        int entry = int(gRandom->Uniform(0,1000));
+        int entry = int(gRandom->Uniform(0,5000));
         double totpe = gRandom->Gaus(m_mean[entry], m_sigma[entry]);
-        m_sampleTotPE[iSample] = totpe;
-        mean += totpe;
-    } mean /= m_nSamples;
-    for(int iSample=0; iSample<m_nSamples; iSample++) {
-        sigma += TMath::Power((m_sampleTotPE[iSample]-mean), 2);
-        h_totalPE->Fill(m_sampleTotPE[iSample]);
-    } sigma = TMath::Sqrt(sigma/(m_nSamples-1));
+        //m_sampleTotPE[iSample] = totpe; 
+        //mean += totpe;
+        h_totalPE->Fill(totpe);
+    } 
+    h_totalPE->Fit("gaus", "Q");
+    TF1* func = (TF1*)h_totalPE->GetFunction("gaus");
+    //Esample = func->GetParameter(1);
+    //tmp_sigma = func->GetParameter(2);
+    m_resCalc = func->GetParameter(2)/func->GetParameter(1);
+    m_nonlCalc = func->GetParameter(1)/m_scale/m_Etrue; 
+    func->Delete();
+    //cout << m_name << " " << m_Etrue << " "  << m_nonlCalc << " " << m_resCalc << " "  << endl;
+    //mean /= m_nSamples;
+    //for(int iSample=0; iSample<m_nSamples; iSample++) {
+    //    sigma += TMath::Power((m_sampleTotPE[iSample]-mean), 2);
+    //    h_totalPE->Fill(m_sampleTotPE[iSample]);
+    //} sigma = TMath::Sqrt(sigma/(m_nSamples-1));
 
-    m_resCalc = sigma / mean;
-    delete []m_sampleTotPE;
+    //m_resCalc = sigma / mean;
+    //m_nonlCalc = mean / m_scale/m_Etrue ;
+    //delete []m_sampleTotPE;
 }
 
-
-//void gammaResol::predGammaNPE()
-//{
-//    string filename = "./data/naked_gamma/singleEvent_"+m_name+".txt";
-//    ifstream in;
-//    in.open(filename.c_str());
-//    if(!in) {cout << "No Such singleEvent File: "<< filename << endl;}
-//    double tmp_mean; double tmp_sigma;
-//    string line; int index = 0;
-//    while(getline(in, line)) {
-//        istringstream ss(line);
-//        ss >> tmp_mean >> tmp_sigma;
-//        m_mean[index] = tmp_mean;
-//        m_sigma[index] = tmp_sigma; index++;
-//    }
-//    in.close();
-//    
-//    
-//    double mean = 0; double sigma = 0;
-//    for(int iSample=0; iSample<m_nSamples; iSample++) {
-//        int entry = int(gRandom->Uniform(0,1000));
-//        double totpe = gRandom->Gaus(m_mean[entry], m_sigma[entry]);
-//        m_sampleTotPE[iSample] = totpe;
-//        mean += totpe;
-//    } mean /= m_nSamples;
-//    for(int iSample=0; iSample<m_nSamples; iSample++) {
-//        sigma += TMath::Power((m_sampleTotPE[iSample]-mean), 2);
-//        h_totalPE->Fill(m_sampleTotPE[idx]);
-//    } sigma = TMath::Sqrt(sigma/(m_nSamples-1));
-//
-//    m_resCalc = sigma / mean;
-//    
-//}
 
 double gammaResol::GetChi2()
 {
@@ -156,10 +188,14 @@ double gammaResol::GetChi2()
     
     // calculate totpe sigma
     calcGammaNPE();
-    if(!m_loadRes) LoadResData();
 
-    chi2 = TMath::Power( (m_resCalc - m_resData)/m_resDataErr, 2);
-    //cout << "mean totpe: " << mean << ", sigma: " << sigma << endl;
+    if(m_FitNL) {
+        chi2 += TMath::Power( (m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
+    }
+    if(m_FitRes) {
+        chi2 += TMath::Power( (m_resCalc - m_resData)/m_resDataErr, 2);
+    }
+    //cout << m_name << " chi2: " << chi2 << endl;
     return chi2;
 }
 
@@ -181,4 +217,10 @@ void gammaResol::Plot()
     TFile* file = new TFile("./output/gamma/predCs137.root", "recreate");
     h_totalPE->Write();
     file->Close();
+}
+
+
+double gammaResol::interpolate_nonl(int idx, double E) {
+    double delta = (elecNonl[idx]-elecNonl[idx-1])*(E-elecEtrue[idx-1]/1000)/(elecEtrue[idx]/1000-elecEtrue[idx-1]/1000) ;
+    return delta+elecNonl[idx-1];
 }

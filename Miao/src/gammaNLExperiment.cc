@@ -25,6 +25,7 @@ double gammaNLExperiment::m_gammaScale = 0.00;
 double gammaNLExperiment::m_pdf_eTru[m_nMaxSources][m_nMaxPdf] = {0.};
 double gammaNLExperiment::m_pdf_prob[m_nMaxSources][m_nMaxPdf] = {0.};
 double gammaNLExperiment::m_max_eTru[m_nMaxSources] = {0.};
+double gammaNLExperiment::m_ratio[m_nMaxSources] = {0.};
 
 vector<double> gammaNLExperiment::Etrue;
 vector<string> gammaNLExperiment::source_name;
@@ -62,13 +63,15 @@ void gammaNLExperiment::LoadData () {
     string line;
 
     int num = 0;
-    string tmp_name; double tmp_E, tmp_Evis, tmp_EvisError;
+    string tmp_name; double tmp_E, tmp_Evis, tmp_EvisError, tmp_ratio;
     while(getline(in,line)){
         istringstream ss(line);
-        ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError;
+        ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError ;
         source_name.push_back(tmp_name);
         mTrueGammaNL->SetPoint(num, tmp_E, (1+m_gammaScale)*tmp_Evis/tmp_E);
         mTrueGammaNL->SetPointError(num, 0, (1+m_gammaScale)*tmp_EvisError*tmp_Evis/tmp_E);
+        m_ratio[num] = tmp_ratio;
+        cout << "true gamma nonl:"  << tmp_E << " " << tmp_Evis/tmp_E << endl;
         //mTrueGammaNL->SetPoint(num, tmp_E, tmp_Evis/tmp_E);
         //mTrueGammaNL->SetPointError(num, 0, tmp_EvisError*tmp_Evis/tmp_E);
         num++;
@@ -158,12 +161,8 @@ double gammaNLExperiment::CalculateGammaNL( int iSource )
     } 
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
-    if(iSource==9) {
-        for(int i=0;i<m_max_eTru[iSource]; i++) {
-            //cout << m_pdf_eTru[iSource][i] << " " << " " << electronQuench::ScintillatorNL(m_pdf_eTru[iSource][i]) << " "<< electronCerenkov::getCerenkovPE(m_pdf_eTru[iSource][i]) << " " << electronQuench::ScintillatorNL(m_pdf_eTru[iSource][i])+electronCerenkov::getCerenkovPE(m_pdf_eTru[iSource][i]) << endl;
-        }
-    }
 
+    //return numerator/denominator*m_ratio[iSource];
     return numerator/denominator;
 
 }
@@ -216,10 +215,18 @@ void gammaNLExperiment::Plot ()  {
     mTrueGammaNL  ->SetLineWidth(2);
     mFitGammaNL   ->SetLineWidth(2);
 
+    TGraph* gRatio = new TGraph();
+    double *xx  = mTrueGammaNL->GetX();
+    double *yy1 = mTrueGammaNL->GetY();
+    double *yy2 = mFitGammaNL->GetY();
+    for(int iPoint=0; iPoint<mTrueGammaNL->GetN(); iPoint++) {
+        gRatio->SetPoint(iPoint, xx[iPoint], yy2[iPoint]/yy1[iPoint]);
+    }
+
     TMultiGraph* fitGraph = new TMultiGraph();
     fitGraph->Add(mTrueGammaNL, "PZ");
     fitGraph->Add(mFitGammaNL,  "pZ");
-    TCanvas* tmpC1 = new TCanvas();
+    TCanvas* tmpC1 = new TCanvas("GammaFit", "GammaFit", 800, 600);
     tmpC1->cd();  tmpC1->SetGrid();
     fitGraph->SetTitle("Gamma NL Fitting; Etrue/MeV; Evis/Etrue");
     fitGraph->Draw("APL");
@@ -234,10 +241,20 @@ void gammaNLExperiment::Plot ()  {
     leg->AddEntry(mFitGammaNL,  "Gamma Fit" , "PE");
 	leg->SetTextSize(19);
 	leg->Draw("SAME");
+    
+    TCanvas* tmpC2 = new TCanvas("Ratio", "Ratio", 800, 600);
+    gRatio->SetMarkerColor(kPink+2);
+    gRatio->SetMarkerStyle(20);
+    gRatio->SetMarkerSize(1);
+    gRatio->SetLineColor(kPink+2);
+    gRatio->SetLineWidth(3);
+    gRatio->SetTitle("; gamma true energy/MeV; fitting/true nonlinearity");
+    gRatio->Draw("APL");
 
     
     TFile* gammaFile = new TFile (junoParameters::gammaOut_File.c_str(), "recreate");
     tmpC1->Write("GammaFit");
+    tmpC2->Write("Ratio");
     gammaFile->Close();
     delete gammaFile;
 }

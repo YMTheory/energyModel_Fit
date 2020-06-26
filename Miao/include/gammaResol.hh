@@ -18,8 +18,11 @@ class gammaResol
         
     public:
         void calcGammaNPE();
-        //void predGammaNPE();
+        double GetEtrue         () {return m_Etrue;}
         double GetEvis          () {return m_Evis;}
+        double GetNonlPred      () {return m_nonlCalc;}
+        double GetNonlData      () {return m_nonlData;}
+        double GetNonlDataErr   () {return m_nonlDataErr;}
         double GetResolPred     () {return m_resCalc;}
         double GetResolData     () {return m_resData;}
         double GetResolDataErr  () {return m_resDataErr;}
@@ -28,7 +31,11 @@ class gammaResol
 
     private:
         void LoadElecNLData  ();
+        void LoadGammaNLData ();
         void LoadResData     ();
+        void LoadData        ();
+
+        double interpolate_nonl(int idx, double E);
 
     private:
         std::string m_name;
@@ -37,20 +44,27 @@ class gammaResol
         int m_nbins;
         
         std::vector<double> EprmElec;
-        double m_mean[1000];
-        double m_sigma[1000];
+        double m_mean[5000];
+        double m_sigma[5000];
         TH1D* h_totalPE;
         int m_nSamples = 10000;
         //double m_sampleTotPE[10000];
 
-        double m_scale = 1481.06;
+        double m_scale = 3350/2.220;   // prior energy scale, nH energy scale
 
-        bool m_loadNL;
-        double elecNonl[799];
+        bool m_loadData;
+        bool m_FitNL;
+        bool m_FitRes;
+
+        double elecEtrue[810];
+        double elecNonl[810];
         double m_NLResol = 0.01;
 
-        bool m_loadRes;
+        double m_Etrue;
         double m_Evis;
+        double m_nonlCalc;
+        double m_nonlData;
+        double m_nonlDataErr;
         double m_resCalc;
         double m_resData;
         double m_resDataErr;

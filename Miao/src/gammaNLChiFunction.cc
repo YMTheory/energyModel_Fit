@@ -52,9 +52,9 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
     gammaNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    //gammaNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0., 2.0, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 1e-4, 1e-2, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.0, 2.0, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kA", 0.96, 0.01, 0.9, 1.0, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6e-3, 7e-3, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.9, 1.1, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
     //gammaNLMinuit->FixParameter(0);
@@ -67,7 +67,7 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
     arglist[0]=2;
     gammaNLMinuit->mnexcm("SET STR",arglist,1,ierrflag);
 
-    arglist[0] = 100; //maxCalls
+    arglist[0] = 5000; //maxCalls
     arglist[1] = 0.01; // tolerance
     gammaNLMinuit->mnexcm("MIGrad", arglist, 1, ierrflag);
 
@@ -93,16 +93,16 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
 
 void gammaNLChiFunction::SetParameters(double *par) {
     // 4-parameter fitting
-    //electronQuench::setkA             (par[0]);
-    //electronQuench::setBirk1          (par[1]);
-    //electronCerenkov::setkC           (par[2]);
-    //gammaNLExperiment::setGammaScale  (par[3]);
+    electronQuench::setkA             (par[0]);
+    electronQuench::setBirk1          (par[1]);
+    electronCerenkov::setkC           (par[2]);
+    gammaNLExperiment::setGammaScale  (par[3]);
     
     // 3-parameter fitting
-    electronQuench::setBirk1          (par[0]);
-    electronCerenkov::setkC           (par[1]);
-    gammaNLExperiment::setGammaScale  (par[2]);
-    electronQuench::setkA             ((1-par[1]*58.517/1481.06)/0.9796);
+    //electronQuench::setBirk1          (par[0]);
+    //electronCerenkov::setkC           (par[1]);
+    //gammaNLExperiment::setGammaScale  (par[2]);
+    //electronQuench::setkA             ((1-par[1]*58.517/1481.06)/0.9796);
 }
 
 
@@ -116,7 +116,8 @@ void gammaNLChiFunction::Plot ()
     for(int iPoint=0; iPoint<nPoints; iPoint++) {
         par[iPoint] = m_bestFit[iPoint];
     }
-    SetParameters(par);
+    //double par[3] = {0.967, 6.5e-3, 1};
+    //SetParameters(par);
     gammaNLExperiment::Plot();
 }
 

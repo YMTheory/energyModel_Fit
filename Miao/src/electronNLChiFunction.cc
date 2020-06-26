@@ -31,6 +31,7 @@ electronNLChiFunction::~electronNLChiFunction()
 double electronNLChiFunction::GetChi2(double maxChi2 ) {
     m_chi2 = 0;
     m_chi2 += electronNLExperiment::GetChi2(0);
+    cout << "chi2: " << m_chi2 << endl;
     if(maxChi2>0 and m_chi2>maxChi2) return maxChi2;
 
     return m_chi2;
@@ -55,9 +56,9 @@ double electronNLChiFunction::GetChiSquare( double maxChi2 )
     electronNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    electronNLMinuit->mnparm(iPar, "kA", 0.98, 0.01, 0, 2, ierrflag);           iPar++;
-    electronNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 4.0e-3, 9.0e-3, ierrflag);   iPar++;
-    electronNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0, 2, ierrflag);            iPar++;
+    electronNLMinuit->mnparm(iPar, "kA", 0.96, 0.01, 0.90, 1.00, ierrflag);           iPar++;
+    electronNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6.0e-3, 7.0e-3, ierrflag);   iPar++;
+    electronNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.95, 1.05, ierrflag);            iPar++;
     //electronNLMinuit->mnparm(iPar, "errElectron", 0.0,  0.01, 0, 0, ierrflag); iPar++;
     
     //electronNLMinuit->FixParameter(0);
@@ -72,7 +73,7 @@ double electronNLChiFunction::GetChiSquare( double maxChi2 )
     electronNLMinuit->mnexcm("SET STR",arglist,1,ierrflag);
 
     arglist[0] = 5000; //maxCalls
-    arglist[1] = 0.01; // tolerance
+    arglist[1] = 0.1; // tolerance
     electronNLMinuit->mnexcm("MIGrad", arglist, 2, ierrflag);
 
     double min, edm, errdef;

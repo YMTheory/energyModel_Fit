@@ -18,10 +18,10 @@
 using namespace std;
 
 bool electronNLExperiment::m_LoadData = false;
-bool electronNLExperiment::m_LoadSingleData = false;
-bool electronNLExperiment::m_LoadB12 = true;
+bool electronNLExperiment::m_LoadSingleData = true;
+bool electronNLExperiment::m_LoadB12 = false;
 bool electronNLExperiment::m_CalcTheo = false;
-double electronNLExperiment::m_energyScale = 1481.06;
+double electronNLExperiment::m_energyScale = 3350/2.220;
 
 
 double electronNLExperiment::binCenter_B12data[100];
@@ -74,6 +74,7 @@ void electronNLExperiment::LoadData ()  {
         ss >> tmp_E >> tmp_totpe >> tmp_sigma ;
         mTrueElectronNL->SetPoint(count, tmp_E, tmp_totpe/m_energyScale/tmp_E);
         mTrueElectronNL->SetPointError(count, 0, tmp_sigma*tmp_totpe/m_energyScale/tmp_E);
+        cout << tmp_E << " " << tmp_totpe/m_energyScale << endl;
         count++;
     }
     in.close();
@@ -127,8 +128,8 @@ void electronNLExperiment::UpdateTheoElectronNL()
             if(junoParameters::scintillatorParameterization == kEmpirical) {
                 nonl = mQuench->ScintillatorNL(Edep[i]);
             } else {
-                double fq = mQuench->ScintillatorNL(Edep[i]);
-                double fC = mCerenkov->getCerenkovPE(Edep[i]);
+                double fq = electronQuench::ScintillatorNL(Edep[i]);
+                double fC = electronCerenkov::getCerenkovPE(Edep[i]);
                 nonl = fq + fC;
             }
             nl_pred[i] = nonl;
@@ -219,8 +220,8 @@ double electronNLExperiment::GetChi2 ( int nDoF )  {
 
     if (!m_LoadData) UpdateDataElectronNL();
     if (!m_CalcTheo) UpdateTheoElectronNL();
-    cout << "In Chi2 Calc: " << mTrueB12Spec->GetNbinsX() << endl;
-    cout << "In Chi2 Calc: " << mFitB12Spec->GetNbinsX() << endl;
+    //cout << "In Chi2 Calc: " << mTrueB12Spec->GetNbinsX() << endl;
+    //cout << "In Chi2 Calc: " << mFitB12Spec->GetNbinsX() << endl;
     double chi2 = 0;
     double nData = 0;
     

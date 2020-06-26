@@ -40,8 +40,8 @@ class electronQuench
         static double m_birk1;
         static double m_kA;
 		static const unsigned int m_nKb          = 100;
-		static const unsigned int m_nSamples     = 1000;
-		static constexpr double m_samplingResol  = 0.05;   // bining: 50keV/bin
+		static const unsigned int m_nSamples     = 2000;
+		static constexpr double m_samplingResol  = 0.01;   // bining: 50keV/bin
 		static double  m_kBResid;
         static double p0 ;
         static double p1 ;
@@ -51,6 +51,9 @@ class electronQuench
         static double m_edep[1000];
         static double m_nonl[1000];
 
+        static double m_quenching_energy[m_nKb][m_nSamples];
+        static double* m_quenching_energy_low;
+        static double* m_quenching_energy_high;
 		static double m_quenchingShape1 [m_nKb][m_nSamples];
 		static double* m_quenchingShape1_lowKb;
 		static double* m_quenchingShape1_higKb;

@@ -11,7 +11,7 @@
 
 using namespace std;
 
-double electronQuench::m_kA = 0.98;
+double electronQuench::m_kA = 0.962;
 double electronQuench::m_birk1     = 6.5e-3;
 double electronQuench::m_kBResid  = 0;
 double electronQuench::p0 = 1.02561e+00;
@@ -19,6 +19,9 @@ double electronQuench::p1 = 1.12245e-01;
 double electronQuench::p2 = 1.39421e+00;
 double electronQuench::p3 = 5.55117e-04;
 
+double electronQuench::m_quenching_energy[m_nKb][m_nSamples] = {0};
+double* electronQuench::m_quenching_energy_low = &m_quenching_energy[0][0];
+double* electronQuench::m_quenching_energy_high = &m_quenching_energy[0][0];
 double electronQuench::m_quenchingShape1[m_nKb][m_nSamples] = {0};
 double* electronQuench::m_quenchingShape1_lowKb = &m_quenchingShape1[0][0];
 double* electronQuench::m_quenchingShape1_higKb = &m_quenchingShape1[0][0];
@@ -94,19 +97,20 @@ void electronQuench::LoadNLData ()  {
     cout << " >>> Loading Quenching NL Data <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
     if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
-    for(int kbIdx=50; kbIdx<91; kbIdx++)  {
+    for(int kbIdx=51; kbIdx<76; kbIdx++)  {
         //cout << kbIdx << endl;
         stringstream ss; ss << kbIdx;
         TString name1 = "kB"+ss.str();
 
         //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
         TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
-        if(!quench1G) { cout << "No Such A Histogram in Quench.root File" << endl; return;  }
+        if(!quench1G) { cout << "No Such A Histogram " << name1 << " in Quench.root File" << endl; return;  }
         //double* quench1 = quench1G->GetY();
 
         for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)
         {
 			//m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
+            m_quenching_energy[kbIdx][sampleIdx] = quench1G->GetBinCenter(sampleIdx+1);
             m_quenchingShape1[kbIdx][sampleIdx] = quench1G->GetBinContent(sampleIdx+1);
         }
         delete quench1G;
@@ -122,6 +126,8 @@ void electronQuench::Update () {
     if(m_birk1==0) return;
     int kBIdx = int(m_birk1*1e4);   
 	m_kBResid = kBIdx+1 - m_birk1*1e4; 
+    m_quenching_energy_low  = &m_quenching_energy[kBIdx] [0];
+    m_quenching_energy_high = &m_quenching_energy[kBIdx] [0];
 	m_quenchingShape1_lowKb = &m_quenchingShape1[kBIdx]  [0];
 	m_quenchingShape1_higKb = &m_quenchingShape1[kBIdx+1][0];
 }
@@ -147,10 +153,16 @@ double electronQuench::SimulationNLShape (double eTrue)  {
     if( !m_loadNLData ) LoadNLData();
     Update();
     if (m_birk1 ==0 ) return 1.0;
-    int idx = int(eTrue/m_samplingResol);
+    int idx = 0;
+    if(eTrue<=0.1) { idx = int(eTrue/0.001); }
+    else { idx = int((eTrue-0.1)/m_samplingResol)+100; }
+    
+    double quenchNL_low = m_quenchingShape1_lowKb[idx-1] + (m_quenchingShape1_lowKb[idx]-m_quenchingShape1_lowKb[idx-1])*(eTrue-m_quenching_energy_low[idx-1])/ (m_quenching_energy_low[idx]-m_quenching_energy_low[idx-1]);
+    double quenchNL_high = m_quenchingShape1_higKb[idx-1] + (m_quenchingShape1_higKb[idx]-m_quenchingShape1_higKb[idx-1])*(eTrue-m_quenching_energy_high[idx-1])/ (m_quenching_energy_high[idx]-m_quenching_energy_high[idx-1]);
 
-    double quenchNL  =  m_kA * ( m_kBResid    *m_quenchingShape1_lowKb[idx] 
-                    +(1-m_kBResid) *m_quenchingShape1_higKb[idx] );
+    double quenchNL = quenchNL_low;
+    //double quenchNL  =  m_kA * ( m_kBResid    * quenchNL_low
+    //                +(1-m_kBResid) * quenchNL_high );
     return quenchNL;
 }
 
