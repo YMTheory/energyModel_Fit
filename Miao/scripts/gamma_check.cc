@@ -57,12 +57,12 @@ void gamma_check()
     Double_t mean[5000]; Double_t sigma[5000];   // 1000 gaussian distributions
     TH1D* h1 = new TH1D("Cs137","", 100, 7.6,7.7);  // energy distributions
     TH1D* h2 = new TH1D("Cs137Num", "", 50, 0, 100);  // secondary particle numbers
-    TGraph* g1 = new TGraph();
-    TGraphErrors* g2 = new TGraphErrors();
+    TGraph* g1 = new TGraph(); g1->SetName("pred");
+    TGraphErrors* g2 = new TGraphErrors(); g2->SetName("data");
     //TGraph* g2 = new TGraph();
     TGraphErrors* g3 = new TGraphErrors();
-    TGraph* g4 = new TGraph();
-    TGraphErrors* g5 = new TGraphErrors();
+    TGraph* g4 = new TGraph(); g4->SetName("pred");
+    TGraphErrors* g5 = new TGraphErrors(); g5->SetName("data");
     TGraphErrors* g6 = new TGraphErrors();
     TProfile* gProf = new TProfile("sample","",50, 0, 10000 , 0.52, 0.72);
     TGraph* g7 = new TGraph();
@@ -72,6 +72,8 @@ void gamma_check()
     TGraph *g8 = new TGraph();
     TGraph* g9 = new TGraph();
     TGraph* gOne = new TGraph();
+    TGraph* g11 = new TGraph();
+    TGraph* g12 = new TGraph();
 
     vector<double> EprmElec;
     ifstream in;
@@ -107,11 +109,12 @@ void gamma_check()
             h2->Fill(num);
             double tmp_Evis = 0; double tmp_sigma = 0;
             for(int j=0; j<num; j++) {
-                int idx;
+                int idx; 
                 if(EprmElec[j]<0.01) { idx = int(EprmElec[j]/0.001)+1; }
                 else {idx = int(EprmElec[j]/0.01)+10;}
-                if(idx==0) {mean[index] += EprmElec[j] * elecNonl[idx] * scale; tmp_Evis += EprmElec[j]*elecNonl[idx]; }
-                else {mean[index] += EprmElec[j] * interpolate_nonl(idx, EprmElec[j]) * scale; tmp_Evis+= EprmElec[j]*interpolate_nonl(idx, EprmElec[j]); }
+                double nonl;
+                if(idx==0) {mean[index] += EprmElec[j] * elecNonl[idx] * scale; tmp_Evis += EprmElec[j]*elecNonl[idx]; nonl=elecNonl[idx]; }
+                else {mean[index] += EprmElec[j] * interpolate_nonl(idx, EprmElec[j]) * scale; tmp_Evis+= EprmElec[j]*interpolate_nonl(idx, EprmElec[j]); nonl=interpolate_nonl(idx, EprmElec[j]); }
                 //mean[index] += EprmElec[j] * elecNonl[idx] * scale;
                 //int idx1;
                 //idx1 = EprmElec[j]/0.01;
@@ -123,8 +126,9 @@ void gamma_check()
             //h1->Fill(secTotE[index]);
             //if(iFile==4) cout <<secTotE[index] << " " << tmp_Evis << " " << mean[index] << endl;
             sigma[index] = TMath::Sqrt(sigma[index]);
-            if(iFile==2) g7->SetPoint(index, mean[index], sigma[index]);
-            if(iFile==3) g10->SetPoint(index, mean[index], sigma[index]);
+            //if(iFile==4) cout << index << " " << mean[index] << " " << sigma[index] << endl;
+            //if(iFile==2) g7->SetPoint(index, mean[index], sigma[index]);
+            //if(iFile==3) g10->SetPoint(index, mean[index], sigma[index]);
             //if(iFile==2 and secTotE[index]>2.505) std::cout << index << " " << secTotE[index] << endl;
             //if(iFile==8) {  h3->Fill(sigma[index]); h4->Fill(secTot[index], secTotE[index]);}
             index++;
@@ -132,6 +136,17 @@ void gamma_check()
 
             if (index==5000) break;
         }
+
+        // calculate smearing from mean value dist
+        double m_mean = 0; double m_std = 0;
+        for(int i=0; i<2000; i++) {
+            m_mean += mean[i];
+        } m_mean/=2000;
+        for(int i=0; i<2000; i++) {
+            m_std += (mean[i]-m_mean) * (mean[i]-m_mean);
+        }
+        m_std = TMath::Sqrt(m_std/(1999));
+        g10->SetPoint(iFile, etrue[iFile], m_std/m_mean);
 
         //Double_t mean_secTotE = 0;
         //for(int j=0; j<1000; j++) {
@@ -143,7 +158,7 @@ void gamma_check()
         // 2-layer sampling:
         const int times = 100000;
         double* sample_E = new double[times];
-        Double_t Esample = 0;
+        Double_t Esample = 0 ; 
         for(int iTime=0; iTime<times; iTime++) {
             int dist = int(gRandom->Uniform(0,index));
             //if(mean[dist]<1400 and iFile==2) continue;
@@ -166,7 +181,9 @@ void gamma_check()
         TF1* func = (TF1*)h3->GetFunction("gaus");
         Esample = func->GetParameter(1);
         tmp_sigma = func->GetParameter(2);
-        cout << input[iFile] << " " << etrue[iFile] << " "<< scale << " " << func->GetParameter(1) << " " << func->GetParameter(2) << " "<< endl;
+        //cout << input[iFile] << " " << etrue[iFile] << " "<< scale << " " << func->GetParameter(1) << " " << func->GetParameter(2) << " "<< endl;
+        //cout << etrue[iFile] << " " << totPE[iFile]/scale/etrue[iFile] << " " << func->GetParameter(1)/scale/etrue[iFile] << endl;
+        cout << Esample/scale << "," << tmp_sigma/Esample << endl;
         func->Delete();
 
         g1->SetPoint(iFile, etrue[iFile], Esample/scale/etrue[iFile]);
@@ -181,6 +198,13 @@ void gamma_check()
         g6->SetPointError(iFile, 0, tmp_sigma/Esample/(totPESigma[iFile]/totPE[iFile]*0.99) - tmp_sigma/Esample/(totPESigma[iFile]/totPE[iFile]));
         g8->SetPoint(iFile, evis[iFile], totPE[iFile]);
         g9->SetPoint(iFile, evis[iFile], Esample);
+        
+        int idx; 
+        if(evis[iFile]<0.01) { idx = int(evis[iFile]/0.001)+1; }
+        else {idx = int(evis[iFile]/0.01)+10;}
+        g11->SetPoint(iFile, evis[iFile], elecTotPESigma[idx]/elecTotPE[idx]);
+        g12->SetPoint(iFile, evis[iFile], TMath::Sqrt( totPESigma[iFile]/totPE[iFile]*totPESigma[iFile]/totPE[iFile] - (elecTotPESigma[idx]/elecTotPE[idx])*(elecTotPESigma[idx]/elecTotPE[idx]) ));
+        //cout << evis[iFile] << " " << elecTotPESigma[idx]/elecTotPE[idx] << endl;
 
         //h2->Write();
         in.close();
@@ -201,7 +225,7 @@ void gamma_check()
     g1->SetLineColor(kOrange+1);
     g1->SetLineWidth(3);
     g1->SetMarkerStyle(21);
-    g1->SetMarkerSize(0.9);
+    g1->SetMarkerSize(1.2);
     ////g1->GetYaxis()->SetRangeUser(0.91,1.03);
     g1->SetTitle("Gamma Nonlinearity");
     g1->GetYaxis()->SetTitle("nonlinearity");
@@ -209,7 +233,7 @@ void gamma_check()
     g2->SetLineColor(kBlue);
     g2->SetLineWidth(2);
     g2->SetMarkerStyle(20);
-    g2->SetMarkerSize(0.8);
+    g2->SetMarkerSize(1.2);
     TLegend* le = new TLegend();
     le->AddEntry(g1, "model", "PL");
     le->AddEntry(g2, "data", "PL");
@@ -267,12 +291,17 @@ void gamma_check()
     g4->SetLineColor(kOrange+1);
     g4->SetLineWidth(3);
     g4->SetMarkerStyle(21);
-    g4->SetMarkerSize(0.9);
+    g4->SetMarkerSize(1.2);
     g5->SetMarkerColor(kBlue);
     g5->SetLineColor(kBlue);
     g5->SetLineWidth(2);
     g5->SetMarkerStyle(20);
-    g5->SetMarkerSize(0.8);
+    g5->SetMarkerSize(1.2);
+    g11->SetMarkerColor(kViolet+1);
+    g11->SetLineColor(kViolet+1);
+    g11->SetLineWidth(3);
+    g11->SetMarkerStyle(21);
+    g11->SetMarkerSize(1.2);
     g4->SetTitle("Gamma Resolution");
     g4->GetYaxis()->SetTitle("Resolution");
     TLegend* ld = new TLegend();
@@ -329,7 +358,24 @@ void gamma_check()
     pad4->cd();
     g4->Draw("APL");
     g5->Draw("P SAME");
+    g11->Draw("PL SAME");
     ld->Draw("SAME");
+
+
+
+    TCanvas* c5 = new TCanvas();
+    g12->SetMarkerColor(kRed+1);
+    g12->SetMarkerStyle(20);
+    g12->SetMarkerSize(1.3);
+    g12->SetLineColor(kRed+1);
+    g12->SetLineWidth(2);
+    g12->Draw("APL");
+
+
+    TFile* ff = new TFile("gamma2.root", "recreate");
+    g4->Write();
+    g5->Write();
+    ff->Close();
 
 }
 

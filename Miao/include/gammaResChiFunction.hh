@@ -20,6 +20,9 @@ class gammaResChiFunction
 
         static void Plot              ();
 
+        static void Contour           ();
+
+
     private:
         static void ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Double_t *par, Int_t flag);
         TMinuit* gammaResMinuit;

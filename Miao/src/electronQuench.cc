@@ -11,8 +11,8 @@
 
 using namespace std;
 
-double electronQuench::m_kA = 0.962;
-double electronQuench::m_birk1     = 6.5e-3;
+double electronQuench::m_kA = 9.59131e-01;
+double electronQuench::m_birk1     = 5.72857e-03;
 double electronQuench::m_kBResid  = 0;
 double electronQuench::p0 = 1.02561e+00;
 double electronQuench::p1 = 1.12245e-01;
@@ -155,14 +155,13 @@ double electronQuench::SimulationNLShape (double eTrue)  {
     if (m_birk1 ==0 ) return 1.0;
     int idx = 0;
     if(eTrue<=0.1) { idx = int(eTrue/0.001); }
-    else { idx = int((eTrue-0.1)/m_samplingResol)+100; }
+    else { idx = int((eTrue-0.1)/0.01)+100; }
     
     double quenchNL_low = m_quenchingShape1_lowKb[idx-1] + (m_quenchingShape1_lowKb[idx]-m_quenchingShape1_lowKb[idx-1])*(eTrue-m_quenching_energy_low[idx-1])/ (m_quenching_energy_low[idx]-m_quenching_energy_low[idx-1]);
     double quenchNL_high = m_quenchingShape1_higKb[idx-1] + (m_quenchingShape1_higKb[idx]-m_quenchingShape1_higKb[idx-1])*(eTrue-m_quenching_energy_high[idx-1])/ (m_quenching_energy_high[idx]-m_quenching_energy_high[idx-1]);
 
-    double quenchNL = quenchNL_low;
-    //double quenchNL  =  m_kA * ( m_kBResid    * quenchNL_low
-    //                +(1-m_kBResid) * quenchNL_high );
+    //double quenchNL = m_kA * m_quenchingShape1_lowKb[idx];
+    double quenchNL  =  m_kA * ( m_kBResid    * quenchNL_low+(1-m_kBResid) * quenchNL_high );
     return quenchNL;
 }
 

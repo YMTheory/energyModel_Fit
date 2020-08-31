@@ -28,6 +28,7 @@ class gammaResol
         double GetResolDataErr  () {return m_resDataErr;}
         void Plot();
         double GetChi2();
+        void check_nonl();
 
     private:
         void LoadElecNLData  ();
@@ -47,10 +48,10 @@ class gammaResol
         double m_mean[5000];
         double m_sigma[5000];
         TH1D* h_totalPE;
-        int m_nSamples = 10000;
+        int m_nSamples = 5000;
         //double m_sampleTotPE[10000];
 
-        double m_scale = 3350/2.220;   // prior energy scale, nH energy scale
+        double m_scale = 3350/2.22;   // prior energy scale, nH energy scale
 
         bool m_loadData;
         bool m_FitNL;

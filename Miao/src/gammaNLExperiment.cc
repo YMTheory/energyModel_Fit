@@ -21,6 +21,7 @@ bool gammaNLExperiment::m_LoadPrmElecDist = false;
 bool gammaNLExperiment::m_CalcTheo = false;
 
 double gammaNLExperiment::m_gammaScale = 0.00;
+double gammaNLExperiment::m_scale = 3350/2.22;
 
 double gammaNLExperiment::m_pdf_eTru[m_nMaxSources][m_nMaxPdf] = {0.};
 double gammaNLExperiment::m_pdf_prob[m_nMaxSources][m_nMaxPdf] = {0.};
@@ -63,15 +64,15 @@ void gammaNLExperiment::LoadData () {
     string line;
 
     int num = 0;
-    string tmp_name; double tmp_E, tmp_Evis, tmp_EvisError, tmp_ratio;
+    string tmp_name; double tmp_E, tmp_totpe, tmp_totpesigma, tmp_EvisError, tmp_ratio;
     while(getline(in,line)){
         istringstream ss(line);
-        ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError ;
+        ss >> tmp_name >> tmp_E >> tmp_totpe >> tmp_totpesigma >> tmp_EvisError ;
         source_name.push_back(tmp_name);
-        mTrueGammaNL->SetPoint(num, tmp_E, (1+m_gammaScale)*tmp_Evis/tmp_E);
-        mTrueGammaNL->SetPointError(num, 0, (1+m_gammaScale)*tmp_EvisError*tmp_Evis/tmp_E);
+        mTrueGammaNL->SetPoint(num, tmp_E, (1+m_gammaScale)*tmp_totpe/m_scale/tmp_E);
+        mTrueGammaNL->SetPointError(num, 0, (1+m_gammaScale)*tmp_EvisError*tmp_totpe/m_scale/tmp_E);
         m_ratio[num] = tmp_ratio;
-        cout << "true gamma nonl:"  << tmp_E << " " << tmp_Evis/tmp_E << endl;
+        cout << "true gamma nonl:"  << tmp_E << " " << tmp_totpe/m_scale/tmp_E << endl;
         //mTrueGammaNL->SetPoint(num, tmp_E, tmp_Evis/tmp_E);
         //mTrueGammaNL->SetPointError(num, 0, tmp_EvisError*tmp_Evis/tmp_E);
         num++;

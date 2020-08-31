@@ -57,6 +57,8 @@ class gammaNLExperiment
         static double m_pdf_prob[m_nMaxSources][m_nMaxPdf];
         static double m_max_eTru[m_nMaxSources];
         static double m_ratio[m_nMaxSources];
+
+        static double m_scale;
 };
 
 #endif

@@ -129,8 +129,8 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     // Configurate parameters
     junoNLMinuit->mnparm(iPar, "kA", 0.96, 0.001, 0.9, 1.0, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kB", 7.5e-3, 1e-5, 5.0e-3, 9.0e-3, ierrflag); iPar++;
-    junoNLMinuit->mnparm(iPar, "kC", 1.1, 0.001, 0.8, 1.20, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.5e-3, 7.5e-3, ierrflag); iPar++;
+    junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0.9, 1.00, ierrflag); iPar++;
     junoNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
     //junoNLMinuit->FixParameter(0);

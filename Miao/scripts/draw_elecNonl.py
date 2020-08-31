@@ -9,9 +9,9 @@ scale = 3350/2.220
 
 # read quenching nonlinearity curve
 quenchFile = up.open("../data/electron/Quench5.root")
-quenchNonl = quenchFile["kB61"]
-quenchNonl_up = quenchFile["kB53"]
-quenchNonl_low = quenchFile["kB69"]
+quenchNonl = quenchFile["kB60"]
+quenchNonl_up = quenchFile["kB60"]
+quenchNonl_low = quenchFile["kB60"]
 quenchNonl_nominal = quenchFile["kB65"]
 quenchNonl_up_gamma = quenchFile["kB63"]
 quenchNonl_low_gamma = quenchFile["kB58"]
@@ -40,9 +40,9 @@ with open( "/Users/yumiao/Documents/Works/github/energyModel_Fit/Miao/data/elect
 
 
 kA_nominal = 0.962; kC_nominal = 1.0
-kA = 0.961; kC = 1.0;
-kA_up = 0.966; kC_up = 1.060;
-kA_low = 0.955; kC_low = 0.939;
+kA = 9.96327e-01; kC = 9.02779e-01;
+kA_up = 9.96327e-01+1.31070e-05; kC_up = 9.02779e-01+2.92558e-05;
+kA_low = 9.96327e-01-1.31070e-05; kC_low =9.02779e-01-2.92558e-05;
 kA_gamma = 9.65736e-01; kC_gamma = 9.71846e-01;
 kA_gamma_low = 9.65736e-01-3.45386e-03; kC_gamma_low = 9.71846e-01-6.90211e-02;
 kA_gamma_high = 9.65736e-01+3.45386e-03; kC_gamma_high = 9.71846e-01+6.90211e-02;
@@ -67,27 +67,35 @@ for i in etrue:
     nonl_low_gamma.append(kA_gamma_low*value_low_gamma[idx]+kC_gamma_low*cer[idx1]/i/scale)
     nonl_high_gamma.append(kA_gamma_high*value_high_gamma[idx]+kC_gamma_high*cer[idx1]/i/scale)
 
+plt.figure(0)
 plt.plot(etrue, nonl_nominal, color="forestgreen", label="nominal")
 plt.plot(etrue, nonl, "-.", color="chocolate", label="electron best fit") #, color='blue')
-plt.plot(etrue, nonl_gamma, color="blue", label="gamma best fit")
+#plt.plot(etrue, nonl_gamma, color="blue", label="gamma best fit")
 #plt.plot(etrue, nonl_low, "-", color="blue", alpha=0.25) #, color='blue')
 #plt.plot(etrue, nonl_up, "-",color="blue", alpha=0.25) #, color='blue')
+plt.text(3,0.960, "best fit valuse:",fontsize=14)
+plt.text(3,0.952, 'kA=9.59131e-01+-5.63720e-03')
+plt.text(3,0.944, "kB=5.72834e-03+-6.21471e-04")
+plt.text(3,0.936, "kC=1.01532e+00+-6.70182e-02")
 #plt.text(3, 0.96, "best fit valuse:",fontsize=14)
-#plt.text(3,0.952, 'kA=0.961+-0.0060')
-#plt.text(3,0.944, "kB=0.00613+-0.000885")
-#plt.text(3,0.936, "kC=1.000+-0.0605")
-plt.text(3, 0.96, "best fit valuse:",fontsize=14)
-plt.text(3,0.952, 'kA=9.65736e-01+-3.45386e-03')
-plt.text(3,0.944, "kB=0.00612+-2.30433e-04")
-plt.text(3,0.936, "kC=9.71846e-01+-6.90211e-02")
-plt.text(0.2,1.01, "1$\sigma$ zone", fontsize=13, color="purple")
+#plt.text(3,0.952, 'kA=9.65736e-01+-3.45386e-03')
+#plt.text(3,0.944, "kB=0.00612+-2.30433e-04")
+#plt.text(3,0.936, "kC=9.71846e-01+-6.90211e-02")
+#plt.text(0.2,1.01, "1$\sigma$ zone", fontsize=13, color="purple")
 
 plt.legend(loc="center right", fontsize=9)
 plt.xlabel("electron etrue/MeV")
 plt.ylabel("nonlinearity")
 a, b = 0, 8  # integral limits
 xf = etrue[np.where((etrue>a)&(etrue<b))]
-#plt.fill_between(xf, nonl_up, nonl_low, color='blue',alpha=0.25)
-plt.fill_between(xf, nonl_high_gamma, nonl_low_gamma, color='purple',alpha=0.35)
+plt.fill_between(xf, nonl_up, nonl_low, color='blue',alpha=0.25)
+plt.text(0.2,1.01, "1$\sigma$ zone", color="blue", fontsize=13)
+#plt.fill_between(xf, nonl_high_gamma, nonl_low_gamma, color='purple',alpha=0.35)
 
+plt.show()
+
+plt.figure(1)
+plt.plot(binCenter, value, "-", label="fitting")
+plt.plot(binCenter, value_nominal, "-", label="nominal")
+plt.legend()
 plt.show()

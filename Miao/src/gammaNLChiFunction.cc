@@ -52,9 +52,9 @@ double gammaNLChiFunction::GetChiSquare(double maxChi2)
     gammaNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    gammaNLMinuit->mnparm(iPar, "kA", 0.96, 0.01, 0.9, 1.0, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6e-3, 7e-3, ierrflag); iPar++;
-    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.9, 1.1, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kA", 0.96, 0.01, 0.94, 1.00, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6.2e-3, 6.8e-3, ierrflag); iPar++;
+    gammaNLMinuit->mnparm(iPar, "kC", 1.0, 0.01, 0.96, 1.44, ierrflag); iPar++;
     gammaNLMinuit->mnparm(iPar, "errGamma", 0, 0.01, 0, 0, ierrflag); iPar++;
     
     //gammaNLMinuit->FixParameter(0);

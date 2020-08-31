@@ -29,11 +29,11 @@ void pre_sample()
         //input[0] = "Cs137";
         //input[1] = "Mn54";
         //input[0] = "K40";
-        //input[0] = "nH";
+        input[0] = "nH";
         //input[0] = "Co60";
         //input[0] = "Tl208";
         //input[0] = "nC12";
-        input[0] = "O16";
+        //input[0] = "O16";
         //input[0] = "nFe56";
     }
 
@@ -41,7 +41,7 @@ void pre_sample()
     load_resol(resol);
 
     Double_t mean[5000]; Double_t sigma[5000]; Double_t SecTotE[5000];  // 1000 gaussian distributions
-    TH1D* h1 = new TH1D("Cs137","", 4000, 5000, 12000);  // energy distributions
+    TH1D* h1 = new TH1D("Cs137","", 100, 2.1, 2.3);  // energy distributions
     TH1D* h2 = new TH1D("Cs137Num", "", 50, 0, 100);  // secondary particle numbers
     TGraph* g1 = new TGraph();
 
@@ -74,14 +74,16 @@ void pre_sample()
             }
             mean_num += num;
             h2->Fill(num);
-            //double tmp_Evis = 0; double tmp_sigma = 0;
+            double tmp_Evis = 0; double tmp_sigma = 0;
             for(int j=0; j<num; j++) {
                 int idx;
                 if(EprmElec[j]<0.01) { idx = int(EprmElec[j]/0.001)+1; }
                 else {idx = int(EprmElec[j]/0.01)+10;}
+                tmp_Evis += EprmElec[j]*elecNonl[idx] ;
                 mean[index] += EprmElec[j] * elecNonl[idx]* scale;
                 sigma[index] += elecTotPESigma[idx]*elecTotPESigma[idx];
             }
+            h1->Fill(tmp_Evis);
 
             sigma[index] = TMath::Sqrt(sigma[index]);
             cout << mean[index] << " " << sigma[index] << endl ;
@@ -98,7 +100,7 @@ void pre_sample()
         for(int iTime=0; iTime<times; iTime++) {
             int dist = int(gRandom->Uniform(0,5000));
             double evis_tmp = gRandom->Gaus(mean[dist], sigma[dist]);
-            h1->Fill(evis_tmp);
+            //h1->Fill(evis_tmp);
         }
 
         //h2->Write();

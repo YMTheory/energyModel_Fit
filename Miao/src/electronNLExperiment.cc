@@ -74,7 +74,7 @@ void electronNLExperiment::LoadData ()  {
         ss >> tmp_E >> tmp_totpe >> tmp_sigma ;
         mTrueElectronNL->SetPoint(count, tmp_E, tmp_totpe/m_energyScale/tmp_E);
         mTrueElectronNL->SetPointError(count, 0, tmp_sigma*tmp_totpe/m_energyScale/tmp_E);
-        cout << tmp_E << " " << tmp_totpe/m_energyScale << endl;
+        //cout << tmp_E << " " << tmp_totpe/m_energyScale << endl;
         count++;
     }
     in.close();

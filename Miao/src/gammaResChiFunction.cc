@@ -15,6 +15,7 @@
 #include <TCanvas.h>
 #include <TLegend.h>
 #include <TFile.h>
+#include <TH2.h>
 
 using namespace std;
 
@@ -125,9 +126,9 @@ void gammaResChiFunction::SetParameters(double* par)
     electronQuench::setkA(par[0]);
     electronQuench::setBirk1(par[1]);
     electronCerenkov::setkC(par[2]);
-    //electronResol::setpA(par[3]);
-    //electronResol::setpB(par[4]);
-    //electronResol::setpC(par[5]);
+    //electronResol::setpA(par[0]);
+    //electronResol::setpB(par[1]);
+    //electronResol::setpC(par[2]);
 }
 
 double gammaResChiFunction::GetChiSquare(double maxChi2)
@@ -143,15 +144,15 @@ double gammaResChiFunction::GetChiSquare(double maxChi2)
     gammaResMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    gammaResMinuit->mnparm(iPar, "kA", 0.961, 0.001, 0.94, 0.98, ierrflag); iPar++;
-    gammaResMinuit->mnparm(iPar, "kB", 6.1e-3, 1e-4, 5.8e-3, 6.4e-3, ierrflag); iPar++;
-    gammaResMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.96, 1.04, ierrflag); iPar++;
-    //gammaResMinuit->mnparm(iPar, "pA", 0.027, 0.001, 0.023, 0.038, ierrflag); iPar++;
-    //gammaResMinuit->mnparm(iPar, "pB", 6.8e-3, 1e-5, 6.5e-3, 7.0e-3, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "kA", 0.960, 0.0001, 0.96, 0.97, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6.3e-3, 6.7e-3, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "kC", 1.00, 0.01, 0.98, 1.02, ierrflag); iPar++;
+    //gammaResMinuit->mnparm(iPar, "pA", 0.0258, 0.0001, 0.025, 0.029, ierrflag); iPar++;
+    //gammaResMinuit->mnparm(iPar, "pB", 6.86e-3, 1e-5, 6.5e-3, 7.0e-3, ierrflag); iPar++;
     //gammaResMinuit->mnparm(iPar, "pC", 0.0, 0.001, 0.0, 0.00, ierrflag); iPar++;
     
     //gammaResMinuit->FixParameter(0);
-    gammaResMinuit->FixParameter(1);
+    //gammaResMinuit->FixParameter(1);
     //gammaResMinuit->FixParameter(2);
     //gammaResMinuit->FixParameter(3);
     //gammaResMinuit->FixParameter(4);
@@ -169,7 +170,7 @@ double gammaResChiFunction::GetChiSquare(double maxChi2)
     //gammaResMinuit->mnexcm("CALL FCN", arglist, 1, ierrflag);
 
     arglist[0] = 5000;
-    arglist[1] = 1;
+    arglist[1] = 50;
     gammaResMinuit->mnexcm("MIGRAD", arglist, 2, ierrflag);
 
 
@@ -305,8 +306,10 @@ void gammaResChiFunction::Plot()
     //    SetParameters(par);
     //}
 
-    double par[6] = {0.961, 6.13e-3, 1.00, 0.27, 0.0068, 0};
-    SetParameters(par);
+    //double par[6] = {0.961, 6.13e-3, 1.00, 0.27, 0.0068, 0};
+    //SetParameters(par);
+
+    //cout << "Current parameters: " << electronQuench::getkA() << " " << electronQuench::getBirk1() << " " << electronCerenkov::getkC() << endl;
 
     TGraphErrors* gNonlData = new TGraphErrors();
     TGraph* gNonlCalc = new TGraph();
@@ -322,7 +325,7 @@ void gammaResChiFunction::Plot()
         double tmp_pred    = tmpGammaData->GetNonlPred();
         double tmp_data    = tmpGammaData->GetNonlData();
         double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
-        cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
+        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
         gNonlData->SetPoint(index, tmp_E, tmp_data);
         gNonlData->SetPointError(index, 0, tmp_dataErr);
         gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
@@ -367,7 +370,7 @@ void gammaResChiFunction::Plot()
         double tmp_pred    = tmpGammaData->GetResolPred();
         double tmp_data    = tmpGammaData->GetResolData();
         double tmp_dataErr = tmpGammaData->GetResolDataErr(); 
-        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
+        cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
         gResData->SetPoint(index, tmp_E, tmp_data);
         gResData->SetPointError(index, 0, tmp_dataErr);
         gResCalc->SetPoint(index, tmp_E, tmp_pred);
@@ -407,6 +410,28 @@ void gammaResChiFunction::Plot()
     //c1->Write();
     //c2->Write();
     file->Close();
+}
+
+
+void gammaResChiFunction::Contour()
+{
+    TH2D* cont = new TH2D("cont", "", 50, 0.96, 0.97, 20, 0.9,1.10);
+    for(int iA=0; iA<50; iA++) {
+        double kA = 0.960+0.0002*iA;
+        for(int iB=0; iB<20; iB++) {
+            double kB = 6.5e-3;
+            double kC = 0.9+0.01*iB;
+            double par[3] = {kA, kB, kC};
+            SetParameters(par);
+            double chi2 = GetChi2();
+            cout << kA << " " << kB << " " << kC << " " << chi2 << endl;
+            cont->SetBinContent(iA, iB, chi2);
+        }
+    }
+
+    TFile* out = new TFile("scan2.root", "recreate");
+    cont->Write();
+    out->Close();
 }
 
 

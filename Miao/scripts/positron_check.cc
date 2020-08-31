@@ -2,7 +2,7 @@ double elecEtrue[810];
 double elecNonl[810];
 double elecTotPE[810];
 double elecTotPESigma[810];
-double scale = 3450/2.220;
+double scale = 3350/2.220;
 double gamma_totPE; double gamma_totPESigma;
 double gamma_Etrue = 0.511; //MeV
 double KEtrue[8] = { 0, 0.1,0.2,0.5,1,2,5,7.98};
@@ -27,11 +27,11 @@ void positron_check()
 
     double mass = 1.022;  //MeV
 
-    TGraph* gNonlCalc = new TGraph();
-    TGraphErrors* gNonlData = new TGraphErrors();
+    TGraph* gNonlCalc = new TGraph(); gNonlCalc->SetName("pred");
+    TGraphErrors* gNonlData = new TGraphErrors(); gNonlData->SetName("data");
     TGraphErrors* gNonlRatio = new TGraphErrors();
-    TGraph* gResCalc = new TGraph();
-    TGraphErrors* gResData = new TGraphErrors();
+    TGraph* gResCalc = new TGraph(); gResCalc->SetName("pred");
+    TGraphErrors* gResData = new TGraphErrors(); gResData->SetName("data");
     TGraphErrors* gResRatio = new TGraphErrors();
     TGraph* gOne = new TGraph();
 
@@ -83,6 +83,76 @@ void positron_check()
         gResRatio->SetPointError(i, 0, (tot_resol/(totPESigma[i]/totPE[i]*0.99))-(tot_resol/(totPESigma[i]/totPE[i])) );
     }
 
+    // compare different particles :
+    TGraph* gPosiNonl = new TGraph();
+    TGraph* gElecNonl = new TGraph();
+    TGraph* gPosiRes = new TGraph();
+    TGraph* gElecRes = new TGraph();
+    TGraph* gGammNonl = new TGraph();
+    TGraph* gGammRes = new TGraph();
+    gGammNonl->SetPoint(0, 0.662,0.898731);
+    gGammNonl->SetPoint(1, 0.834,0.912187);
+    gGammNonl->SetPoint(2, 1.461,0.943455);
+    gGammNonl->SetPoint(3, 2.223,0.96258);
+    gGammNonl->SetPoint(4, 2.505,0.967708);
+    gGammNonl->SetPoint(5, 2.614,0.969692);
+    gGammNonl->SetPoint(5, 4.945,0.989272);
+    gGammNonl->SetPoint(6, 6.13,0.99403);
+    gGammNonl->SetPoint(7, 7.637,0.997891);
+    gGammRes->SetPoint(0, 0.592775,0.0361329);
+    gGammRes->SetPoint(1, 0.759428,0.0325757);
+    gGammRes->SetPoint(2,1.37551,0.0262751);
+    gGammRes->SetPoint(3,2.13831,0.0224635);
+    gGammRes->SetPoint(4, 2.4172,0.0213321);
+    gGammRes->SetPoint(5,2.5319,0.0209328);
+    gGammRes->SetPoint(6, 4.88936,0.0156215);
+    gGammRes->SetPoint(7, 6.08914,0.0139477);
+    gGammRes->SetPoint(8,7.61789,0.0125106);
+
+    for(int i=0; i<7; i++) {
+        hPositron->Reset();
+        double ketrue = 7/7.*i+1.0;
+        double etrue = ketrue+mass;
+        int idx;
+        if(ketrue<0.01) { idx = int(ketrue/0.001)+1; }
+        else {idx = int(ketrue/0.01)+10;}
+        double ke_nonl = interpolate_nonl(idx, ketrue);
+        double ke_sigma = interpolate_resol(idx, ketrue);  // NPE sigma
+
+        double evis = ketrue * ke_nonl + 2* gamma_totPE/scale;
+        double tot_nonl = evis/etrue;
+
+        double tot_sigma = TMath::Sqrt(ke_sigma*ke_sigma + gamma_totPESigma*gamma_totPESigma *2 );
+        double tot_resol = tot_sigma / scale / evis;
+
+        for(int i=0; i<10000; i++) {  // 100000 times sampling
+            double elec_pe = gRandom->Gaus(elecTotPE[idx], ke_sigma);
+            double gamma_pe1 = gRandom->Gaus(gamma_totPE, gamma_totPESigma);
+            double gamma_pe2 = gRandom->Gaus(gamma_totPE, gamma_totPESigma);
+            hPositron->Fill(elec_pe+gamma_pe1+gamma_pe2);
+        }
+
+        hPositron->Fit("gaus", "Q");
+        TF1* func = (TF1*)hPositron->GetFunction("gaus");
+        double pe_mean = func->GetParameter(1);
+        double pe_sigma = func->GetParameter(2);
+        func->Delete();
+
+        tot_nonl = pe_mean/scale/etrue;
+        tot_resol = pe_sigma / pe_mean;
+            
+        gPosiNonl->SetPoint(i, etrue, tot_nonl);
+        gPosiRes->SetPoint(i, pe_mean/scale, tot_resol);
+        int idx1;
+        if(etrue<0.01) { idx1 = int(etrue/0.001)+1; }
+        else {idx1 = int(ketrue/0.01)+10;}
+        gElecNonl->SetPoint(i, etrue, interpolate_nonl(idx1, etrue));
+        gElecRes->SetPoint(i, ketrue*interpolate_nonl(idx1,ketrue), interpolate_resol(idx1, ketrue)/scale/ketrue/interpolate_nonl(idx,ketrue));
+        cout << ketrue << " " << idx1<< " " << interpolate_nonl(idx1, ketrue)<< endl;
+    }
+
+
+
     // Plotting
     gOne->SetPoint(0,0,1);
     gOne->SetPoint(1,10,1);
@@ -96,7 +166,7 @@ void positron_check()
     gNonlCalc->SetLineWidth(2);
     gNonlCalc->SetMarkerColor(kBlue+1);
     gNonlCalc->SetMarkerStyle(20);
-    gNonlCalc->SetMarkerSize(1);
+    gNonlCalc->SetMarkerSize(1.2);
     gNonlData->GetYaxis()->SetTitle("Nonlinearity");
     gNonlData->SetTitle("Positron Nonlinearity");
     //gNonlCalc->GetYaxis()->SetRangeUser(0.7, 1.1);
@@ -104,7 +174,7 @@ void positron_check()
     gNonlData->SetLineWidth(2);
     gNonlData->SetMarkerColor(kGreen+1);
     gNonlData->SetMarkerStyle(21);
-    gNonlData->SetMarkerSize(1);
+    gNonlData->SetMarkerSize(1.2);
     gNonlRatio->SetLineColor(kPink+2);
     gNonlRatio->SetLineWidth(2);
     gNonlRatio->SetMarkerColor(kPink+2);
@@ -163,7 +233,7 @@ void positron_check()
     gResCalc->SetLineWidth(2);
     gResCalc->SetMarkerColor(kBlue+1);
     gResCalc->SetMarkerStyle(20);
-    gResCalc->SetMarkerSize(1);
+    gResCalc->SetMarkerSize(1.2);
     gResData->GetYaxis()->SetTitle("Resolution");
     gResData->SetTitle("Positron Resolution");
     //gResCalc->GetYaxis()->SetRangeUser(0.7, 1.1);
@@ -171,7 +241,7 @@ void positron_check()
     gResData->SetLineWidth(2);
     gResData->SetMarkerColor(kGreen+1);
     gResData->SetMarkerStyle(21);
-    gResData->SetMarkerSize(1);
+    gResData->SetMarkerSize(1.2);
     gResRatio->SetLineColor(kPink+2);
     gResRatio->SetLineWidth(2);
     gResRatio->SetMarkerColor(kPink+2);
@@ -225,6 +295,48 @@ void positron_check()
     gResCalc->Draw("P SAME");
     l2->Draw("SAME");
 
+
+
+    TCanvas* c3 = new TCanvas("compare_nonl"); c3->cd();
+    gPosiNonl->SetLineColor(kOrange+1);
+    gPosiNonl->SetLineWidth(4);
+    gElecNonl->SetLineColor(kBlue+1);
+    gElecNonl->SetLineWidth(4);
+    gGammNonl->SetLineColor(kViolet+1);
+    gGammNonl->SetLineWidth(4);
+    gPosiNonl->GetYaxis()->SetRangeUser(0.8,1.1);
+    gPosiNonl->SetTitle("Nonlinearity for Different Particles; total deposit energy/MeV; nonlinearity");
+    gPosiNonl->Draw("AL");
+    gElecNonl->Draw("L SAME");
+    gGammNonl->Draw("L SAME");
+    TLegend* l3 = new TLegend();
+    l3->AddEntry(gPosiNonl, "positron", "l");
+    l3->AddEntry(gElecNonl, "electron", "l");
+    l3->AddEntry(gGammNonl, "gamma", "l");
+    l3->Draw("SAME");
+
+    TCanvas* c4 = new TCanvas("compare_resol"); c4->cd();
+    gPosiRes->SetLineColor(kOrange+1);
+    gPosiRes->SetLineWidth(4);
+    gElecRes->SetLineColor(kBlue+1);
+    gElecRes->SetLineWidth(4);
+    gGammRes->SetLineColor(kViolet+1);
+    gGammRes->SetLineWidth(4);
+    gPosiRes->GetYaxis()->SetRangeUser(0.01, 0.06);
+    gPosiRes->SetTitle("Resolution for Different Particles; visible energy/MeV; resolution");
+    gPosiRes->Draw("AL");
+    gElecRes->Draw("L SAME");
+    gGammRes->Draw("L SAME");
+    TLegend* l4 = new TLegend();
+    l4->AddEntry(gPosiNonl, "positron", "l");
+    l4->AddEntry(gElecNonl, "electron", "l");
+    l4->AddEntry(gGammNonl, "gamma", "l");
+    l4->Draw("SAME");
+
+    TFile* ff = new TFile("positron2.root", "recreate");
+    gResCalc->Write();
+    gResData->Write();
+    ff->Close();
 }
 
 

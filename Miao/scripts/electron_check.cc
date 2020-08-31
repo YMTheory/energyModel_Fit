@@ -32,7 +32,7 @@ void electron_check()
     TGraph* g4 = new TGraph();
     TGraph* g5 = new TGraph();
 
-    double kA = 0.961;
+    double kA = 0.962;
     double kC = 1.00;
     double pA = 0.02576;
     double pB = 0.006864;
@@ -59,8 +59,8 @@ void electron_check()
     //
     //}
 
-    for(int i=1; i<800; i++) {
-        double eTrue = elecEtrue[i]/1000;
+    for(int i=1; i<80; i++) {
+        double eTrue = elecEtrue[i*10]/1000;
         double evis = elecTotPE[i]/m_energyScale;
         int idx = 0;
         if(eTrue<=0.1) { idx = int(eTrue/0.001); }
@@ -72,12 +72,14 @@ void electron_check()
         double cerNL     =  kC * m_Cerenkov[idx1];
         cerNL = cerNL/m_energyScale/eTrue;
 
-        if(eTrue==2.23) cout << i << " " << eTrue << " " << elecNonl[i] << " " << m_quenchingShape1[idx] << " " << cerNL << endl;
-        g1->SetPoint(i-1, eTrue, elecNonl[i]);
-        g1->SetPointError(i-1, 0, elecNonl[i]*0.005);
+        cout << eTrue << " " << elecNonl[i] << " " << quenchNL+cerNL << endl;
+
+        if(eTrue==0.1 or eTrue==0.2 or eTrue==0.3 or eTrue==0.6 or eTrue==0.8) continue;
+        g1->SetPoint(i-1, eTrue, elecNonl[i*10]);
+        g1->SetPointError(i-1, 0, elecNonl[i*10]*0.005);
         g2->SetPoint(i-1, eTrue, quenchNL+cerNL);
-        g3->SetPoint(i-1, eTrue, (quenchNL+cerNL)/(elecNonl[i]));
-        g4->SetPoint(i-1, evis, elecTotPESigma[i]/elecTotPE[i]);
+        g3->SetPoint(i-1, eTrue, (quenchNL+cerNL)/(elecNonl[i*10]));
+        g4->SetPoint(i-1, evis, elecTotPESigma[i*10]/elecTotPE[i*10]);
         g5->SetPoint(i-1, evis, TMath::Sqrt(pA*pA/evis+pB*pB));
 
     }
@@ -117,12 +119,18 @@ void electron_check()
     g3->SetLineColor(kPink+2);
     g3->SetLineWidth(3);
     g3->SetMarkerStyle(21);
-    g3->SetMarkerSize(0.9);
+    g3->SetMarkerSize(0.8);
     ////g1->GetYaxis()->SetRangeUser(0.91,1.03);
-    g3->SetTitle("electron Nonlinearity");
+    g3->SetTitle("Electron Nonlinearity");
     g3->GetYaxis()->SetTitle("pred nonl / true nonl");
     g3->GetXaxis()->SetTitle("electron etrue/MeV");
-    g3->Draw("APL");
+    g3->Draw("AP");
+    TGraph* g6 = new TGraph();
+    g6->SetPoint(0, 0, 1);
+    g6->SetPoint(1, 8, 1);
+    g6->SetLineWidth(4);
+    g6->SetLineColor(kBlue);
+    g6->Draw("L SAME");
 
     TCanvas* c3 = new TCanvas(); c3->cd(); c3->SetGrid();
     g4->SetMarkerColor(kOrange+1);
@@ -145,7 +153,7 @@ void electron_check()
     ////g5->getyaxis()->setrangeuser(25,29);
     ////g5->getyaxis()->settitle("primary e+- number");
     ////g5->getxaxis()->settitle("true gamma energy/mev");
-    g5->Draw("PL SAME");
+    g5->Draw("P SAME");
     //g5->Draw("AP");
 
     TLegend* ll = new TLegend();
@@ -165,7 +173,8 @@ void load_nonl(string file) {
     while(getline(in,line)) {
         istringstream ss(line);
         ss >> tmp_E >> tmp_nonl;
-        elecEtrue[num] = tmp_E; elecNonl[num] = tmp_nonl*1481.06/m_energyScale; num++;
+        elecEtrue[num] = tmp_E; elecNonl[num] = tmp_nonl*1481.06/m_energyScale; 
+        num++;
     }
     in.close();
 

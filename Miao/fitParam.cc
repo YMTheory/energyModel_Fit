@@ -4,12 +4,12 @@ int main()
 {
     SetStyle();
     
-    //junoB12Data* m_b12data = new junoB12Data();
+    junoB12Data* m_b12data = new junoB12Data();
     //std::cout << m_b12data->EvisGamma("4440") * 4.44<< endl;
-    //m_b12data->SetParameters();
-    //m_b12data->LoadData("./data/electron/B12.root");
-    //cout << "Chi2: " << m_b12data->GetChi2(1) << endl;
-    //m_b12data->Plot();
+    m_b12data->SetParameters();
+    m_b12data->LoadData("./data/electron/B12.root");
+    cout << "Chi2: " << m_b12data->GetChi2(1) << endl;
+    m_b12data->Plot();
 
     //electronNLExperiment* junoENLExp = new electronNLExperiment();
     //junoENLExp->UpdateDataElectronNL();
@@ -19,6 +19,15 @@ int main()
 
     //electronNLChiFunction* junoEChiFCN = new electronNLChiFunction();
     //cout << junoEChiFCN->GetChiSquare() << endl;
+    //for(int iA=0; iA<200; iA++){
+    //    double kA = 0.962;
+    //    double kB = 5.5e-3+0.1e-4*iA;
+    //    double kC = 1.0;
+    //    electronQuench::setkA(kA);
+    //    electronQuench::setBirk1(kB);
+    //    electronCerenkov::setkC(kC);
+    //    cout << electronQuench::getBirk1() << " " << junoEChiFCN->GetChi2() << endl;
+    //}
     //junoEChiFCN->Plot();
     //junoEChiFCN->DrawContour(0,1);
 
@@ -42,7 +51,7 @@ int main()
 
     //junoNLChiFunction* junoNLChiFcn = new junoNLChiFunction();
     //junoNLChiFcn->LoadData();
-    ////cout << junoNLChiFcn->GetChi2() << endl; 
+    //cout << junoNLChiFcn->GetChi2() << endl; 
     //junoNLChiFcn->GetChiSquare();
     //junoNLChiFcn->Plot();
     //junoNLChiFcn->GridSearch();
@@ -56,13 +65,27 @@ int main()
     //m_C10data->Plot();
     //cout << "visible energy for 0.511MeV gamma: " <<  m_C10data->EvisGamma("511")*0.511 << endl;
     
-    gammaResChiFunction* gammaRes = new gammaResChiFunction();
+    //gammaResChiFunction* gammaRes = new gammaResChiFunction();
     //cout << "chi2 : \n" << gammaRes->GetChi2() << endl;
-    gammaRes->GetChiSquare();
+    //gammaRes->Contour();
+    //gammaRes->GetChiSquare();
     //gammaRes->GridSearch();
-    gammaRes->Plot();
+    //gammaRes->Plot();
+    //for(int iA=0; iA<12; iA++){
+    //    double kA = 0.962;
+    //    double kB = 5.5e-3+iA*1e-4;
+    //    double kC = 1.0;
+    //    electronQuench::setkA(kA);
+    //    electronQuench::setBirk1(kB);
+    //    electronCerenkov::setkC(kC);
+    //    cout <<electronQuench::getBirk1() <<" "<<  gammaRes->GetChi2() << endl;
+    //}
+
+
+
 
     //gammaResol * gResol = new gammaResol("Co60", 100, 700, 1100);
+    //gResol->check_nonl() ;
     //gResol->calcGammaNPE();
     //cout << "initial chi2 value: " << gResol->GetChi2() << endl;
     //gResol->Plot();

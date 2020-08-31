@@ -47,7 +47,7 @@ void gammaResol::LoadElecNLData()
         istringstream ss(line);
         ss >> tmp_E >>tmp_nonl;
         elecEtrue[num] = tmp_E;
-        elecNonl[num] = tmp_nonl/1481.06*m_scale; 
+        elecNonl[num] = tmp_nonl*1481.06/m_scale; 
         num++;
     }
     in.close();
@@ -82,14 +82,17 @@ void gammaResol::LoadGammaNLData()
     string line;
 
     int num = 0;
-    string tmp_name; double tmp_E, tmp_Evis, tmp_EvisError;
+    string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError;
     while(getline(in,line)){
         istringstream ss(line);
-        ss >> tmp_name >> tmp_E >> tmp_Evis >> tmp_EvisError ;
+        ss >> tmp_name >> tmp_E >> tmp_totPE >> tmp_totPESigma >> tmp_EvisError ;
         if(tmp_name == m_name) {
             m_Etrue = tmp_E;
-            m_nonlData = tmp_Evis/tmp_E;
-            m_nonlDataErr = tmp_EvisError*tmp_Evis/tmp_E;
+            m_nonlData = tmp_totPE/m_scale/tmp_E;
+            m_nonlDataErr = tmp_EvisError*tmp_totPE/m_scale/tmp_E;
+            m_Evis = tmp_totPE/m_scale;
+            m_resData = tmp_totPESigma/tmp_totPE;
+            m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
         }
     }
     in.close();
@@ -101,7 +104,7 @@ void gammaResol::LoadData()
 {
     LoadElecNLData    ();
     LoadGammaNLData   ();
-    LoadResData       ();
+    //LoadResData       ();
 
     m_loadData = true;
 }
@@ -134,7 +137,7 @@ void gammaResol::calcGammaNPE()
             if(idx==0) {elec_nonl = elecNonl[idx];}
             else {elec_nonl = interpolate_nonl(idx, EprmElec[j]);}
             double elec_nonl1 = electronQuench::ScintillatorNL(EprmElec[j])+electronCerenkov::getCerenkovPE(EprmElec[j]);
-            //cout << EprmElec[j] << " " << elec_nonl << " " << elec_nonl1 << endl;
+            //cout <<"nonl: " << EprmElec[j] << " " << elec_nonl << " " << elec_nonl1 << endl;
             tmp_Etrue += EprmElec[j];
             tmp_Evis += elec_nonl1*EprmElec[j];
             tmp_Esigma += TMath::Power(electronResol::Resolution(EprmElec[j])*EprmElec[j],2);
@@ -223,4 +226,16 @@ void gammaResol::Plot()
 double gammaResol::interpolate_nonl(int idx, double E) {
     double delta = (elecNonl[idx]-elecNonl[idx-1])*(E-elecEtrue[idx-1]/1000)/(elecEtrue[idx]/1000-elecEtrue[idx-1]/1000) ;
     return delta+elecNonl[idx-1];
+}
+
+
+
+
+void gammaResol::check_nonl()
+{
+    LoadElecNLData();
+    for(int i=0; i<800; i++) {
+        double etrue = elecEtrue[i]/1000.;
+        cout << etrue << " "<< elecNonl[i] << " " << electronQuench::ScintillatorNL(etrue)+electronCerenkov::getCerenkovPE(etrue) << endl; 
+    } 
 }
