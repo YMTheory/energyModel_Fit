@@ -11,8 +11,8 @@
 
 using namespace std;
 
-double electronQuench::m_kA = 9.59131e-01;
-double electronQuench::m_birk1     = 5.72857e-03;
+double electronQuench::m_kA = 0.96; //9.59131e-01;
+double electronQuench::m_birk1     = 6.5e-3; //5.72857e-03;
 double electronQuench::m_kBResid  = 0;
 double electronQuench::p0 = 1.02561e+00;
 double electronQuench::p1 = 1.12245e-01;

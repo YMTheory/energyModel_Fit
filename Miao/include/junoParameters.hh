@@ -29,6 +29,8 @@ class junoParameters
         static double m_gammaError;
         static bool fitGammaSources;
 
+        static unsigned int gammaNLOption;
+
         static ScintillatorParameterization scintillatorParameterization;
 
         static bool fitB12;

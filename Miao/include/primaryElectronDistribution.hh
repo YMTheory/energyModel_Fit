@@ -2,6 +2,7 @@
 #define _PRIMARYELECTRONDISTRIBUTION_H
 
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ class primaryElectronDistribution
         ~primaryElectronDistribution();
 
     public:
-        void read_distribution(string source);
+        void read_distribution(std::string source);
 
         int getSize() { return Etrue.size(); }
         double getEtrue(int num);

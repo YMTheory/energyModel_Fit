@@ -4,12 +4,12 @@ int main()
 {
     SetStyle();
     
-    junoB12Data* m_b12data = new junoB12Data();
+    //junoB12Data* m_b12data = new junoB12Data();
     //std::cout << m_b12data->EvisGamma("4440") * 4.44<< endl;
-    m_b12data->SetParameters();
-    m_b12data->LoadData("./data/electron/B12.root");
-    cout << "Chi2: " << m_b12data->GetChi2(1) << endl;
-    m_b12data->Plot();
+    //m_b12data->SetParameters();
+    //m_b12data->LoadData("./data/electron/B12.root");
+    //cout << "Chi2: " << m_b12data->GetChi2(1) << endl;
+    //m_b12data->Plot();
 
     //electronNLExperiment* junoENLExp = new electronNLExperiment();
     //junoENLExp->UpdateDataElectronNL();
@@ -65,12 +65,13 @@ int main()
     //m_C10data->Plot();
     //cout << "visible energy for 0.511MeV gamma: " <<  m_C10data->EvisGamma("511")*0.511 << endl;
     
-    //gammaResChiFunction* gammaRes = new gammaResChiFunction();
+    gammaResChiFunction* gammaRes = new gammaResChiFunction();
     //cout << "chi2 : \n" << gammaRes->GetChi2() << endl;
     //gammaRes->Contour();
-    //gammaRes->GetChiSquare();
+    gammaRes->Initialize();
+    gammaRes->GetChiSquare();
     //gammaRes->GridSearch();
-    //gammaRes->Plot();
+    gammaRes->Plot();
     //for(int iA=0; iA<12; iA++){
     //    double kA = 0.962;
     //    double kB = 5.5e-3+iA*1e-4;

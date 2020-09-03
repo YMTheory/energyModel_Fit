@@ -3,6 +3,7 @@
 #include "gammaResol.hh"
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "junoParameters.hh"
 
 #include <iostream>
 #include <fstream>
@@ -51,51 +52,64 @@ std::string gammaResChiFunction::source_name[20];
 
 gammaResChiFunction::gammaResChiFunction() {
     Cs137Data = new gammaResol("Cs137", 700, 1100, 100);
-    Cs137Data->calcGammaNPE(); 
+    Cs137Data->LoadData(); 
     source_name[m_nData] = "Cs137"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("Cs137", Cs137Data));
 
     Mn54Data  = new gammaResol("Mn54", 900, 1300, 100);
-    Mn54Data->calcGammaNPE(); 
+    Mn54Data->LoadData(); 
     source_name[m_nData] = "Mn54"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("Mn54", Mn54Data));
 
     K40Data  = new gammaResol("K40", 900, 1300, 100);
-    K40Data->calcGammaNPE(); 
+    K40Data->LoadData(); 
     source_name[m_nData] = "K40"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("K40", K40Data));
 
     nHData  = new gammaResol("nH", 900, 1300, 100);
-    nHData->calcGammaNPE(); 
+    nHData->LoadData(); 
     source_name[m_nData] = "nH"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("nH", nHData));
 
     Co60Data  = new gammaResol("Co60", 900, 1300, 100);
-    Co60Data->calcGammaNPE(); 
+    Co60Data->LoadData(); 
     source_name[m_nData] = "Co60"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("Co60", Co60Data));
 
     Tl208Data  = new gammaResol("Tl208", 900, 1300, 100);
-    Tl208Data->calcGammaNPE(); 
+    Tl208Data->LoadData(); 
     source_name[m_nData] = "Tl208"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("Tl208", Tl208Data));
 
     nC12Data  = new gammaResol("nC12", 900, 1300, 100);
-    nC12Data->calcGammaNPE(); 
+    nC12Data->LoadData(); 
     source_name[m_nData] = "nC12"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("nC12", nC12Data));
 
     O16Data  = new gammaResol("O16", 900, 1300, 100);
-    O16Data->calcGammaNPE(); 
+    O16Data->LoadData(); 
     source_name[m_nData] = "O16"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("O16", O16Data));
 
     nFe56Data  = new gammaResol("nFe56", 900, 1300, 100);
-    nFe56Data->calcGammaNPE(); 
+    nFe56Data->LoadData(); 
     source_name[m_nData] = "nFe56"; m_nData++;
     mapGammaResol.insert(pair<std::string, gammaResol*> ("nFe56", nFe56Data));
 
 }
+
+void gammaResChiFunction::Initialize()
+{
+    string mode;
+    if   (junoParameters::gammaNLOption == 0) 
+        mode = "PrimElecDist";
+    else if(junoParameters::gammaNLOption == 1) 
+        mode = "2-layer sampling";
+
+    cout << "======> Nonlineairity Fitting Mode: " << mode << endl;
+}
+
+
 
 double gammaResChiFunction::GetChi2 (double maxChi2) {
     m_chi2 = 0;
@@ -144,11 +158,11 @@ double gammaResChiFunction::GetChiSquare(double maxChi2)
     gammaResMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    gammaResMinuit->mnparm(iPar, "kA", 0.960, 0.0001, 0.96, 0.97, ierrflag); iPar++;
-    gammaResMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 6.3e-3, 6.7e-3, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "kA", 0.960, 0.0001, 0.95, 0.97, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5.5e-3, 7.2e-3, ierrflag); iPar++;
     gammaResMinuit->mnparm(iPar, "kC", 1.00, 0.01, 0.98, 1.02, ierrflag); iPar++;
-    //gammaResMinuit->mnparm(iPar, "pA", 0.0258, 0.0001, 0.025, 0.029, ierrflag); iPar++;
-    //gammaResMinuit->mnparm(iPar, "pB", 6.86e-3, 1e-5, 6.5e-3, 7.0e-3, ierrflag); iPar++;
+    //gammaResMinuit->mnparm(iPar, "pA", 0.0258, 0.0001, 0.012, 0.029, ierrflag); iPar++;
+    //gammaResMinuit->mnparm(iPar, "pB", 6.80e-3, 1e-5, 6.5e-3, 7.0e-3, ierrflag); iPar++;
     //gammaResMinuit->mnparm(iPar, "pC", 0.0, 0.001, 0.0, 0.00, ierrflag); iPar++;
     
     //gammaResMinuit->FixParameter(0);
@@ -370,7 +384,7 @@ void gammaResChiFunction::Plot()
         double tmp_pred    = tmpGammaData->GetResolPred();
         double tmp_data    = tmpGammaData->GetResolData();
         double tmp_dataErr = tmpGammaData->GetResolDataErr(); 
-        cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
+        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
         gResData->SetPoint(index, tmp_E, tmp_data);
         gResData->SetPointError(index, 0, tmp_dataErr);
         gResCalc->SetPoint(index, tmp_E, tmp_pred);

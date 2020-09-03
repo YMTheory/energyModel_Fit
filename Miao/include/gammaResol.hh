@@ -26,6 +26,7 @@ class gammaResol
         double GetResolPred     () {return m_resCalc;}
         double GetResolData     () {return m_resData;}
         double GetResolDataErr  () {return m_resDataErr;}
+        void LoadData        ();
         void Plot();
         double GetChi2();
         void check_nonl();
@@ -34,7 +35,7 @@ class gammaResol
         void LoadElecNLData  ();
         void LoadGammaNLData ();
         void LoadResData     ();
-        void LoadData        ();
+        void LoadPrimElecDist();
 
         double interpolate_nonl(int idx, double E);
 
@@ -56,6 +57,7 @@ class gammaResol
         bool m_loadData;
         bool m_FitNL;
         bool m_FitRes;
+        unsigned int m_NL_option;
 
         double elecEtrue[810];
         double elecNonl[810];
@@ -69,6 +71,14 @@ class gammaResol
         double m_resCalc;
         double m_resData;
         double m_resDataErr;
+
+
+        // data for primary electron distribution: 
+        static const unsigned int m_nMaxPdf = 2000;
+        int m_max_eTrue;
+        double m_pdf_eTrue[m_nMaxPdf];
+        double m_pdf_prob[m_nMaxPdf];
+
 
 
 };

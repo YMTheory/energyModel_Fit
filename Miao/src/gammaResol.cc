@@ -16,6 +16,7 @@
 
 using namespace std;
 
+
 gammaResol::gammaResol(std::string name,
                        double minPE,
                        double maxPE,
@@ -30,7 +31,9 @@ gammaResol::gammaResol(std::string name,
     m_FitNL      = true;
     m_FitRes     = false;
 
-    h_totalPE = new TH1D(m_name.c_str(), "", 10000, 0, 13000);
+    m_NL_option = junoParameters::gammaNLOption;  // 0 : using primary electron distribution; 1: using 2-layer sampling method
+
+    h_totalPE = new TH1D(m_name.c_str(), "", 2000, 0, 13000);
 }
 
 gammaResol::~gammaResol(){
@@ -99,12 +102,34 @@ void gammaResol::LoadGammaNLData()
     
 }
 
+void gammaResol::LoadPrimElecDist()
+{
+    //cout << " >>> Load primaryElectronDistribution <<< " << endl;
+
+    TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
+    if (!file) cout << " No such input primary electron file " << endl;
+    string pdfName = "gamma"+m_name; 
+    TH1D* gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
+    if(!gGammaPdf) cout << "No such Pdf : " << pdfName << endl;
+
+    for(int i=0; i<gGammaPdf->GetNbinsX(); i++) {
+        m_pdf_eTrue[i] = gGammaPdf->GetBinCenter(i+1);
+        m_pdf_prob[i]  = gGammaPdf->GetBinContent(i+1);
+        if (m_pdf_prob[i] > 0) m_max_eTrue = i;
+    }
+    file->Close();
+
+}
+
 
 void gammaResol::LoadData()
 {
     LoadElecNLData    ();
     LoadGammaNLData   ();
     //LoadResData       ();
+
+    if(m_NL_option == 0)
+        LoadPrimElecDist();
 
     m_loadData = true;
 }
@@ -115,90 +140,130 @@ void gammaResol::LoadData()
 void gammaResol::calcGammaNPE()
 {
     if(!m_loadData) LoadData();
-    
-    string filename = "./data/naked_gamma/"+m_name+"_all.txt";
-    ifstream in; in.open(filename.c_str());
-    if(!in) {cout << "No such file : " << filename << endl;}
-    //cout << " >>> Reading " << filename << endl;
-    Double_t tmp_elec; Int_t index = 0;
-    string line; int num = 0;
-    while(getline(in,line)) {
-        num = 0;
-        istringstream ss(line);
-        while(ss>>tmp_elec) {
-            EprmElec.push_back(tmp_elec); num++;
-        }
-        double tmp_Evis = 0;  double tmp_Esigma = 0.; double tmp_Etrue = 0;
-        for(int j=0; j<num; j++) {
-            int idx ;
-            if(EprmElec[j]<0.01) { idx = int(EprmElec[j]/0.001)+1; }
-            else {idx = int(EprmElec[j]/0.01)+10;}
-            double elec_nonl;
-            if(idx==0) {elec_nonl = elecNonl[idx];}
-            else {elec_nonl = interpolate_nonl(idx, EprmElec[j]);}
-            double elec_nonl1 = electronQuench::ScintillatorNL(EprmElec[j])+electronCerenkov::getCerenkovPE(EprmElec[j]);
-            //cout <<"nonl: " << EprmElec[j] << " " << elec_nonl << " " << elec_nonl1 << endl;
-            tmp_Etrue += EprmElec[j];
-            tmp_Evis += elec_nonl1*EprmElec[j];
-            tmp_Esigma += TMath::Power(electronResol::Resolution(EprmElec[j])*EprmElec[j],2);
-            //tmp_Evis += EprmElec[j];
-        }
 
-        
-        m_mean[index] = tmp_Evis*m_scale; 
-        m_sigma[index] = TMath::Sqrt(tmp_Esigma)*m_scale;
-        //cout << tmp_Etrue << " " << tmp_Evis << " " << m_mean[index] << endl;
-        //cout << "prepare distributions: " << index << " " << m_mean[index] <<  " " << m_sigma[index] << endl;
-        EprmElec.clear();
-        index++; if(index==5000) break;
+    if (m_NL_option == 0) {  // primaryElectronDistribution method
+        double numerator = 0;
+        double denominator = 0;
+        for(int iBin=1; iBin<m_max_eTrue; iBin++) { // to largest bin
+
+            double E1 = m_pdf_eTrue[iBin-1];
+            double E2= m_pdf_eTrue[iBin];
+            double prob1 = m_pdf_prob[iBin-1];
+            double prob2 = m_pdf_prob[iBin];
+
+            double fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
+            double fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+
+            numerator   += (prob1*E1*fNL1 + prob2*E2*fNL2) * (E2-E1) / 2.;
+            denominator += (prob1*E1 + prob2*E2) * (E2-E1) / 2.;
+        }
+    
+        if(denominator == 0 ) cout << "Errors Happend While Calculating..." << endl;
+
+        m_nonlCalc = numerator / denominator;
 
     }
-    in.close();
 
-    // 2-layer sample gamma totalPE distribution...
-    double mean = 0; double sigma = 0;
-    //double* m_sampleTotPE = new double[m_nSamples];
-    for(int iSample=0; iSample<m_nSamples; iSample++) {
-        int entry = int(gRandom->Uniform(0,5000));
-        double totpe = gRandom->Gaus(m_mean[entry], m_sigma[entry]);
-        //m_sampleTotPE[iSample] = totpe; 
-        //mean += totpe;
-        h_totalPE->Fill(totpe);
-    } 
-    h_totalPE->Fit("gaus", "Q");
-    TF1* func = (TF1*)h_totalPE->GetFunction("gaus");
-    //Esample = func->GetParameter(1);
-    //tmp_sigma = func->GetParameter(2);
-    m_resCalc = func->GetParameter(2)/func->GetParameter(1);
-    m_nonlCalc = func->GetParameter(1)/m_scale/m_Etrue; 
-    func->Delete();
-    //cout << m_name << " " << m_Etrue << " "  << m_nonlCalc << " " << m_resCalc << " "  << endl;
-    //mean /= m_nSamples;
-    //for(int iSample=0; iSample<m_nSamples; iSample++) {
-    //    sigma += TMath::Power((m_sampleTotPE[iSample]-mean), 2);
-    //    h_totalPE->Fill(m_sampleTotPE[iSample]);
-    //} sigma = TMath::Sqrt(sigma/(m_nSamples-1));
+    else if (m_NL_option == 1) {   // 2-layer sampling method  ---
 
-    //m_resCalc = sigma / mean;
-    //m_nonlCalc = mean / m_scale/m_Etrue ;
-    //delete []m_sampleTotPE;
+        string filename = "./data/naked_gamma/"+m_name+"_all.txt";
+        ifstream in; in.open(filename.c_str());
+        if(!in) {cout << "No such file : " << filename << endl;}
+        //cout << " >>> Reading " << filename << endl;
+        Double_t tmp_elec; Int_t index = 0;
+        string line; int num = 0;
+        while(getline(in,line)) {
+            num = 0;
+            istringstream ss(line);
+            while(ss>>tmp_elec) {
+                EprmElec.push_back(tmp_elec); num++;
+            }
+            double tmp_Evis = 0;  double tmp_Esigma = 0.; double tmp_Etrue = 0;
+            for(int j=0; j<num; j++) {
+                int idx ;
+                if(EprmElec[j]<0.01) { idx = int(EprmElec[j]/0.001)+1; }
+                else {idx = int(EprmElec[j]/0.01)+10;}
+                double elec_nonl;
+                if(idx==0) {elec_nonl = elecNonl[idx];}
+                else {elec_nonl = interpolate_nonl(idx, EprmElec[j]);}
+                double elec_nonl1 = electronQuench::ScintillatorNL(EprmElec[j])+electronCerenkov::getCerenkovPE(EprmElec[j]);
+                //cout <<"nonl: " << EprmElec[j] << " " << elec_nonl << " " << elec_nonl1 << endl;
+                tmp_Etrue += EprmElec[j];
+                tmp_Evis += elec_nonl1*EprmElec[j];
+                tmp_Esigma += TMath::Power(electronResol::Resolution(EprmElec[j])*EprmElec[j],2);
+                //tmp_Evis += EprmElec[j];
+            }
+
+
+            m_mean[index] = tmp_Evis*m_scale; 
+            m_sigma[index] = TMath::Sqrt(tmp_Esigma)*m_scale;
+            //cout << tmp_Etrue << " " << tmp_Evis << " " << m_mean[index] << endl;
+            //cout << "prepare distributions: " << index << " " << m_mean[index] <<  " " << m_sigma[index] << endl;
+            EprmElec.clear();
+            index++; if(index==5000) break;
+
+        }
+        in.close();
+
+        // 2-layer sample gamma totalPE distribution...
+        double mean = 0; double sigma = 0;
+        //double* m_sampleTotPE = new double[m_nSamples];
+        for(int iSample=0; iSample<m_nSamples; iSample++) {
+            int entry = int(gRandom->Uniform(0,5000));
+            double totpe = gRandom->Gaus(m_mean[entry], m_sigma[entry]);
+            //m_sampleTotPE[iSample] = totpe; 
+            //mean += totpe;
+            h_totalPE->Fill(totpe);
+        } 
+        h_totalPE->Fit("gaus", "Q");
+        TF1* func = (TF1*)h_totalPE->GetFunction("gaus");
+        //Esample = func->GetParameter(1);
+        //tmp_sigma = func->GetParameter(2);
+        m_resCalc = func->GetParameter(2)/func->GetParameter(1);
+        m_nonlCalc = func->GetParameter(1)/m_scale/m_Etrue; 
+        func->Delete();
+        //cout << m_name << " " << m_Etrue << " "  << m_nonlCalc << " " << m_resCalc << " "  << endl;
+        //mean /= m_nSamples;
+        //for(int iSample=0; iSample<m_nSamples; iSample++) {
+        //    sigma += TMath::Power((m_sampleTotPE[iSample]-mean), 2);
+        //    h_totalPE->Fill(m_sampleTotPE[iSample]);
+        //} sigma = TMath::Sqrt(sigma/(m_nSamples-1));
+
+        //m_resCalc = sigma / mean;
+        //m_nonlCalc = mean / m_scale/m_Etrue ;
+        //delete []m_sampleTotPE;
+    }
+
+    else {
+        cout << " No Such NL Fitting Option..." << endl;
+    }
 }
 
 
 double gammaResol::GetChi2()
 {
     double chi2 = 0;
-    
+
     // calculate totpe sigma
     calcGammaNPE();
 
-    if(m_FitNL) {
+    if(m_NL_option == 1) {
+        if(m_FitNL) {
+            chi2 += TMath::Power( (m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
+        }
+        if(m_FitRes) {
+            chi2 += TMath::Power( (m_resCalc - m_resData)/m_resDataErr, 2);
+        }
+        //cout << m_name << " chi2: " << chi2 << endl;
+    }
+
+    else if (m_NL_option == 0) {
         chi2 += TMath::Power( (m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
     }
-    if(m_FitRes) {
-        chi2 += TMath::Power( (m_resCalc - m_resData)/m_resDataErr, 2);
+
+    else {
+        cout << "No such NL fitting option" << endl;
     }
-    //cout << m_name << " chi2: " << chi2 << endl;
     return chi2;
 }
 
@@ -236,6 +301,5 @@ void gammaResol::check_nonl()
     LoadElecNLData();
     for(int i=0; i<800; i++) {
         double etrue = elecEtrue[i]/1000.;
-        cout << etrue << " "<< elecNonl[i] << " " << electronQuench::ScintillatorNL(etrue)+electronCerenkov::getCerenkovPE(etrue) << endl; 
     } 
 }

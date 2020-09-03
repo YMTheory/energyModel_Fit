@@ -11,6 +11,8 @@ class gammaResChiFunction
         gammaResChiFunction();
         ~gammaResChiFunction();
 
+        void Initialize               ();
+
         double LoadDate               ();
         double GetChiSquare           ( double maxChi2 = 100000 );
         static void SetParameters     ( double *par );

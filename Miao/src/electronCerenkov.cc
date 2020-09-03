@@ -10,7 +10,7 @@
 
 using namespace std;
 
-double electronCerenkov::m_kC = 1.01533e+00;
+double electronCerenkov::m_kC = 1; //1.01533e+00;
 double electronCerenkov::m_energyScale = 3350/2.220;
 bool electronCerenkov::m_LoadCerenkov = false;
 

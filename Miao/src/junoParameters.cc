@@ -19,6 +19,7 @@ std::string JUNOP::gammaPdf_File      = "data/Gamma_Electron1.root";
 std::string JUNOP::gammaOut_File      = "output/gamma/gammaFit.root";
 double JUNOP::m_gammaError            = 1.;
 bool JUNOP::fitGammaSources           = false;
+unsigned int JUNOP::gammaNLOption     = 1;
 
 bool JUNOP::fitB12                    = false;
 std::string JUNOP::B12DataFile        = "data/electron/B12.root";
