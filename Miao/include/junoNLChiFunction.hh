@@ -1,10 +1,12 @@
 #ifndef junoNLChiFunction_h
 #define junoNLChiFunction_h
 
+#include "gammaResol.hh"
 #include "junoB12Data.hh"
 #include "junoC11Data.hh"
 #include "junoC10Data.hh"
 #include <TMinuit.h>
+#include <map>
 
 class junoNLChiFunction 
 {
@@ -16,11 +18,9 @@ class junoNLChiFunction
         double GetChiSquare           ( double maxChi2 = 100000 );
         static void SetParameters     ( double *par );
         static double GetChi2         ( double maxChi2 = 100000 );  
-        
-        bool GridSearch               ();
-        bool ScanContour              ();      
     
         static void Plot              ();
+        static void GammaPlot         ();
 
     private:
         static void ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Double_t *par, Int_t flag);
@@ -39,6 +39,16 @@ class junoNLChiFunction
         static bool m_DoFit;
         static bool m_gridSearch;
         
+        static gammaResol* Cs137Data;
+        static gammaResol* Mn54Data;
+        static gammaResol* nHData;
+        static gammaResol* K40Data;
+        static gammaResol* Co60Data;
+        static gammaResol* Tl208Data;
+        static gammaResol* nC12Data;
+        static gammaResol* O16Data;
+        static gammaResol* nFe56Data;
+
         static junoB12Data* m_b12Data;
         static junoC11Data* m_c11Data;
         static junoC10Data* m_c10Data;
@@ -49,6 +59,10 @@ class junoNLChiFunction
         static double m_kALimit;
         static double m_kBLimit;
         static double m_kCLimit;
+
+        static int m_nData;
+        static std::map<std::string, gammaResol*> mapGammaResol;
+        static std::string source_name[20];
 
 } ;
 
