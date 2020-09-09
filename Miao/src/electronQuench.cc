@@ -124,6 +124,8 @@ void electronQuench::LoadNLData ()  {
 void electronQuench::Update () {
     if(!m_loadNLData) LoadNLData();
     if(m_birk1==0) return;
+    else if (m_birk1 > m_birkHigh) m_birk1 = m_birkHigh;
+    else if (m_birk1 < m_birkLow ) m_birk1 = m_birkLow;
     int kBIdx = int(m_birk1*1e4);   
 	m_kBResid = kBIdx+1 - m_birk1*1e4; 
     m_quenching_energy_low  = &m_quenching_energy[kBIdx] [0];

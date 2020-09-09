@@ -103,4 +103,7 @@ if __name__ == "__main__" :
     plt.fill_between(Elist1, NLlist1_high, NLlist1_low, color='blue',alpha=0.25)
     plt.plot(Elist2, NLlist2, "-", label="primElecDist")
     plt.fill_between(Elist2, NLlist2_high, NLlist2_low, color='orange',alpha=0.25)
+    plt.legend()
+    plt.xlabel("Etrue/MeV")
+    plt.ylabel("Evis/Etrue")
     plt.show()

@@ -38,6 +38,8 @@ class electronQuench
 
     private:
         static double m_birk1;
+        static constexpr double m_birkHigh = 75e-4;
+        static constexpr double m_birkLow  = 55e-4;
         static double m_kA;
 		static const unsigned int m_nKb          = 100;
 		static const unsigned int m_nSamples     = 2000;

@@ -123,6 +123,9 @@ double gammaResChiFunction::GetChi2 (double maxChi2) {
     m_chi2 += O16Data->GetChi2();
     m_chi2 += nFe56Data->GetChi2();
 
+    // Add Penalty Term: 
+    m_chi2 += TMath::Power(gammaResol::GetGammaScale()/junoParameters::m_gammaError, 2) ;
+
     //cout << "kA : " << electronQuench::getkA() << "  kB: " << electronQuench::getBirk1() << "  kC: " << electronCerenkov::getkC()  << "  chi2: " << m_chi2 << endl;
     return m_chi2;
 }
@@ -140,6 +143,7 @@ void gammaResChiFunction::SetParameters(double* par)
     electronQuench::setkA(par[0]);
     electronQuench::setBirk1(par[1]);
     electronCerenkov::setkC(par[2]);
+    gammaResol::SetGammaScale(par[3]);
     //electronResol::setpA(par[0]);
     //electronResol::setpB(par[1]);
     //electronResol::setpC(par[2]);
@@ -161,6 +165,7 @@ double gammaResChiFunction::GetChiSquare(double maxChi2)
     gammaResMinuit->mnparm(iPar, "kA", 0.960, 0.0001, 0.95, 0.97, ierrflag); iPar++;
     gammaResMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5.5e-3, 7.2e-3, ierrflag); iPar++;
     gammaResMinuit->mnparm(iPar, "kC", 1.00, 0.01, 0.98, 1.02, ierrflag); iPar++;
+    gammaResMinuit->mnparm(iPar, "gammaScale", 0.003, 0.0001, 0, 0, ierrflag); iPar++;
     //gammaResMinuit->mnparm(iPar, "pA", 0.0258, 0.0001, 0.012, 0.029, ierrflag); iPar++;
     //gammaResMinuit->mnparm(iPar, "pB", 6.80e-3, 1e-5, 6.5e-3, 7.0e-3, ierrflag); iPar++;
     //gammaResMinuit->mnparm(iPar, "pC", 0.0, 0.001, 0.0, 0.00, ierrflag); iPar++;

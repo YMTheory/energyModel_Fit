@@ -16,6 +16,7 @@
 
 using namespace std;
 
+double gammaResol::m_gammaScale = 0.03;
 
 gammaResol::gammaResol(std::string name,
                        double minPE,
@@ -137,7 +138,7 @@ void gammaResol::LoadData()
 
 
 
-void gammaResol::calcGammaNPE()
+void gammaResol::calcGammaResponse()
 {
     if(!m_loadData) LoadData();
 
@@ -245,7 +246,7 @@ double gammaResol::GetChi2()
     double chi2 = 0;
 
     // calculate totpe sigma
-    calcGammaNPE();
+    calcGammaResponse();
 
     if(m_NL_option == 1) {
         if(m_FitNL) {
@@ -258,7 +259,7 @@ double gammaResol::GetChi2()
     }
 
     else if (m_NL_option == 0) {
-        chi2 += TMath::Power( (m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
+        chi2 += TMath::Power( (m_nonlCalc*(1+m_gammaScale) - m_nonlData)/m_nonlDataErr, 2);
     }
 
     else {

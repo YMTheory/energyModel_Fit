@@ -17,7 +17,7 @@ class gammaResol
 
         
     public:
-        void calcGammaNPE();
+        void calcGammaResponse();
         double GetEtrue         () {return m_Etrue;}
         double GetEvis          () {return m_Evis;}
         double GetNonlPred      () {return m_nonlCalc;}
@@ -30,6 +30,9 @@ class gammaResol
         void Plot();
         double GetChi2();
         void check_nonl();
+
+        static double GetGammaScale() {return m_gammaScale;}
+        static void   SetGammaScale(double m_scale) {m_gammaScale=m_scale;}
 
     private:
         void LoadElecNLData  ();
@@ -79,6 +82,7 @@ class gammaResol
         double m_pdf_eTrue[m_nMaxPdf];
         double m_pdf_prob[m_nMaxPdf];
 
+        static double m_gammaScale;
 
 
 };
