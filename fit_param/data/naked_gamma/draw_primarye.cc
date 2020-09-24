@@ -1,5 +1,0 @@
-void draw_primarye()
-{
-
-
-}
