@@ -4,7 +4,7 @@ int main()
 {
     SetStyle();
 
-    electronQuench::Plot();
+    electronCerenkov::Plot();
 
     return 1.0;
 }

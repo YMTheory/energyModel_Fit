@@ -5,6 +5,7 @@
 #include "TGraph.h"
 
 #include "electronQuench.hh"
+#include "electronCerenkov.hh"
 
 using namespace std;
 
