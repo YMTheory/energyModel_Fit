@@ -10,13 +10,9 @@
 
 #include <TFile.h>
 #include <TH1.h>
+#include <TSystem.h>
 
 using namespace std;
-
-double gammaData::m_pdf_eTrue[m_nMaxPdf];
-double gammaData::m_pdf_prob[m_nMaxPdf];
-double gammaData::m_max_eTrue;
-double gammaData::m_scale;
 
 std::string gammaData::m_calcOption = "prmelec";
 
@@ -34,13 +30,12 @@ gammaData::gammaData( std::string name,
     m_loadData = false;
 }
 
-gammaData::~gammaData() {
-
-}
+gammaData::~gammaData() 
+{}
 
 void gammaData::LoadGammaData()
 {
-    cout << " >>> Loading Naked Gamma " << m_name << " Data from " << junoParameters::gammaLSNL_File << endl;
+    cout << " >>> Loading Naked Gamma " << m_name << " Data <<< " << endl;
 
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     string line;
@@ -64,7 +59,7 @@ void gammaData::LoadGammaData()
 
 void gammaData::LoadPrimElecDist()
 {
-    //cout << " >>> Load Primary Electron Distribution <<< " << endl;
+    cout << " >>> Load Primary Electron Distribution <<< " << endl;
 
     TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
     if (!file) cout << " No such input primary electron file " << endl;
@@ -79,6 +74,7 @@ void gammaData::LoadPrimElecDist()
     }
 
     file->Close();
+
 }
 
 
@@ -117,7 +113,6 @@ void gammaData::calcGammaResponse()
         if (denominator == 0) cout << "Errors Happend While Using GammaPdf Calculation..." << endl;
 
         m_nonlCalc = numerator / denominator;
-        //cout << m_name << " " << m_nonlData << " " << m_nonlCalc << endl;
     }
 }
 
@@ -132,8 +127,7 @@ double gammaData::GetChi2()
     if (m_calcOption == "prmelec") {
         chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
     }
-    //cout << m_name << " " << m_nonlCalc << " " << m_nonlData << " " << m_nonlDataErr << " " << chi2 << endl;
-    
+
     return chi2;
 }
 
