@@ -164,7 +164,6 @@ double electronQuench::SimulationNLShape (double eTrue)  {
 
     //double quenchNL = m_kA * m_quenchingShape1_lowKb[idx];
     double quenchNL  =  m_kA * ( m_kBResid * quenchNL_low + (1-m_kBResid) * quenchNL_high );
-    cout << eTrue << " " << quenchNL_low << " " << quenchNL_high << " " << quenchNL << endl;
     return quenchNL;
 }
 

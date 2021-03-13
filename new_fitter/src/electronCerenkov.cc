@@ -1,4 +1,5 @@
 #include "electronCerenkov.hh"
+#include "junoParameters.hh"
 
 #include <iostream>
 #include <fstream>
@@ -12,7 +13,8 @@
 using namespace std;
 
 double electronCerenkov::m_kC = 1; //1.01533e+00;
-double electronCerenkov::m_energyScale = 3350/2.220;
+//double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
+double electronCerenkov::m_energyScale;
 bool electronCerenkov::m_LoadCerenkov = false;
 
 vector<double> electronCerenkov::m_Etrue;
@@ -22,7 +24,7 @@ double electronCerenkov::m_E[1000];
 double electronCerenkov::m_nonl[1000];
 
 electronCerenkov::electronCerenkov()
-{;}
+{}
 
 electronCerenkov::~electronCerenkov()
 {;}
@@ -65,7 +67,6 @@ double electronCerenkov::getCerenkovPE(double E)
         int num = m_Cerenkov.size();
         for(int i=1; i<num; i++){
             if(m_Etrue[i-1]<=E and m_Etrue[i]>E){  
-                double m_Resid = m_Etrue[i] - E;
                 return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]))/m_energyScale/E;
                 //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
             }

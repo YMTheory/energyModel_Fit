@@ -1,4 +1,5 @@
 #include <iostream>
+
 #include "TStyle.h"
 #include "TROOT.h"
 #include "TCanvas.h"
@@ -7,6 +8,7 @@
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
 #include "gammaData.hh"
+#include "gammaFitter.hh"
 
 using namespace std;
 

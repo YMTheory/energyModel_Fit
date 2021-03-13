@@ -14,8 +14,6 @@ enum ScintillatorParameterization {
 class junoParameters
 {
     public:
-        // parameters in elec Quench/Cerenkov 
-        static ScintillatorParameterization scintillatorParameterization;
         static std::string stopPow_File;
         static std::string quenchNL_File;
         static std::string cerenkovNL_File;
@@ -24,7 +22,6 @@ class junoParameters
         static std::string quenchNL_outFile;
         static std::string cerenkov_outFile;
     
-        // parameters in gammaData
         static std::string gammaLSNL_File;
         static std::string gammaPdf_File;
         static std::string gammaOut_File;
@@ -33,6 +30,7 @@ class junoParameters
         static double m_gammaError;
         static bool fitGammaSources;
 
+        static ScintillatorParameterization scintillatorParameterization;
 
         static bool fitB12;
         static std::string B12DataFile;
@@ -62,6 +60,7 @@ class junoParameters
         static double c10FitMaxE;
 
         static double m_gammaScale;
+
 
 };
 

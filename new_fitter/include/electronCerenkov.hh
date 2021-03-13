@@ -2,7 +2,6 @@
 #define _ELECTRONCERENKOV_H
 
 #include <vector>
-#include "junoParameters.hh"
 
 using namespace std;
 

@@ -16,8 +16,9 @@ using namespace std;
 double gammaData::m_pdf_eTrue[m_nMaxPdf];
 double gammaData::m_pdf_prob[m_nMaxPdf];
 double gammaData::m_max_eTrue;
+double gammaData::m_scale;
 
-string gammaData::m_calcOption = junoParameters::gammaNLOption;
+std::string gammaData::m_calcOption = "prmelec";
 
 gammaData::gammaData( std::string name,
                         double minPE,
@@ -39,20 +40,21 @@ gammaData::~gammaData() {
 
 void gammaData::LoadGammaData()
 {
-    cout << " >>> Loading Naked Gamma " << m_name << " Data" << endl;
+    cout << " >>> Loading Naked Gamma " << m_name << " Data from " << junoParameters::gammaLSNL_File << endl;
 
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     string line;
 
+    double scale = 3350./2.22;
     string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError;
     while(getline(in,line)){
         istringstream ss(line);
         ss >> tmp_name >> tmp_E >> tmp_totPE >> tmp_totPESigma >> tmp_EvisError ;
         if(tmp_name == m_name) {
             m_Etrue = tmp_E;
-            m_nonlData = tmp_totPE/m_scale/tmp_E;
-            m_nonlDataErr = tmp_EvisError*tmp_totPE/m_scale/tmp_E;
-            m_Evis = tmp_totPE/m_scale;
+            m_nonlData = tmp_totPE/scale/tmp_E;
+            m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
+            m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
         }
@@ -62,7 +64,7 @@ void gammaData::LoadGammaData()
 
 void gammaData::LoadPrimElecDist()
 {
-    cout << " >>> Load Primary Electron Distribution <<< " << endl;
+    //cout << " >>> Load Primary Electron Distribution <<< " << endl;
 
     TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
     if (!file) cout << " No such input primary electron file " << endl;
@@ -95,7 +97,7 @@ void gammaData::calcGammaResponse()
 {
     if (!m_loadData) LoadData();
 
-    if (m_calcOption == "primelec") {
+    if (m_calcOption == "prmelec") {
         double numerator = 0;
         double denominator = 0;
         
@@ -115,6 +117,7 @@ void gammaData::calcGammaResponse()
         if (denominator == 0) cout << "Errors Happend While Using GammaPdf Calculation..." << endl;
 
         m_nonlCalc = numerator / denominator;
+        //cout << m_name << " " << m_nonlData << " " << m_nonlCalc << endl;
     }
 }
 
@@ -126,9 +129,10 @@ double gammaData::GetChi2()
     // calculate totpe sigma
     calcGammaResponse();
 
-    if (m_calcOption == "primelec") {
+    if (m_calcOption == "prmelec") {
         chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
     }
+    //cout << m_name << " " << m_nonlCalc << " " << m_nonlData << " " << m_nonlDataErr << " " << chi2 << endl;
     
     return chi2;
 }

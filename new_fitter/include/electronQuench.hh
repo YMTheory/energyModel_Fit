@@ -9,7 +9,6 @@
 #include <TGraph.h>
 #include <TFile.h>
 #include <TH1.h>
-#include "junoParameters.hh"
 
 using namespace std;
 

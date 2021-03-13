@@ -53,7 +53,7 @@ class gammaData
         double m_resDataErr;
 
     private:
-        double m_scale;
+        static double m_scale;
 
     private:
         static const unsigned int m_nMaxPdf = 2000;
