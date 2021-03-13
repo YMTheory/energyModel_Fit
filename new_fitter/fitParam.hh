@@ -6,6 +6,7 @@
 
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "gammaData.hh"
 
 using namespace std;
 

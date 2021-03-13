@@ -14,12 +14,12 @@ std::string JUNOP::cerenkov_outFile   = "output/electron/CerenkovNL.root";
 std::string JUNOP::electronLSNL_File  = "data/electron/electron_total.txt";
 std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
 
-std::string JUNOP::gammaLSNL_File     = "data/naked_gamma/gamma.dat";
+std::string JUNOP::gammaLSNL_File     = "data/gamma/gamma.dat";
 std::string JUNOP::gammaPdf_File      = "data/Gamma_Electron1.root";
 std::string JUNOP::gammaOut_File      = "output/gamma/gammaFit.root";
 double JUNOP::m_gammaError            = 1.;
 bool JUNOP::fitGammaSources           = true;
-unsigned int JUNOP::gammaNLOption     = 1;  // only options are 0: for primElecDist method and 1: for 2-layer sampling method
+std::string JUNOP::gammaNLOption      = "primelec" ;  // primelec or twolayer
 
 bool JUNOP::fitB12                    = false;
 std::string JUNOP::B12DataFile        = "data/electron/B12.root";
