@@ -53,6 +53,11 @@ gammaFitter::~gammaFitter()
 
 void gammaFitter::Initialize()
 {
+
+    cout << endl;
+    cout << " ++++++++++++++++++++++++++++++++++++++++++++ >> Begin of Initialization << ++++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << endl;
+
     ProcInfo_t info;;
     gSystem->GetProcInfo(&info);
     float m_momery = info.fMemResident/1024;
@@ -141,6 +146,9 @@ void gammaFitter::Initialize()
     m_momery = info.fMemResident/1024;
     cout << "Memory = " << m_momery << " MB" << endl;
 
+    cout << endl;
+    cout << " ++++++++++++++++++++++++++++++++++++++++++++ >> End of Initialization << ++++++++++++++++++++++++++++++++++++++++" << endl;
+    cout << endl;
 }
 
 double gammaFitter::GetChi2(const double *par)
@@ -230,14 +238,8 @@ void gammaFitter::Plot()
 
     TGraphErrors* gNonlData = new TGraphErrors();
     TGraphErrors* gNonlCalc = new TGraphErrors();
-    TGraphErrors* gNonlNom  = new TGraphErrors();
     gNonlData->SetName("gNonlData");
     gNonlCalc->SetName("gNonlCalc");
-    gNonlNom->SetName("gNonlNom");
-    double nom_kA = 0.96;
-    double nom_kB = 6.5e-3;
-    double nom_kC = 1;
-    double nom_es = 3350./2.22;
 
     int index = 0;
     for(int iData=0; iData<m_nData; iData++) {
@@ -252,7 +254,23 @@ void gammaFitter::Plot()
         gNonlData->SetPoint(index, tmp_E, tmp_data);
         gNonlData->SetPointError(index, 0, tmp_dataErr);
         gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
+
         index++;
+    }
+
+    TGraphErrors* gNonlNom  = new TGraphErrors();
+    gNonlNom->SetName("gNonlNom");
+    double nom_kA = 0.96;
+    double nom_kB = 6.5e-3;
+    double nom_kC = 1;
+    double nom_es = 3350./2.22;
+    electronQuench::setkA(nom_kA);
+    electronQuench::setBirk1(nom_kB);
+    electronCerenkov::setkC(nom_kC);
+    electronCerenkov::setEnergyScale(nom_es);
+    for (int i=0; i<m_nData; i++) {
+        gammaData_array[i]->calcGammaResponse();
+        gNonlNom->SetPoint(i, gammaData_array[i]->GetEtrue(), gammaData_array[i]->GetNonlPred());
     }
 
     gNonlData->SetMarkerStyle(20);
@@ -265,6 +283,11 @@ void gammaFitter::Plot()
     gNonlCalc->SetMarkerSize(1.2);
     gNonlCalc->SetLineColor(kRed+1);
     gNonlCalc->SetLineWidth(2);
+    gNonlNom->SetMarkerStyle(21);
+    gNonlNom->SetMarkerColor(kViolet+1);
+    gNonlNom->SetMarkerSize(1.2);
+    gNonlNom->SetLineColor(kViolet+1);
+    gNonlNom->SetLineWidth(2);
 
     TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
     c1->cd(); c1->SetGrid();
@@ -272,10 +295,12 @@ void gammaFitter::Plot()
     //gNonlData->GetYaxis()->SetRangeUser(0.01,0.045);
     gNonlData->Draw("APL");
     gNonlCalc->Draw("P SAME");
+    gNonlNom->Draw("L SAME");
     TLegend* led = new TLegend();
     led->SetFillColor(kWhite);
     led->AddEntry(gNonlData, "data", "PL");
     led->AddEntry(gNonlCalc, "calc", "PL");
+    led->AddEntry(gNonlNom, "nominal", "PL");
     led->Draw("SAME");
 
     c1->SaveAs("GamNLFit.root");    

@@ -2,6 +2,7 @@
 #include "junoParameters.hh"
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "electronResponse.hh"
 
 #include <fstream>
 #include <string>
@@ -14,7 +15,8 @@
 
 using namespace std;
 
-std::string gammaData::m_calcOption = "prmelec";
+//std::string gammaData::m_calcOption = "prmelec";
+std::string gammaData::m_calcOption = "twolayer";
 
 gammaData::gammaData( std::string name,
                         double minPE,
@@ -77,6 +79,15 @@ void gammaData::LoadPrimElecDist()
 
 }
 
+void gammaData::LoadPrimElecSamples()
+{
+    cout << " >>> Load Primary Electron in Single Event <<< " << endl;
+    string filename = "./data/gamma/" + m_name + "_all.root";
+    TFile* file = new TFile(filename.c_str(), "read");
+    if (!file) cout << " No such input file: " << filename << endl;
+    elec_hist = (TH2D*)file->Get(m_name.c_str());
+}
+
 
 void gammaData::LoadData()
 {
@@ -84,6 +95,9 @@ void gammaData::LoadData()
 
     if (m_calcOption == "prmelec")
         LoadPrimElecDist();
+
+    if (m_calcOption == "twolayer")
+        LoadPrimElecSamples();
 
     m_loadData = true;
 }
@@ -113,6 +127,27 @@ void gammaData::calcGammaResponse()
         if (denominator == 0) cout << "Errors Happend While Using GammaPdf Calculation..." << endl;
 
         m_nonlCalc = numerator / denominator;
+    }  else if (m_calcOption == "twolayer") {
+        for (int iSample=0; iSample<m_nSamples; iSample++) {
+        
+            // apply Nonlinearity curve
+            double tmp_mean = 0;
+            for (int iSec=0; iSec<100; iSec++) {
+                double tmp_E = elec_hist->GetBinContent(iSample+1, iSec+1);
+                if (tmp_E == 0) break;
+                double tmp_Edep = tmp_E * electronResponse::getElecNonl(tmp_E);
+                tmp_mean += tmp_Edep;
+            }
+            m_mean[iSample] = tmp_mean;
+        }
+
+        // calculate pe distribution
+        double mean_Edep = 0;
+        for (int i=0; i<m_nSamples; i++) {
+            mean_Edep += m_mean[i];
+        }
+        mean_Edep /= m_nSamples;
+        m_nonlCalc = mean_Edep / m_Etrue;
     }
 }
 
@@ -124,9 +159,7 @@ double gammaData::GetChi2()
     // calculate totpe sigma
     calcGammaResponse();
 
-    if (m_calcOption == "prmelec") {
-        chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
-    }
+    chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
 
     return chi2;
 }

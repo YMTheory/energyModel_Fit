@@ -2,6 +2,8 @@
 #define _gammaData_h
 
 #include <string>
+#include <vector>
+#include <TH2D.h>
 
 class gammaData
 {
@@ -30,6 +32,7 @@ class gammaData
 
         void LoadGammaData ();
         void LoadPrimElecDist();
+        void LoadPrimElecSamples();
 
         void calcGammaResponse();
 
@@ -61,6 +64,10 @@ class gammaData
         double m_pdf_prob[m_nMaxPdf];
         double m_max_eTrue;
 
+    private:
+        TH2D* elec_hist;
+        static const unsigned int m_nSamples = 5000;
+        double m_mean[m_nSamples];
 
     private:
         static std::string m_calcOption;  // prmelec ; twolayer
