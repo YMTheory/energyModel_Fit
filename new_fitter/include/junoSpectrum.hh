@@ -10,24 +10,57 @@ class junoSpectrum
 {
 
     public:
-        junoSpectrum()  {;}
-        ~junoSpectrum() {;}
+        junoSpectrum(int nMaxBins    ,
+                     int nMaxBinsData,  
+                     int nMaxBr      ,
+                     int nMaxGam     ,
+                     double eMin     ,
+                     double eMax     ,
+                     string name    ); 
+        ~junoSpectrum() ;
 
 
     public:
+        void LoadData();
         void InitTheo();
         void TheoHistTree(string theofile);
-    //     void InitData();
+        void InitData();
+        void DataHistTree(string datafile);
 
     
     public:
         string m_name;
         bool m_isPositron;
 
-        int m_nBranch;
-        int m_nGamma[10];
-        double m_eTruGam[10][10];
-        string m_eTruGamStr[10][10];
+        // decay branch
+        int m_nBranch;        // branch number
+        int m_nGam;           // Max gamma number among all branches
+
+        // gamma number & energy 
+        int* m_nGamma;
+        double** m_eTruGam;
+        int** m_eTruGamStr;
+    
+        // beta spectrum
+        int m_nBins;
+        double m_binWidth;
+        double m_eMin;
+        double m_eMax;
+    
+        double m_fitMin;
+        double m_fitMax;
+        int m_fitMinBin;
+        int m_fitMaxBin; 
+
+        int m_nBinsData;
+        double** m_eTru;
+        double* m_binCenter;
+        double* m_eData;
+        double* m_eDataErr;
+
+        // alpha energy
+        double* m_eTruAlp;
+
 };
 
 #endif
