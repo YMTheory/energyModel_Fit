@@ -1,4 +1,7 @@
 #include "junoSpectrum.hh"
+#include "junoParameters.hh"
+#include "electronQuench.hh"
+#include "electronCerenkov.hh"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -31,6 +34,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_name      = name;
 
 	m_binCenter = new double[nMaxBins];
+    m_eVis      = new double[nMaxBins];
 	
 	m_eTru      = new double*[nMaxBr];
 	
@@ -51,6 +55,8 @@ junoSpectrum::junoSpectrum( int nMaxBins,
 
     m_eData = new double[nMaxBinsData];
     m_eDataErr = new double[nMaxBinsData];
+
+    m_nPdfBins = 600;
 }
 
 junoSpectrum::~junoSpectrum()
@@ -64,9 +70,12 @@ junoSpectrum::~junoSpectrum()
 		delete [] m_eTruGam[branchIdx];
 	}
 	delete [] m_binCenter;
+    delete [] m_eVis     ;
 	delete [] m_eTru     ;
 	delete [] m_eTruGam  ;
 	delete [] m_eTruAlp  ;
+    delete [] m_eData    ;
+    delete [] m_eDataErr ;
 
 }
 
@@ -88,7 +97,7 @@ void junoSpectrum::TheoHistTree(string theofile)
     int eGammaStr[10];
     int nGamma, branchNumber;
     double branchRatio;
-    double weight, weight1;
+    double weight;
 	tt->SetBranchAddress("num"      ,&branchNumber);
 	tt->SetBranchAddress("BR"       ,&branchRatio);
 	tt->SetBranchAddress("numPhoton",&nGamma);
@@ -180,11 +189,85 @@ void junoSpectrum::LoadData()
 }
 
 
+void junoSpectrum::ApplyScintillatorNL()
+{
+    for (int i=0; i<m_nBins; i++) {
+        m_eVis[i] = 0;
+    }
 
+    //int newBin;
+    //int newBinLow, newBinHig;
+	//vector<double> eVisGam;
 
+    //for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
+	//	eVisGam.push_back(0);
+    //    for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
+	//		if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
+    //        //eVisGam[branchIdx] += EvisGamma(to_string(m_eTruGamStr[branchIdx][gamIdx]))*m_eTruGam[branchIdx][gamIdx] * (1+m_gammaScale);
 
+    //    }   
+    //}
+}
 
+void junoSpectrum::LoadPrmElecDist()
+{
+    TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
+    for (int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
+        
+        for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) { 
+			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
+            string eTru = to_string(m_eTruGamStr[branchIdx][gamIdx]);
+            string pdfName = "gamma"+eTru+"keV";
+            TH1D* gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
+            if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
+            
+            int tmp_PdfMaxEtrue;
+            double* tmp_pdfEtrue = new double[m_nPdfBins];
+            double* tmp_pdfProb = new double[m_nPdfBins];
 
+            for(int i=0; i<gGammaPdf->GetNbinsX(); i++)  {
+                tmp_pdfEtrue[i] = gGammaPdf->GetBinCenter(i);
+                tmp_pdfProb[i] = gGammaPdf->GetBinContent(i);
+                if (tmp_pdfProb[i] == 0) tmp_PdfMaxEtrue = i;
+            }
+
+            mapPdfMaxEtrue.insert(pair<int, int> (m_eTruGamStr[branchIdx][gamIdx], tmp_PdfMaxEtrue));
+            mapPdfEtrue.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtrue));
+            mapPdfProb.insert(pair<int, double*> (m_eTruGamStr[branchIdx][gamIdx], tmp_pdfProb));
+
+            delete gGammaPdf;
+        }
+
+    }
+    
+    delete file;
+}
+
+double junoSpectrum::EvisGamma(int Etrue)
+{
+    int gamPdfMaxEtrue   = mapPdfMaxEtrue[Etrue];
+    double* gamPdfEtrue  = mapPdfEtrue[Etrue];
+    double* gamPdfProb   = mapPdfProb[Etrue];
+
+    double numerator = 0.; double denominator = 0.;
+    for(int iBin=1;  iBin<gamPdfMaxEtrue; iBin++) {
+        double E1 = gamPdfEtrue[iBin-1];
+        double E2 = gamPdfEtrue[iBin];
+
+        double prob1 = gamPdfProb[iBin-1];
+        double prob2 = gamPdfProb[iBin];
+
+        double fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
+        double fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+
+        numerator   += ( prob1*E1*fNL1 + prob2*E2*fNL2 ) * (E2-E1) /2.;
+        denominator += (prob1*E1 + prob2*E2) * (E2-E1)/ 2.;
+    } 
+
+    if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
+    return numerator/denominator;
+
+}
 
 
 
