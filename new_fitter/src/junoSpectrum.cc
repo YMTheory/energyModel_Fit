@@ -6,6 +6,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TH1.h>
+#include <TGraphErrors.h>
 
 using namespace std;
 
@@ -15,11 +16,15 @@ junoSpectrum::junoSpectrum( int nMaxBins,
                             int nMaxGam,
                             double eMin,
                             double eMax,
+                            double fitMin,
+                            double fitMax,
                             string name)
 {
 
     std::cout << " eMin         = " << eMin << std::endl;
     std::cout << " eMax         = " << eMax << std::endl;
+    std::cout << " fitMin         = " << fitMin << std::endl;
+    std::cout << " fitMax         = " << fitMax << std::endl;
 	std::cout << " nMaxBins     = " << nMaxBins << std::endl;
 	std::cout << " nMaxBinsData = " << nMaxBinsData << std::endl;
 	std::cout << " nMaxBr       = " << nMaxBr << std::endl;
@@ -27,6 +32,8 @@ junoSpectrum::junoSpectrum( int nMaxBins,
 	
     m_eMin      = eMin;
     m_eMax      = eMax;
+    m_fitMin      = fitMin;
+    m_fitMax      = fitMax;
 	m_nBins     = nMaxBins;
     m_nBinsData = nMaxBinsData;
 	m_nBranch   = nMaxBr;
@@ -56,7 +63,9 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_eData = new double[nMaxBinsData];
     m_eDataErr = new double[nMaxBinsData];
 
-    m_nPdfBins = 600;
+    m_nPdfBins = 1200;
+
+	m_eTheo     = new double[nMaxBinsData];
 }
 
 junoSpectrum::~junoSpectrum()
@@ -76,6 +85,7 @@ junoSpectrum::~junoSpectrum()
 	delete [] m_eTruAlp  ;
     delete [] m_eData    ;
     delete [] m_eDataErr ;
+    delete [] m_eTheo    ;
 
 }
 
@@ -191,22 +201,43 @@ void junoSpectrum::LoadData()
 
 void junoSpectrum::ApplyScintillatorNL()
 {
+    cout << "Applying ScintillatorNL curve on True Energy spectrum" << endl;
+    LoadPrmElecDist();
+
     for (int i=0; i<m_nBins; i++) {
         m_eVis[i] = 0;
     }
 
-    //int newBin;
-    //int newBinLow, newBinHig;
-	//vector<double> eVisGam;
+    int newBin;
+    int newBinLow, newBinHig;
+    double bias;
+	double eVisGam[m_nBranch];
 
-    //for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
-	//	eVisGam.push_back(0);
-    //    for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
-	//		if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
-    //        //eVisGam[branchIdx] += EvisGamma(to_string(m_eTruGamStr[branchIdx][gamIdx]))*m_eTruGam[branchIdx][gamIdx] * (1+m_gammaScale);
+    for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
+        // Nonlinearity on gamma
+        for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
+			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
+            eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
+        }
 
-    //    }   
-    //}
+        // Nonlinearity on beta
+        for (int i=0; i<m_nBins; i++) {
+            double eTru = m_binCenter[i];
+            double eVisElec = eTru;
+            eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
+
+            for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++){
+                double eVis = eVisElec + eVisGam[branchIdx];
+                if(m_name=="B12" and branchIdx==2) eVis += 0.5; // 3-alpha branch
+                newBinLow     = int((eVis-m_eMin)/m_binWidth);
+                newBinHig     = int((eVis-m_eMin)/m_binWidth) + 1;
+			    bias          = (eVis - m_eMin - newBinLow * m_binWidth)/m_binWidth;
+
+                if (newBinLow<m_nBins) m_eVis[newBinLow] += (1-bias) * m_eTru[branchIdx][i];
+			    if (newBinHig<m_nBins) m_eVis[newBinHig] += bias * m_eTru   [branchIdx][i];
+            }
+        }
+    }
 }
 
 void junoSpectrum::LoadPrmElecDist()
@@ -226,9 +257,9 @@ void junoSpectrum::LoadPrmElecDist()
             double* tmp_pdfProb = new double[m_nPdfBins];
 
             for(int i=0; i<gGammaPdf->GetNbinsX(); i++)  {
-                tmp_pdfEtrue[i] = gGammaPdf->GetBinCenter(i);
-                tmp_pdfProb[i] = gGammaPdf->GetBinContent(i);
-                if (tmp_pdfProb[i] == 0) tmp_PdfMaxEtrue = i;
+                tmp_pdfEtrue[i] = gGammaPdf->GetBinCenter(i+1);
+                tmp_pdfProb[i] = gGammaPdf->GetBinContent(i+1);
+                if (tmp_pdfProb[i] == 0) {  tmp_PdfMaxEtrue = i; break;}
             }
 
             mapPdfMaxEtrue.insert(pair<int, int> (m_eTruGamStr[branchIdx][gamIdx], tmp_PdfMaxEtrue));
@@ -270,8 +301,88 @@ double junoSpectrum::EvisGamma(int Etrue)
 }
 
 
+void junoSpectrum::Normalize()
+{
+    // Normalize spectrum for data and pred
+	int   rebin = m_nBins/m_nBinsData;
+	double binWidthData = m_binWidth * rebin;
+	double nTheo = 0;
+	double nData = 0;
+	for (int i = 0; i < m_nBinsData; i++)
+	{
+		m_eTheo[i] = 0;
+        for (int j = 0; j < rebin; j++){
+			m_eTheo[i] += m_eVis[i*rebin+j];
+        } 
+            
+		if(i*binWidthData>m_fitMin && i*binWidthData<m_fitMax)
+		{
+			nTheo += m_eTheo[i];
+			nData += m_eData[i];
+		}
+	}
+    double scale = 1;
+    if( nTheo!=0 ) { scale = nData/nTheo; }
+	for (int i = 0; i < m_nBinsData; i++)
+    {
+		m_eTheo[i] *= scale;
+        
+    }
+	for (int i = 0; i < m_nBins; i++)
+	{
+		m_eVis   [i] *= scale;
+	}
+
+}
 
 
+double junoSpectrum::GetChi2()
+{
+    ApplyScintillatorNL();
+    Normalize();
+    
+    double chi2 = 0;
+    int rebin = m_nBins / m_nBinsData;
+    double binWidthData = m_binWidth * rebin;
+    m_nData = 0;
+    for(int i=0; i < m_nBinsData; i++) {
+        if(i*binWidthData<m_fitMin or binWidthData*i>m_fitMax-0.1) continue;
+        if( m_eDataErr[i]!=0 ) {
+            chi2 += pow( (m_eData[i] - m_eTheo[i])/m_eDataErr[i], 2); 
+            m_nData++;
+        }
+    }
+    cout << m_name << "  chi2: " << chi2 << " with nData : " << m_nData << endl;
+	//if(nDoF>0) chi2 /= double(m_nData - nDoF);
+	return chi2;
+
+}
 
 
+void junoSpectrum::Plot()
+{
+    TGraphErrors* gCalc = new TGraphErrors();
+    TGraphErrors* gData = new TGraphErrors();
+    gCalc->SetName("theo");
+    gData->SetName("data");
+
+    for (int i=0; i<m_nBinsData; i++) {
+        gCalc->SetPoint(i, m_binCenter[i], m_eTheo[i]);
+        gData->SetPoint(i, m_binCenter[i], m_eData[i]);
+        gData->SetPointError(i, m_binWidth, m_eDataErr[i]);
+    }
+
+    gCalc->SetLineColor(kBlue+1);
+    gCalc->SetMarkerColor(kBlue+1);
+    gCalc->SetMarkerSize(0.2);
+
+    gData->SetLineColor(kGreen+1);
+    gData->SetMarkerColor(kGreen+1);
+    gData->SetMarkerSize(0.2);
+
+    TFile* out = new TFile("spectrum.root", "recreate");
+    gData->Write();
+    gCalc->Write();
+    out->Close();
+}
 
