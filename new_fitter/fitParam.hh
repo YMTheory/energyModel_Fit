@@ -9,6 +9,9 @@
 #include "electronCerenkov.hh"
 #include "gammaData.hh"
 #include "gammaFitter.hh"
+#include "junoSpectrum.hh"
+#include "spectrumFitter.hh"
+#include "junoNLChiFunction.hh"
 
 using namespace std;
 

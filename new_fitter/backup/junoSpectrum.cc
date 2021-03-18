@@ -217,13 +217,14 @@ void junoSpectrum::ApplyScintillatorNL()
         for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
+            //eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
         }
 
         // Nonlinearity on beta
         for (int i=0; i<m_nBins; i++) {
             double eTru = m_binCenter[i];
             double eVisElec = eTru;
-            eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
+            //eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
 
             for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++){
                 double eVis = eVisElec + eVisGam[branchIdx];
