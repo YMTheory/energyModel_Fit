@@ -40,6 +40,9 @@ class junoSpectrum
 
         void Plot();
 
+    public:
+        int getNData()      { return m_nData; }
+
     
     public:
         string m_name;

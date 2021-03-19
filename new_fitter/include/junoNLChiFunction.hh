@@ -1,6 +1,7 @@
 #ifndef junoNLChiFunction_h
 #define junoNLChiFunction_h
 
+#include "gammaData.hh"
 #include "junoSpectrum.hh"
 
 #include <TMinuit.h>
@@ -16,6 +17,7 @@ class junoNLChiFunction
         static void SetParameters     ( double *par );
         static double GetChi2         ( double maxChi2 = 100000 );  
     
+        static void GammaPlot         ();
         static void Plot              ();
 
     private:
@@ -34,11 +36,27 @@ class junoNLChiFunction
         static double m_bestFitError[20];
         static bool m_DoFit;
         
+
+    private:
+        static gammaData* Cs137Data;
+        static gammaData* Mn54Data;
+        static gammaData* nHData;
+        static gammaData* K40Data;
+        static gammaData* Co60Data;
+        static gammaData* Tl208Data;
+        static gammaData* nC12Data;
+        static gammaData* O16Data;
+        static gammaData* nFe56Data;
+
         static junoSpectrum* junoB12;
 
-        static double final_kA;
-        static double final_kB;
-        static double final_kC;
+        static int m_nData;
+        static std::string source_name[20];
+
+        static gammaData* gammaData_array[20];
+
+        static bool m_doGamFit;
+        static bool m_doB12Fit;
 };
 
 #endif
