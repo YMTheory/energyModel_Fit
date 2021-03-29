@@ -65,7 +65,8 @@ void gammaData::LoadPrimElecDist()
 
     TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
     if (!file) cout << " No such input primary electron file " << endl;
-    string pdfName = "gamma" + m_name;
+    string pdfName = m_name;
+    //string pdfName = "gamma" + m_name;
     TH1D* gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
     if (!gGammaPdf) cout << " No such Pdf : " << pdfName << endl;
 

@@ -1,0 +1,88 @@
+ >>> Loading Naked Gamma Cs137 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+Cs137 140
+ >>> Loading Naked Gamma Mn54 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+Mn54 155
+ >>> Loading Naked Gamma nH Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+nH 291
+ >>> Loading Naked Gamma K40 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+K40 216
+ >>> Loading Naked Gamma Co60 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+Co60 318
+ >>> Loading Naked Gamma Tl208 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+Tl208 330
+ >>> Loading Naked Gamma nC12 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+nC12 561
+ >>> Loading Naked Gamma O16 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+O16 679
+ >>> Loading Naked Gamma nFe56 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+nFe56 831
+ **********
+ **    1 **SET PRINT           1
+ **********
+ **********
+ **    2 **CLEAR
+ **********
+ MINUIT MEMORY CLEARED. NO PARAMETERS NOW DEFINED.
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 kA           9.50000e-01  1.00000e-03     no limits
+     2 kB           6.50000e-03  1.00000e-05    5.50000e-03  7.50000e-03
+     3 kC           8.00000e-01  1.00000e-03     no limits
+ **********
+ **    3 **SET ERRDEF           1
+ **********
+ **********
+ **    4 **SET STR           2
+ **********
+ NOW USING STRATEGY  2: MAKE SURE MINIMUM TRUE, ERRORS CORRECT  
+ **********
+ **    5 **MIGRAD        5000
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ >>> Loading Quenching NL Data <<< 
+ >>> Loading Electron Cerenkov Shape <<< 
+ START MIGRAD MINIMIZATION.  STRATEGY  2.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -9.9635e-02  2.0786e-01  2.8918e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.102527 TO DIAGONAL.
+ FCN=1466.69 FROM HESSE     STATUS=NOT POSDEF     28 CALLS          29 TOTAL
+                     EDM=12944.8    STRATEGY= 2      ERR MATRIX NOT POS-DEF
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  kA           9.50000e-01   4.51938e-03   1.96150e-04  -4.65523e+04
+   2  kB           6.50000e-03   1.47349e-03   6.14154e-02  -7.20410e+01
+   3  kC           8.00000e-01   1.83313e-02   4.66027e-03  -5.92685e+03
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ COVARIANCE MATRIX CALCULATED SUCCESSFULLY
+ FCN=64.4036 FROM MIGRAD    STATUS=CONVERGED     161 CALLS         162 TOTAL
+                     EDM=5.56121e-08    STRATEGY= 2      ERROR MATRIX ACCURATE 
+  EXT PARAMETER                                   STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  kA           9.33832e-01   7.42187e-04   1.29880e-06   8.72645e-02
+   2  kB           7.50000e-03   1.37993e-04   2.10105e-03** at limit **
+   3  kC           1.38732e+00   1.75676e-02   3.07429e-05  -1.67443e-03
+ EXTERNAL ERROR MATRIX.    NDIM=  26    NPAR=  3    ERR DEF=1
+  5.508e-07 -1.272e-13 -1.169e-05 
+ -1.272e-13  2.047e-15  1.234e-12 
+ -1.169e-05  1.234e-12  3.086e-04 
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3
+        1  0.89644   1.000 -0.004 -0.896
+        2  0.00563  -0.004  1.000  0.002
+        3  0.89644  -0.896  0.002  1.000
+ ====================== 
+    minChi2: 64.4036 with nData = 9 and nPar = 3
+ ====================== 
+Draw Gamma NL Fitting Results
+Info in <TCanvas::SaveAs>: ROOT file GamNLFit.root has been created

@@ -184,7 +184,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     junoNLMinuit->mnparm(iPar, "energyScale", 1500, 1, 1450, 1550, ierrflag); iPar++;
     
     //junoNLMinuit->FixParameter(0);
-    //junoNLMinuit->FixParameter(1);
+    junoNLMinuit->FixParameter(1);
     //junoNLMinuit->FixParameter(2);
     //junoNLMinuit->FixParameter(3);
 
