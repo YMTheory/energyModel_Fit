@@ -12,10 +12,11 @@ class electronResponse
         static double getElecNonl(double Etrue);
         
         static void loadSimElecNonl();
+        static void EmpiricalFit();
 
         static void Plot();
 
-        static void EmpiricalFit();
+        static void FuncConstruct();
 
     private:
         static const int m_nSimData = 809;
@@ -29,7 +30,25 @@ class electronResponse
 
     private:
         static TGraph* gSimData;
-        static TF1* func;
+        static TF1* fElecNonl;
+
+    private:
+        static double m_p0;
+        static double m_p1;
+        static double m_p2;
+        static double m_p3;
+
+    public:
+        static double getp0()       {return m_p0;}
+        static void setp0(double p0){m_p0 = p0;}
+        static double getp1()       {return m_p1;}
+        static void setp1(double p1){m_p1 = p1;}
+        static double getp2()       {return m_p2;}
+        static void setp2(double p2){m_p2 = p2;}
+        static double getp3()       {return m_p3;}
+        static void setp3(double p3){m_p3 = p3;}
+
+        static void SetParameters();
 
 };
 

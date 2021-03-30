@@ -24,12 +24,12 @@ int main()
     //fitter->Initialize();
     //fitter->Minimization();
 
-    //junoNLChiFunction* fitter = new junoNLChiFunction();
-    //fitter->LoadData();
-    //fitter->GetChiSquare();
-    //fitter->Plot();
+    junoNLChiFunction* fitter = new junoNLChiFunction();
+    fitter->LoadData();
+    fitter->GetChiSquare();
+    fitter->Plot();
 
-    electronResponse::Plot();
+    //electronResponse::Plot();
 
     return 1.0;
 }
