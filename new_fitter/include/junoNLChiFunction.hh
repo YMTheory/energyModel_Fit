@@ -57,6 +57,9 @@ class junoNLChiFunction
 
         static bool m_doGamFit;
         static bool m_doB12Fit;
+
+    private:
+        static string m_nonlMode;
 };
 
 #endif

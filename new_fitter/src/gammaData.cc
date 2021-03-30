@@ -18,7 +18,8 @@ using namespace std;
 //std::string gammaData::m_calcOption = "prmelec";
 std::string gammaData::m_calcOption = "twolayer";
 
-std::string gammaData::m_nonlMode = "histogram";
+//std::string gammaData::m_nonlMode = "histogram";
+std::string gammaData::m_nonlMode = "analytic";
 
 gammaData::gammaData( std::string name,
                         double minPE,

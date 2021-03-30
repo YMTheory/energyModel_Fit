@@ -73,6 +73,9 @@ class gammaData
         static std::string m_calcOption;  // prmelec ; twolayer
         static std::string m_nonlMode;  // histogram; analytic
 
+    public:
+        std::string getNonlMode()  {return m_nonlMode;}
+
 };
 
 #endif
