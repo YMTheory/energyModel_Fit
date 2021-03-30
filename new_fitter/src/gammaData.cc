@@ -18,6 +18,8 @@ using namespace std;
 //std::string gammaData::m_calcOption = "prmelec";
 std::string gammaData::m_calcOption = "twolayer";
 
+std::string gammaData::m_nonlMode = "histogram";
+
 gammaData::gammaData( std::string name,
                         double minPE,
                         double maxPE,
@@ -118,8 +120,17 @@ void gammaData::calcGammaResponse()
             double prob1 = m_pdf_prob[iBin-1];
             double prob2 = m_pdf_prob[iBin];
 
-            double fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
-            double fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+            double fNL1, fNL2;
+
+            if(m_nonlMode == "histogram") {
+                fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
+                fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+            }
+
+            if (m_nonlMode == "analytic") {
+                fNL1 = electronResponse::calcElecNonl(E1);
+                fNL2 = electronResponse::calcElecNonl(E2);
+            }
 
             numerator += (prob1*E1*fNL1 + prob2*E2*fNL2) * (E2-E1) / 2.;
             denominator += (prob1*E1 + prob2*E2) * (E2-E1) / 2.;
@@ -136,7 +147,11 @@ void gammaData::calcGammaResponse()
             for (int iSec=0; iSec<100; iSec++) {
                 double tmp_E = elec_hist->GetBinContent(iSample+1, iSec+1);
                 if (tmp_E == 0) break;
-                double tmp_Edep = tmp_E * electronResponse::getElecNonl(tmp_E);
+                double tmp_Edep;
+                if(m_nonlMode == "histogram")
+                    tmp_Edep = tmp_E * electronResponse::getElecNonl(tmp_E);
+                if(m_nonlMode == "analytic")
+                    tmp_Edep = tmp_E * electronResponse::calcElecNonl(tmp_E);
                 tmp_mean += tmp_Edep;
             }
             m_mean[iSample] = tmp_mean;

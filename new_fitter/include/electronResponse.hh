@@ -49,6 +49,7 @@ class electronResponse
         static void setp3(double p3){m_p3 = p3;}
 
         static void SetParameters();
+        static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}
 
 };
 
