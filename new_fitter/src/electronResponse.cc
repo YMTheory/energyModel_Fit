@@ -68,8 +68,9 @@ void electronResponse::SetParameters()
 
 void electronResponse::Plot()
 {
+    cout << ">>> Draw Analytic Electron Nonlinearity Curve <<< "<< endl;
     if (not m_loadSimFile) loadSimElecNonl();
-    if (not m_doFit) EmpiricalFit();
+    //if (not m_doFit) EmpiricalFit();
 
     gSimData->SetName("elec");
     gSimData->SetLineColor(kBlue+1);

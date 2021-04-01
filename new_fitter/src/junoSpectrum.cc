@@ -2,6 +2,7 @@
 #include "junoParameters.hh"
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "electronResponse.hh"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -18,6 +19,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
                             double eMax,
                             double fitMin,
                             double fitMax,
+                            string nonlMode,
                             string name)
 {
 
@@ -29,6 +31,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
 	std::cout << " nMaxBinsData = " << nMaxBinsData << std::endl;
 	std::cout << " nMaxBr       = " << nMaxBr << std::endl;
 	std::cout << " nMaxGam      = " << nMaxGam << std::endl;
+    std::cout << " NonlMode     = " << nonlMode << std::endl;
 	
     m_eMin      = eMin;
     m_eMax      = eMax;
@@ -38,6 +41,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_nBinsData = nMaxBinsData;
 	m_nBranch   = nMaxBr;
 	m_nGam      = nMaxGam;
+    m_nonlMode  = nonlMode;
     m_name      = name;
 
 	m_binCenter = new double[nMaxBins];
@@ -223,7 +227,10 @@ void junoSpectrum::ApplyScintillatorNL()
         for (int i=0; i<m_nBins; i++) {
             double eTru = m_binCenter[i];
             double eVisElec = eTru;
-            eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
+            if (m_nonlMode == "histogram")
+                eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
+            if (m_nonlMode == "analytic")
+            eVisElec *= (electronResponse::calcElecNonl(eTru));
 
             for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++){
                 double eVis = eVisElec + eVisGam[branchIdx];
@@ -287,9 +294,17 @@ double junoSpectrum::EvisGamma(int Etrue)
         double prob1 = gamPdfProb[iBin-1];
         double prob2 = gamPdfProb[iBin];
 
-        double fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
-        double fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+        double fNL1, fNL2;
 
+        if(m_nonlMode == "histogram") {
+            fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
+            fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+        }
+
+        if (m_nonlMode == "analytic") {
+            fNL1 = electronResponse::calcElecNonl(E1);
+            fNL2 = electronResponse::calcElecNonl(E2);
+        }
         numerator   += ( prob1*E1*fNL1 + prob2*E2*fNL2 ) * (E2-E1) /2.;
         denominator += (prob1*E1 + prob2*E2) * (E2-E1)/ 2.;
     } 
@@ -351,7 +366,7 @@ double junoSpectrum::GetChi2()
             m_nData++;
         }
     }
-    cout << m_name << " chi2: " << chi2 << " with nData : " << m_nData << endl;
+    //cout << m_name << " chi2: " << chi2 << " with nData : " << m_nData << endl;
 	//if(nDoF>0) chi2 /= double(m_nData - nDoF);
 	return chi2;
 

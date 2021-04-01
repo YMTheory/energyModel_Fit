@@ -16,10 +16,10 @@
 using namespace std;
 
 //std::string gammaData::m_calcOption = "prmelec";
-std::string gammaData::m_calcOption = "twolayer";
+std::string gammaData::m_calcOption = junoParameters::m_calcOption;
 
 //std::string gammaData::m_nonlMode = "histogram";
-std::string gammaData::m_nonlMode = "analytic";
+std::string gammaData::m_nonlMode = junoParameters::m_nonlMode;
 
 gammaData::gammaData( std::string name,
                         double minPE,
@@ -46,17 +46,20 @@ void gammaData::LoadGammaData()
     string line;
 
     double scale = 3350./2.22;
-    string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError;
+    string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError, tmp_totPEerr, tmp_totPESigmaerr;
     while(getline(in,line)){
         istringstream ss(line);
-        ss >> tmp_name >> tmp_E >> tmp_totPE >> tmp_totPESigma >> tmp_EvisError ;
+        //ss >> tmp_name >> tmp_E >> tmp_totPE >> tmp_totPESigma >> tmp_EvisError ;
+        ss >> tmp_name >> tmp_E >> tmp_totPE >> tmp_totPEerr >> tmp_totPESigma >> tmp_totPESigmaerr;
         if(tmp_name == m_name) {
             m_Etrue = tmp_E;
             m_nonlData = tmp_totPE/scale/tmp_E;
-            m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
+            //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
+            m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
-            m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
+            //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
+            m_resDataErr = TMath::Sqrt(tmp_totPESigmaerr*tmp_totPESigmaerr/tmp_totPE/tmp_totPE + tmp_totPEerr*tmp_totPEerr*tmp_totPESigma*tmp_totPESigma/tmp_totPE/tmp_totPE/tmp_totPE/tmp_totPE);
         }
     }
     in.close();

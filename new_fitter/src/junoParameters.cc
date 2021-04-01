@@ -14,6 +14,9 @@ std::string JUNOP::cerenkov_outFile   = "output/electron/CerenkovNL.root";
 std::string JUNOP::electronLSNL_File  = "data/electron/electron_total.txt";
 std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
 
+std::string JUNOP::m_calcOption       = "twolayer";
+std::string JUNOP::m_nonlMode         = "analytic";
+
 std::string JUNOP::gammaLSNL_File     = "data/gamma/gamma1.dat";
 std::string JUNOP::gammaPdf_File      = "data/gamma/Gamma_Electron1.root";
 std::string JUNOP::gammaOut_File      = "output/gamma/gammaFit.root";

@@ -1,8 +1,8 @@
 void text2TH2D()
 {
-    string filename = "nFe56_all.txt";
+    string filename = "gamma511keV.txt";
 
-    TH2D* hh = new TH2D("nFe56", "", 5000, 0, 5000, 80, 0, 80);
+    TH2D* hh = new TH2D("gamma511keV", "", 5000, 0, 5000, 80, 0, 80);
     string line;
     ifstream in; in.open(filename.c_str());
     if(!in) cout << "No such file" << endl;
@@ -18,7 +18,7 @@ void text2TH2D()
     line_num++;
     }
 
-    TFile* out = new TFile("nFe56_all.root", "recreate");
+    TFile* out = new TFile("gamma511keV.root", "recreate");
     hh->Write();
     out->Close();
 }

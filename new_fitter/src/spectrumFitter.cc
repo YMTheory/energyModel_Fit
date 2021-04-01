@@ -34,6 +34,7 @@ void spectrumFitter::Initialize()
                                3, 1,
                                0, 15,
                                1, 14,
+                               "analytic",
                                "B12");
     junoB12->LoadData();
 }

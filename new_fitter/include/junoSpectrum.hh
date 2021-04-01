@@ -19,6 +19,7 @@ class junoSpectrum
                      double eMax     ,
                      double fitMin     ,
                      double fitMax     ,
+                     string nonlMode   ,
                      string name    ); 
 
         ~junoSpectrum() ;
@@ -90,6 +91,9 @@ class junoSpectrum
     public:
         int m_nData;
         double* m_eTheo;
+
+    private:
+        std::string m_nonlMode;
 
 };
 

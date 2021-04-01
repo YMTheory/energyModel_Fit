@@ -61,6 +61,8 @@ class junoParameters
 
         static double m_gammaScale;
 
+        static string m_nonlMode;
+        static string m_calcOption;
 
 };
 
