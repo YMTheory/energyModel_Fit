@@ -32,8 +32,9 @@ class electronCerenkov
         static std::vector<double> m_Etrue;
         static std::vector<double> m_Cerenkov;
 
-        static double m_E[1000];
-        static double m_nonl[1000];
+        static const int m_nData = 321;
+        static double m_E[m_nData];
+        static double m_nonl[m_nData];
 };
 
 #endif

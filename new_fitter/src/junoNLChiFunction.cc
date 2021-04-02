@@ -40,8 +40,8 @@ int junoNLChiFunction::m_nData;
 std::string junoNLChiFunction::source_name[20];
 gammaData* junoNLChiFunction::gammaData_array[20];
 
-bool junoNLChiFunction::m_doGamFit = false;
-bool junoNLChiFunction::m_doB12Fit = true;
+bool junoNLChiFunction::m_doGamFit = true;
+bool junoNLChiFunction::m_doB12Fit = false;
 
 string junoNLChiFunction::m_nonlMode;
 
@@ -71,10 +71,10 @@ junoNLChiFunction::junoNLChiFunction() {
         gammaData_array[m_nData] = nHData;
         m_nData++;
 
-        Co60Data  = new gammaData("Co60", 900, 1300, 100);
-        source_name[m_nData] = "Co60"; 
-        gammaData_array[m_nData] = Co60Data;
-        m_nData++;
+        //Co60Data  = new gammaData("Co60", 900, 1300, 100);
+        //source_name[m_nData] = "Co60"; 
+        //gammaData_array[m_nData] = Co60Data;
+        //m_nData++;
 
         Tl208Data  = new gammaData("Tl208", 900, 1300, 100);
         source_name[m_nData] = "Tl208"; 
@@ -129,15 +129,9 @@ junoNLChiFunction::~junoNLChiFunction() {
 void junoNLChiFunction::LoadData()
 {
     if (m_doGamFit) {
-        Cs137Data->LoadData();
-        Mn54Data->LoadData();
-        nHData->LoadData();
-        K40Data->LoadData();
-        Co60Data->LoadData();
-        Tl208Data->LoadData();
-        nC12Data->LoadData();
-        O16Data->LoadData();
-        nFe56Data->LoadData();
+        for (int i=0; i<m_nData; i++) {
+            gammaData_array[i]->LoadData();
+        }
     }
     if (m_doB12Fit) {
         junoB12->LoadData();
@@ -212,7 +206,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     }
     
     //junoNLMinuit->FixParameter(0);
-    //junoNLMinuit->FixParameter(1);
+    junoNLMinuit->FixParameter(1);
     //junoNLMinuit->FixParameter(2);
     //junoNLMinuit->FixParameter(3);
 

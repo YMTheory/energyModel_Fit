@@ -14,14 +14,14 @@ using namespace std;
 
 double electronCerenkov::m_kC = 1; //1.01533e+00;
 //double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
-double electronCerenkov::m_energyScale = 3382./2.223;
+double electronCerenkov::m_energyScale = 3382.497/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
 
 vector<double> electronCerenkov::m_Etrue;
 vector<double> electronCerenkov::m_Cerenkov;
 
-double electronCerenkov::m_E[1000];
-double electronCerenkov::m_nonl[1000];
+double electronCerenkov::m_E[m_nData];
+double electronCerenkov::m_nonl[m_nData];
 
 electronCerenkov::electronCerenkov()
 {}
@@ -66,7 +66,7 @@ double electronCerenkov::getCerenkovPE(double E)
         // get Cerenkov PE
         int num = m_Cerenkov.size();
         for(int i=1; i<num; i++){
-            if(m_Etrue[i-1]<=E and m_Etrue[i]>E){  
+            if(m_Etrue[i-1]<=E and m_Etrue[i]>=E){  
                 return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]))/m_energyScale/E;
                 //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
             }
@@ -78,8 +78,8 @@ double electronCerenkov::getCerenkovPE(double E)
 void electronCerenkov::Plot()
 {
     cout << " >>> Plot Cerenkov Curve <<< " << endl;
-    for (int i=0; i<1000; i++) {
-        m_E[i] = 16./1000.*(i+1);
+    for (int i=0; i<m_nData; i++) {
+        m_E[i] = m_Etrue[i];
         m_nonl[i] = getCerenkovPE(m_E[i]);
     }
 

@@ -32,6 +32,9 @@ gammaData::gammaData( std::string name,
     m_maxPE = maxPE;
     m_nbins = nbins;
 
+    m_calcOption = junoParameters::m_calcOption;
+    m_nonlMode   = junoParameters::m_nonlMode;
+
     m_loadData = false;
 }
 
@@ -45,7 +48,7 @@ void gammaData::LoadGammaData()
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     string line;
 
-    double scale = 3350./2.22;
+    double scale = 3382.497/2.223;
     string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError, tmp_totPEerr, tmp_totPESigmaerr;
     while(getline(in,line)){
         istringstream ss(line);
@@ -55,7 +58,8 @@ void gammaData::LoadGammaData()
             m_Etrue = tmp_E;
             m_nonlData = tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
-            m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
+            //m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
+            m_nonlDataErr = 0.001;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
@@ -152,8 +156,9 @@ void gammaData::calcGammaResponse()
                 double tmp_E = elec_hist->GetBinContent(iSample+1, iSec+1);
                 if (tmp_E == 0) break;
                 double tmp_Edep;
-                if(m_nonlMode == "histogram")
+                if(m_nonlMode == "histogram") {
                     tmp_Edep = tmp_E * electronResponse::getElecNonl(tmp_E);
+                }
                 if(m_nonlMode == "analytic")
                     tmp_Edep = tmp_E * electronResponse::calcElecNonl(tmp_E);
                 tmp_mean += tmp_Edep;

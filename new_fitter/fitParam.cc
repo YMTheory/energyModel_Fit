@@ -29,7 +29,6 @@ int main()
     fitter->GetChiSquare();
     fitter->Plot();
 
-    //electronResponse::Plot();
 
     return 1.0;
 }

@@ -1,0 +1,119 @@
+Nonlinearity formula form analytic
+Empirical ElecNonl Function has been constructed...
+ >>> Loading Naked Gamma Cs137 Data <<< 
+Cs137 0.662 0.933489 0.000470568 0.0354558 0.000353532
+ >>> Loading Naked Gamma Mn54 Data <<< 
+Mn54 0.834 0.947155 0.000432622 0.0321687 0.000333949
+ >>> Loading Naked Gamma K40 Data <<< 
+K40 1.461 0.980075 0.000355818 0.0253343 0.000253523
+ >>> Loading Naked Gamma nH Data <<< 
+nH 2.223 1 0.000306874 0.0215098 0.000216804
+ >>> Loading Naked Gamma Tl208 Data <<< 
+Tl208 2.614 1.00643 0.00029617 0.0205397 0.000199441
+ >>> Loading Naked Gamma nC12 Data <<< 
+nC12 4.945 1.02735 0.000232448 0.0157222 0.000160194
+ >>> Loading Naked Gamma O16 Data <<< 
+O16 6.13 1.0324 0.000213565 0.0135822 0.000146659
+ >>> Loading Naked Gamma nFe56 Data <<< 
+nFe56 7.637 1.03651 0.000184675 0.0124041 0.000132526
+ **********
+ **    1 **SET PRINT           1
+ **********
+ **********
+ **    2 **CLEAR
+ **********
+ MINUIT MEMORY CLEARED. NO PARAMETERS NOW DEFINED.
+ PARAMETER DEFINITIONS:
+    NO.   NAME         VALUE      STEP SIZE      LIMITS
+     1 p0           1.02500e+00  1.00000e-03    9.00000e-01  1.10000e+00
+     2 p1           1.12200e-01  1.00000e-04    0.00000e+00  2.00000e-01
+     3 p2           1.39400e+00  1.00000e-03    1.10000e+00  4.00000e+00
+     4 p3           5.55000e-04  1.00000e-05    1.00000e-05  1.00000e-02
+ **********
+ **    3 **SET ERRDEF           1
+ **********
+ **********
+ **    4 **SET STR           2
+ **********
+ NOW USING STRATEGY  2: MAKE SURE MINIMUM TRUE, ERRORS CORRECT  
+ **********
+ **    5 **MIGRAD        5000
+ **********
+ FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ START MIGRAD MINIMIZATION.  STRATEGY  2.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ MINUIT WARNING IN HESSE
+ ============== Second derivative zero for parameter1
+  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
+ FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          10 TOTAL
+                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.02500e+00   1.00000e-03   1.03282e-02   1.93645e+02
+   2  p1           1.12200e-01   1.00000e-04   1.00753e-03   1.98506e+03
+   3  p2           1.39400e+00   1.00000e-03   1.14246e-03   1.75061e+03
+   4  p3           5.55000e-04   1.00004e-05   4.40776e-03   4.53745e+02
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ MINUIT WARNING IN HESSE
+ ============== Second derivative zero for parameter1
+  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
+ FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          30 TOTAL
+                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
+   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
+   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
+   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ MINUIT WARNING IN HESSE
+ ============== Second derivative zero for parameter1
+  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
+ FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          50 TOTAL
+                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
+   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
+   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
+   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+ MIGRAD FAILS TO FIND IMPROVEMENT
+ MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
+ MIGRAD MINIMIZATION HAS CONVERGED.
+ MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
+ MINUIT WARNING IN HESSE
+ ============== Second derivative zero for parameter1
+  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
+ MIGRAD TERMINATED WITHOUT CONVERGENCE.
+ FCN=4.35053e+11 FROM MIGRAD    STATUS=FAILED         69 CALLS          70 TOTAL
+                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
+  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
+   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
+   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
+   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
+   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+ EXTERNAL ERROR MATRIX.    NDIM=  26    NPAR=  4    ERR DEF=1
+  1.000e-06  0.000e+00  0.000e+00  0.000e+00 
+  0.000e+00  1.000e-08  0.000e+00  0.000e+00 
+  0.000e+00  0.000e+00  1.000e-06  0.000e+00 
+  0.000e+00  0.000e+00  0.000e+00  1.000e-10 
+ERR MATRIX APPROXIMATE
+ PARAMETER  CORRELATION COEFFICIENTS  
+       NO.  GLOBAL      1      2      3      4
+        1  0.00000   1.000  0.000  0.000  0.000
+        2  0.00000   0.000  1.000  0.000  0.000
+        3  0.00000   0.000  0.000  1.000  0.000
+        4  0.00000   0.000  0.000  0.000  1.000
+ ERR MATRIX APPROXIMATE
+ ====================== 
+    minChi2: 4.35053e+11 with nData = 8 and nPar = 4
+ ====================== 
+>>> Draw Analytic Electron Nonlinearity Curve <<< 
+Draw Gamma NL Fitting Results
+Info in <TCanvas::SaveAs>: ROOT file GamNLFit.root has been created

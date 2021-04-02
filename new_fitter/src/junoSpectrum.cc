@@ -152,6 +152,7 @@ void junoSpectrum::InitData()
 
 void junoSpectrum::DataHistTree(string fileName)
 {
+    // Old spectrum data loading ... -> histogram form
     TFile* ff = new TFile(fileName.c_str());
     if(!ff) cout << "No such data file " << fileName << endl;
     TH1D* sigH = (TH1D*)ff->Get(m_name.c_str());
@@ -163,6 +164,12 @@ void junoSpectrum::DataHistTree(string fileName)
 		m_eDataErr[i] = error;
 	}
 	delete sigH;
+
+    // Tree form spectrum data loading...
+    TFile* ff = new TFile(fileName.c_str());
+    if(!ff) cout << "No such data file " << fileName << endl;
+    TTree* 
+    
 
     delete ff;
 }
