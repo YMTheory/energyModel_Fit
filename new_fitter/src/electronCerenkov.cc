@@ -42,8 +42,10 @@ void electronCerenkov::LoadCerenkov()
     double tmp_Edep, tmp_rel, tmp_abs;
     while(getline(in,line)){
         istringstream ss(line);
-        ss >> tmp_Edep >> tmp_rel >> tmp_abs ;
-        m_Etrue.push_back(tmp_Edep/1000.);
+        //ss >> tmp_Edep >> tmp_rel >> tmp_abs ;
+        ss >> tmp_Edep  >> tmp_abs ;
+        m_Etrue.push_back(tmp_Edep);
+        //m_Etrue.push_back(tmp_Edep/1000.);
         m_Cerenkov.push_back(tmp_abs);
     }
 
