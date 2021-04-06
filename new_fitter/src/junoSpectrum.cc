@@ -43,6 +43,8 @@ junoSpectrum::junoSpectrum( int nMaxBins,
 	m_nGam      = nMaxGam;
     m_nonlMode  = nonlMode;
     m_name      = name;
+    m_specTheoMode = junoParameters::specTheoMode;
+    m_loadPrmElec  = false;
 
 	m_binCenter = new double[nMaxBins];
     m_eVis      = new double[nMaxBins];
@@ -95,52 +97,62 @@ junoSpectrum::~junoSpectrum()
 
 void junoSpectrum::InitTheo()
 {
-    std::cout << " >>> Loading theoretical " << m_name << "spectrum <<< " << std::endl;
-    string theofile = "./data/spectrum/theo/" + m_name + "_theo.root";
+    m_specTheoMode = junoParameters::specTheoMode;
+    std::cout << " >>> Loading theoretical " << m_name << " spectrum <<< " << std::endl;
+    std::cout << " specCalcMode = " << m_specTheoMode << std::endl;
+    //std::cout << "spectrum calc mode " << m_specTheoMode << endl;
+
+    string theofile;
+    if (m_specTheoMode == "calc")
+        theofile = "./data/spectrum/theo/" + m_name + "_theo.root";
+    if (m_specTheoMode == "sim") {
+        theofile = "./data/spectrum/theo/" + m_name + "_sim.root"; 
+    }
+
     TheoHistTree(theofile);
 }
 
 void junoSpectrum::TheoHistTree(string theofile)
 {
-    double energyScale = 1.0;
+        TFile* ff = new TFile(theofile.c_str());
+        if(!ff) cout << " >>> No theoretical spectrum file " << theofile << endl;
+        TTree* tt = (TTree*)ff->Get("T");
+        double eGamma[10];
+        int eGammaStr[10];
+        int nGamma, branchNumber;
+        double branchRatio;
+        double weight;
+        tt->SetBranchAddress("num"      ,&branchNumber);
+        tt->SetBranchAddress("BR"       ,&branchRatio);
+        tt->SetBranchAddress("numPhoton",&nGamma);
+        tt->SetBranchAddress("photonE"  ,eGamma);
+        tt->SetBranchAddress("photonName", eGammaStr);
+        m_nBranch = tt->GetEntries();
+        cout << " >>> Total Branch Number = " << m_nBranch << endl;
+        for (int branchIdx=0;branchIdx!=tt->GetEntries();branchIdx++){ 
+            tt->GetEntry(branchIdx);
+            cout << " >>> " << branchIdx << " with "<< nGamma << " gamma and branch ratio is " << branchRatio << endl;
+            // gamma from this branch :
+            //m_nGamma[branchIdx] = nGamma;
+            for(int gamIdx=0; gamIdx<nGamma; gamIdx++) {
+                cout << "gamma energy = " << eGammaStr[gamIdx] << " keV" << endl;
+                m_eTruGam[branchIdx][gamIdx] = eGamma[gamIdx];
+                m_eTruGamStr[branchIdx][gamIdx] = eGammaStr[gamIdx];
+            }
 
-    TFile* ff = new TFile(theofile.c_str());
-    if(!ff) cout << " >>> No theoretical spectrum file " << theofile << endl;
-    TTree* tt = (TTree*)ff->Get("T");
-    double eGamma[10];
-    int eGammaStr[10];
-    int nGamma, branchNumber;
-    double branchRatio;
-    double weight;
-	tt->SetBranchAddress("num"      ,&branchNumber);
-	tt->SetBranchAddress("BR"       ,&branchRatio);
-	tt->SetBranchAddress("numPhoton",&nGamma);
-	tt->SetBranchAddress("photonE"  ,eGamma);
-    tt->SetBranchAddress("photonName", eGammaStr);
-    m_nBranch = tt->GetEntries();
-    cout << " >>> Total Branch Number = " << m_nBranch << endl;
-	for (int branchIdx=0;branchIdx!=tt->GetEntries();branchIdx++){ 
-        tt->GetEntry(branchIdx);
-        cout << " >>> " << branchIdx << " with "<< nGamma << " gamma and branch ratio is " << branchRatio << endl;
-        // gamma from this branch :
-        //m_nGamma[branchIdx] = nGamma;
-        for(int gamIdx=0; gamIdx<nGamma; gamIdx++) {
-            m_eTruGam[branchIdx][gamIdx] = eGamma[gamIdx];
-            m_eTruGamStr[branchIdx][gamIdx] = eGammaStr[gamIdx];
+            // beta
+            TH1F* electronHist = (TH1F*)ff->Get(Form("hh%d",branchNumber));
+            for (int binIdx=0;binIdx!=m_nBins;binIdx++)
+            {
+                weight = electronHist->Interpolate(m_binCenter[binIdx]);
+                m_eTru[branchIdx][binIdx] = branchRatio * weight;
+            }
+            delete electronHist;
         }
 
-        // beta
-	    TH1F* electronHist = (TH1F*)ff->Get(Form("hh%d",branchNumber));
-		for (int binIdx=0;binIdx!=m_nBins;binIdx++)
-		{
-			weight = electronHist->Interpolate(m_binCenter[binIdx]);
-			m_eTru[branchIdx][binIdx] = branchRatio * weight;
-		}
-		delete electronHist;
-	}
+        delete tt;
+        delete ff;
 
-    delete tt;
-    delete ff;
 }
 
 void junoSpectrum::InitData()
@@ -153,24 +165,43 @@ void junoSpectrum::InitData()
 void junoSpectrum::DataHistTree(string fileName)
 {
     // Old spectrum data loading ... -> histogram form
+    //TFile* ff = new TFile(fileName.c_str());
+    //if(!ff) cout << "No such data file " << fileName << endl;
+    //TH1D* sigH = (TH1D*)ff->Get(m_name.c_str());
+	//for (int i=0;i!=m_nBinsData;i++)
+	//{
+	//	double content = sigH->GetBinContent(i+1);
+	//	double error   = sigH->GetBinError  (i+1);
+	//	m_eData   [i] = content;
+	//	m_eDataErr[i] = error;
+	//}
+	//delete sigH;
+
+    // Tree form spectrum data loading...
+    double m_scale = 3300.371/2.223;
+
+    TH1D* sigH = new TH1D("B12_data", "", m_nBinsData, m_eMin, m_eMax);
+
     TFile* ff = new TFile(fileName.c_str());
     if(!ff) cout << "No such data file " << fileName << endl;
-    TH1D* sigH = (TH1D*)ff->Get(m_name.c_str());
-	for (int i=0;i!=m_nBinsData;i++)
-	{
+    TTree* tt = (TTree*)ff->Get("B12");
+    double m_totpe;
+    tt->SetBranchAddress("totpe", &m_totpe);
+    for(int i=0; i<tt->GetEntries(); i++) {
+        tt->GetEntry(i);
+        double tmp_Evis = m_totpe / m_scale;
+        sigH->Fill(tmp_Evis);
+    }
+    
+    for (int i=0; i<m_nBinsData; i++) {
 		double content = sigH->GetBinContent(i+1);
 		double error   = sigH->GetBinError  (i+1);
 		m_eData   [i] = content;
 		m_eDataErr[i] = error;
-	}
-	delete sigH;
-
-    // Tree form spectrum data loading...
-    TFile* ff = new TFile(fileName.c_str());
-    if(!ff) cout << "No such data file " << fileName << endl;
-    TTree* 
+    }
     
-
+	delete sigH;
+    delete tt;
     delete ff;
 }
 
@@ -212,7 +243,8 @@ void junoSpectrum::LoadData()
 
 void junoSpectrum::ApplyScintillatorNL()
 {
-    LoadPrmElecDist();
+    if (!m_loadPrmElec)
+        LoadPrmElecDist();
 
     for (int i=0; i<m_nBins; i++) {
         m_eVis[i] = 0;
@@ -237,11 +269,11 @@ void junoSpectrum::ApplyScintillatorNL()
             if (m_nonlMode == "histogram")
                 eVisElec *= (electronQuench::ScintillatorNL(eTru) + electronCerenkov::getCerenkovPE(eTru));
             if (m_nonlMode == "analytic")
-            eVisElec *= (electronResponse::calcElecNonl(eTru));
+                eVisElec *= (electronResponse::calcElecNonl(eTru));
 
             for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++){
                 double eVis = eVisElec + eVisGam[branchIdx];
-                if(m_name=="B12" and branchIdx==2) eVis += 0.5; // 3-alpha branch
+                // if(m_name=="B12" and branchIdx==2) eVis += 0.5; // 3-alpha branch -> No 3-alpha branch in gendecay sim??
                 newBinLow     = int((eVis-m_eMin)/m_binWidth);
                 newBinHig     = int((eVis-m_eMin)/m_binWidth) + 1;
 			    bias          = (eVis - m_eMin - newBinLow * m_binWidth)/m_binWidth;
@@ -255,6 +287,8 @@ void junoSpectrum::ApplyScintillatorNL()
 
 void junoSpectrum::LoadPrmElecDist()
 {
+    cout << " >>> Start Loading Primary electron distribution ..." << endl;
+
     TFile* file = new TFile(junoParameters::gammaPdf_File.c_str(), "read");
     for (int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
         
@@ -262,6 +296,7 @@ void junoSpectrum::LoadPrmElecDist()
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             string eTru = to_string(m_eTruGamStr[branchIdx][gamIdx]);
             string pdfName = "gamma"+eTru+"keV";
+            std::cout << "Loading PrmElecDist for " << pdfName << std::endl;
             TH1D* gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
             if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
             
@@ -285,6 +320,8 @@ void junoSpectrum::LoadPrmElecDist()
     }
     
     delete file;
+
+    m_loadPrmElec = true;
 }
 
 double junoSpectrum::EvisGamma(int Etrue)

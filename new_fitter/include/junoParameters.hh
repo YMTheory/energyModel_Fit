@@ -8,7 +8,8 @@ using namespace std;
 enum ScintillatorParameterization {
     kIntegral,
     kSimulation,
-    kEmpirical
+    kEmpirical,
+    kSimulationCalc
 };
 
 class junoParameters
@@ -16,6 +17,7 @@ class junoParameters
     public:
         static std::string stopPow_File;
         static std::string quenchNL_File;
+        static std::string scintFile;
         static std::string cerenkovNL_File;
         static std::string electronLSNL_File;
         static std::string electronOut_File;
@@ -25,12 +27,13 @@ class junoParameters
         static std::string gammaLSNL_File;
         static std::string gammaPdf_File;
         static std::string gammaOut_File;
-        static std::string gammaNLOption;
 
         static double m_gammaError;
         static bool fitGammaSources;
 
         static ScintillatorParameterization scintillatorParameterization;
+
+        static std::string specTheoMode;
 
         static bool fitB12;
         static std::string B12DataFile;

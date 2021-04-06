@@ -51,6 +51,7 @@ class junoNLChiFunction
         static junoSpectrum* junoB12;
 
         static int m_nData;
+        static int m_nGam;
         static std::string source_name[20];
 
         static gammaData* gammaData_array[20];

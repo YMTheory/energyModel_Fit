@@ -20,15 +20,18 @@ class electronQuench
     
     public:
         // parameter configuration
-        static void setBirk1(double birk1) { m_birk1 = birk1;}
-        static double getBirk1()           {return m_birk1;}
-        static void setkA(double val)      { m_kA = val; }
-        static double getkA()              {return m_kA;}
+        static void setBirk1(double birk1)             { m_birk1 = birk1;}
+        static double getBirk1()                       {return m_birk1;}
+        static void setkA(double val)                  { m_kA = val; }
+        static double getkA()                          {return m_kA;}
+        static void setEnergyScale(double scale)       { m_scale = scale; }
+        static double getEnergyScale()                 {return m_scale;}
 
         static void LoadStopPowData();
         static double Integral_BirkLaw(double E);
 
         static void LoadNLData();
+        static void LoadScintPE();
         static void Update();
 
         static double ScintillatorNL (double eTrue);
@@ -50,6 +53,8 @@ class electronQuench
         static double p2 ;
         static double p3 ;
 
+        static double m_scale;
+
         static double m_edep[1000];
         static double m_nonl[1000];
 
@@ -62,15 +67,19 @@ class electronQuench
 
         static bool m_loadStopPowData;
         static bool m_loadNLData;
+        static bool m_loadScintPE;
 
         static std::vector<double> m_Etrue;
         static std::vector<double> m_StopPow;
+
+        static double m_simEtrue[321];
+        static double m_simScintPE[321];
 
         static double ScintillatorShape    (double eTrue);
         static double SimulationNLShape    (double eTrue);
         static double IntegralNLShape      (double eTrue);
         static double EmpiricalNLShape     (double eTrue);
-
+        static double SimulationNLCalcShape(double eTrue);
 };
 
 #endif

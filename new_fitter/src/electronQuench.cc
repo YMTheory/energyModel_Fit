@@ -28,12 +28,17 @@ double* electronQuench::m_quenchingShape1_higKb = &m_quenchingShape1[0][0];
 
 bool electronQuench::m_loadStopPowData = false;
 bool electronQuench::m_loadNLData = false;
+bool electronQuench::m_loadScintPE = false;
 
 vector<double> electronQuench::m_Etrue;
 vector<double> electronQuench::m_StopPow;
 
 double electronQuench::m_edep[1000] = {0.};
 double electronQuench::m_nonl[1000] = {0.};
+
+double electronQuench::m_simEtrue[321];
+double electronQuench::m_simScintPE[321];
+double electronQuench::m_scale = 3300.371/2.223;
 
 electronQuench::electronQuench()
 {;}
@@ -93,6 +98,25 @@ double electronQuench::Integral_BirkLaw(double E)
     
 }
 
+void electronQuench::LoadScintPE() {
+    cout << " >>> Load scintillation PE file <<< " << endl;
+    ifstream in; in.open(junoParameters::scintFile.c_str());
+    if (!in) cout << " >>> No Input File -> " << junoParameters::scintFile << " <<< " << endl;
+    string line; double tmpE, tmpPE;
+    int index = 0;
+    while(getline(in, line)) {
+        istringstream ss(line);
+        ss >> tmpE >> tmpPE;
+        m_simEtrue[index] = tmpE;
+        m_simScintPE[index] = tmpPE;
+        index++;
+    }
+    in.close();
+
+    m_loadScintPE = true;
+}
+
+
 void electronQuench::LoadNLData ()  {
     cout << " >>> Loading Quenching NL Data <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
@@ -148,6 +172,8 @@ double electronQuench::ScintillatorShape (double eTrue)  {
         return SimulationNLShape (eTrue);
     } else if (junoParameters::scintillatorParameterization == kEmpirical) {
         return EmpiricalNLShape (eTrue);
+    } else if (junoParameters::scintillatorParameterization == kSimulationCalc ) {
+        return SimulationNLCalcShape (eTrue);
     }
 }
 
@@ -176,6 +202,24 @@ double electronQuench::EmpiricalNLShape  (double eTrue) {
     return (p0+p3*eTrue)/(1+p1*TMath::Exp(-p2*eTrue));
 }
 
+double electronQuench::SimulationNLCalcShape(double eTrue)
+{
+    if (!m_loadScintPE) LoadScintPE();
+
+    double deltaE = 0.05; 
+    int lowbin  = int(eTrue/0.05);
+    int highbin = int(eTrue/0.05) + 1; 
+    if ( highbin > 320 ) {
+        cout << " >> Energy Beyond Range !!! <<< " << endl;
+        return -1;
+    }   
+
+    double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
+    double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
+    double nonl = scintPE / m_scale / eTrue;
+
+    return m_kA * nonl;
+}
 
 void electronQuench::Plot() {
     cout << " >>> Plot Quenching Curve <<< " << endl;

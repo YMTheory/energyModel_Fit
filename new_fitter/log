@@ -1,21 +1,24 @@
-Nonlinearity formula form analytic
+Nonlinearity formula form histogram
+ eMin         = 0
+ eMax         = 15
+ fitMin         = 0
+ fitMax         = 15
+ nMaxBins     = 14400
+ nMaxBinsData = 100
+ nMaxBr       = 3
+ nMaxGam      = 2
+ NonlMode     = histogram
 Empirical ElecNonl Function has been constructed...
- >>> Loading Naked Gamma Cs137 Data <<< 
-Cs137 0.662 0.933489 0.000470568 0.0354558 0.000353532
- >>> Loading Naked Gamma Mn54 Data <<< 
-Mn54 0.834 0.947155 0.000432622 0.0321687 0.000333949
- >>> Loading Naked Gamma K40 Data <<< 
-K40 1.461 0.980075 0.000355818 0.0253343 0.000253523
- >>> Loading Naked Gamma nH Data <<< 
-nH 2.223 1 0.000306874 0.0215098 0.000216804
- >>> Loading Naked Gamma Tl208 Data <<< 
-Tl208 2.614 1.00643 0.00029617 0.0205397 0.000199441
- >>> Loading Naked Gamma nC12 Data <<< 
-nC12 4.945 1.02735 0.000232448 0.0157222 0.000160194
- >>> Loading Naked Gamma O16 Data <<< 
-O16 6.13 1.0324 0.000213565 0.0135822 0.000146659
- >>> Loading Naked Gamma nFe56 Data <<< 
-nFe56 7.637 1.03651 0.000184675 0.0124041 0.000132526
+ >>> Loading theoretical B12 spectrum <<< 
+ specCalcMode = sim
+ >>> Total Branch Number = 3
+ >>> 0 with 0 gamma and branch ratio is 0.973024
+ >>> 1 with 1 gamma and branch ratio is 0.012472
+gamma energy = 4440 keV
+ >>> 2 with 2 gamma and branch ratio is 0.014504
+gamma energy = 4440 keV
+gamma energy = 3215 keV
+ >>> Loading data B12spectrum <<< 
  **********
  **    1 **SET PRINT           1
  **********
@@ -25,10 +28,10 @@ nFe56 7.637 1.03651 0.000184675 0.0124041 0.000132526
  MINUIT MEMORY CLEARED. NO PARAMETERS NOW DEFINED.
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 p0           1.02500e+00  1.00000e-03    9.00000e-01  1.10000e+00
-     2 p1           1.12200e-01  1.00000e-04    0.00000e+00  2.00000e-01
-     3 p2           1.39400e+00  1.00000e-03    1.10000e+00  4.00000e+00
-     4 p3           5.55000e-04  1.00000e-05    1.00000e-05  1.00000e-02
+     1 kA           1.00000e+00  1.00000e-03    9.00000e-01  1.10000e+00
+     2 kB           6.50000e-03  1.00000e-05    5.50000e-03  7.50000e-03
+     3 kC           1.00000e+00  1.00000e-03    9.00000e-01  1.10000e+00
+     4 energyScale   1.52159e+03  1.00000e+00    1.45000e+03  1.55000e+03
  **********
  **    3 **SET ERRDEF           1
  **********
@@ -40,80 +43,110 @@ nFe56 7.637 1.03651 0.000184675 0.0124041 0.000132526
  **    5 **MIGRAD        5000
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
+ >>> Start Loading Primary electron distribution ...
+Loading PrmElecDist for gamma4440keV
+Loading PrmElecDist for gamma4440keV
+Loading PrmElecDist for gamma3215keV
+ >>> Loading Quenching NL Data <<< 
+ >>> Loading Electron Cerenkov Shape <<< 
  START MIGRAD MINIMIZATION.  STRATEGY  2.  CONVERGENCE WHEN EDM .LT. 1.00e-04
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 1 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 2 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 3 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 4 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== 1.42921e+20 added to diagonal of error matrix
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -2.1953e+37 -9.6789e+10  0.0000e+00  2.1953e+37
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 21974501091562981341218490925258375168.000000 TO DIAGONAL.
  MINUIT WARNING IN HESSE
- ============== Second derivative zero for parameter1
+ ============== Matrix inversion fails.
   MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
- FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          10 TOTAL
-                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+ FCN=2806.25 FROM HESSE     STATUS=FAILED         75 CALLS          76 TOTAL
+                     EDM=2.69011e+36    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  p0           1.02500e+00   1.00000e-03   1.03282e-02   1.93645e+02
-   2  p1           1.12200e-01   1.00000e-04   1.00753e-03   1.98506e+03
-   3  p2           1.39400e+00   1.00000e-03   1.14246e-03   1.75061e+03
-   4  p3           5.55000e-04   1.00004e-05   4.40776e-03   4.53745e+02
+   1  kA           1.00000e+00   1.49388e-01   1.00002e-09  -1.15977e+18
+   2  kB           6.50000e-03   1.49388e-03   1.00002e-09  -1.14316e+03
+   3  kC           1.00000e+00   1.49388e-01   1.00002e-09   9.41424e+02
+   4  energyScale   1.52159e+03   8.13852e+01   2.21770e-07  -2.54430e+02
+ MINUIT WARNING IN MIGRAD  
+ ============== Negative diagonal element 3 in Error Matrix
+ MINUIT WARNING IN MIGRAD  
+ ============== 2.44069 added to diagonal of error matrix
  MIGRAD FAILS TO FIND IMPROVEMENT
- MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
- MIGRAD MINIMIZATION HAS CONVERGED.
- MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- MINUIT WARNING IN HESSE
- ============== Second derivative zero for parameter1
-  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
- FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          30 TOTAL
-                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -3.3657e+00 -3.5876e-01  2.8858e+00  4.8386e+00
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 3.370495 TO DIAGONAL.
+ FCN=1238.28 FROM HESSE     STATUS=NOT POSDEF     31 CALLS         204 TOTAL
+                     EDM=1.07206e+10    STRATEGY= 2      ERR MATRIX NOT POS-DEF
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
-   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
-   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
-   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+   1  kA           9.46913e-01   1.03691e-01   1.72819e+10  -4.98801e-04
+   2  kB           6.65402e-03   1.38037e-04   1.63002e-01  -1.17211e+03
+   3  kC           1.09549e+00   1.57134e-06   1.89357e-04  -1.22412e+03
+   4  energyScale   1.46227e+03   6.80104e-04   2.65568e-05   1.01361e+03
  MIGRAD FAILS TO FIND IMPROVEMENT
- MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
- MIGRAD MINIMIZATION HAS CONVERGED.
- MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- MINUIT WARNING IN HESSE
- ============== Second derivative zero for parameter1
-  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
- FCN=4.35053e+11 FROM HESSE     STATUS=FAILED          9 CALLS          50 TOTAL
-                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 3 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 4 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== 5.14162e+09 added to diagonal of error matrix
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -5.3510e+03  1.0000e+00  1.0002e+00  5.3530e+03
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 5356.377557 TO DIAGONAL.
+ FCN=292.103 FROM HESSE     STATUS=NOT POSDEF     29 CALLS         256 TOTAL
+                     EDM=2476.47    STRATEGY= 2      ERR MATRIX NOT POS-DEF
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
-   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
-   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
-   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+   1  kA           9.77955e-01   0.00000e+00   1.73023e+10  -3.00615e-04
+   2  kB           5.88072e-03   2.18734e-10   1.56098e-01   1.36743e+02
+   3  kC           1.08134e+00   3.54554e-07   1.86801e-04  -1.87658e+07
+   4  energyScale   1.54799e+03   5.88222e+00   2.75778e-05  -3.44120e+01
  MIGRAD FAILS TO FIND IMPROVEMENT
- MACHINE ACCURACY LIMITS FURTHER IMPROVEMENT.
  MIGRAD MINIMIZATION HAS CONVERGED.
  MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- MINUIT WARNING IN HESSE
- ============== Second derivative zero for parameter1
-  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 3 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== Negative diagonal element 4 in Error Matrix
+ MINUIT WARNING IN HESSE   
+ ============== 4.33053e+09 added to diagonal of error matrix
+ EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
+        -6.7051e+03  1.0000e+00  1.0005e+00  6.7071e+03
+ MINUIT WARNING IN HESSE   
+ ============== MATRIX FORCED POS-DEF BY ADDING 6711.828603 TO DIAGONAL.
  MIGRAD TERMINATED WITHOUT CONVERGENCE.
- FCN=4.35053e+11 FROM MIGRAD    STATUS=FAILED         69 CALLS          70 TOTAL
-                     EDM=16    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+ FCN=286.883 FROM MIGRAD    STATUS=FAILED        324 CALLS         325 TOTAL
+                     EDM=3338.01    STRATEGY= 2      ERR MATRIX NOT POS-DEF
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  p0           1.02500e+00   1.00000e-03  -0.00000e+00   1.93645e+02
-   2  p1           1.12200e-01   1.00000e-04  -0.00000e+00   1.98506e+03
-   3  p2           1.39400e+00   1.00000e-03  -0.00000e+00   1.75061e+03
-   4  p3           5.55000e-04   1.00004e-05  -0.00000e+00   4.53745e+02
+   1  kA           9.77955e-01   0.00000e+00   1.73023e+10  -3.00501e-04
+   2  kB           5.88072e-03   3.12315e-09   1.56098e-01   1.11469e+02
+   3  kC           1.08134e+00   2.54284e-07   1.86801e-04  -1.86899e+07
+   4  energyScale   1.55000e+03   3.68311e+00   2.77135e-05** at limit **
  EXTERNAL ERROR MATRIX.    NDIM=  26    NPAR=  4    ERR DEF=1
-  1.000e-06  0.000e+00  0.000e+00  0.000e+00 
-  0.000e+00  1.000e-08  0.000e+00  0.000e+00 
-  0.000e+00  0.000e+00  1.000e-06  0.000e+00 
-  0.000e+00  0.000e+00  0.000e+00  1.000e-10 
-ERR MATRIX APPROXIMATE
+  6.546e-16 -3.035e-28  2.472e-26 -1.619e-23 
+ -3.035e-28  9.754e-18 -7.910e-16  5.181e-13 
+  2.472e-26 -7.910e-16  6.466e-14 -4.220e-11 
+ -1.619e-23  5.181e-13 -4.220e-11  2.764e-08 
+ERR MATRIX NOT POS-DEF
  PARAMETER  CORRELATION COEFFICIENTS  
        NO.  GLOBAL      1      2      3      4
-        1  0.00000   1.000  0.000  0.000  0.000
-        2  0.00000   0.000  1.000  0.000  0.000
-        3  0.00000   0.000  0.000  1.000  0.000
-        4  0.00000   0.000  0.000  0.000  1.000
- ERR MATRIX APPROXIMATE
+        1  0.00000   1.000 -0.000  0.000 -0.000
+        2  0.99782  -0.000  1.000 -0.996  0.998
+        3  0.99816   0.000 -0.996  1.000 -0.998
+        4  0.99900  -0.000  0.998 -0.998  1.000
+ ERR MATRIX NOT POS-DEF
  ====================== 
-    minChi2: 4.35053e+11 with nData = 8 and nPar = 4
+    minChi2: 286.883 with nData = 92 and nPar = 4
  ====================== 
->>> Draw Analytic Electron Nonlinearity Curve <<< 
-Draw Gamma NL Fitting Results
-Info in <TCanvas::SaveAs>: ROOT file GamNLFit.root has been created
+ >>> Plot junoSpectum <<< 

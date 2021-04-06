@@ -48,7 +48,7 @@ void gammaData::LoadGammaData()
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     string line;
 
-    double scale = 3382.497/2.223;
+    double scale = 3300.371/2.223;
     string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError, tmp_totPEerr, tmp_totPESigmaerr;
     while(getline(in,line)){
         istringstream ss(line);
@@ -58,8 +58,8 @@ void gammaData::LoadGammaData()
             m_Etrue = tmp_E;
             m_nonlData = tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
-            //m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
-            m_nonlDataErr = 0.001;
+            m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
+            //m_nonlDataErr = 0.001;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;

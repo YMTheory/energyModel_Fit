@@ -79,6 +79,8 @@ class junoSpectrum
         // alpha energy
         double* m_eTruAlp;
 
+        bool m_loadPrmElec;
+
     public:  // nonlinearity apply
         double* m_eVis;
         int m_max_eTru;
@@ -94,6 +96,7 @@ class junoSpectrum
 
     private:
         std::string m_nonlMode;
+        std::string m_specTheoMode;
 
 };
 

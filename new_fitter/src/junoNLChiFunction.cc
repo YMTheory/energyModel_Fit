@@ -36,18 +36,20 @@ double junoNLChiFunction::m_bestFitError[20] = {0.};
 
 bool junoNLChiFunction::m_DoFit = false;
 
+int junoNLChiFunction::m_nGam;
 int junoNLChiFunction::m_nData;
 std::string junoNLChiFunction::source_name[20];
 gammaData* junoNLChiFunction::gammaData_array[20];
 
-bool junoNLChiFunction::m_doGamFit = true;
-bool junoNLChiFunction::m_doB12Fit = false;
+bool junoNLChiFunction::m_doGamFit = junoParameters::fitGammaSources;
+bool junoNLChiFunction::m_doB12Fit = junoParameters::fitB12;
 
 string junoNLChiFunction::m_nonlMode;
 
 junoNLChiFunction::junoNLChiFunction() {
 
     m_nData = 0;
+    m_nGam  = 0;
 
     if (m_doGamFit) {
 
@@ -55,21 +57,25 @@ junoNLChiFunction::junoNLChiFunction() {
         source_name[m_nData] = "Cs137"; 
         gammaData_array[m_nData] = Cs137Data;
         m_nData++;
+        m_nGam++;
 
         Mn54Data  = new gammaData("Mn54", 900, 1300, 100);
         source_name[m_nData] = "Mn54"; 
         gammaData_array[m_nData] = Mn54Data;
         m_nData++;
+        m_nGam++;
 
         K40Data  = new gammaData("K40", 900, 1300, 100);
         source_name[m_nData] = "K40"; 
         gammaData_array[m_nData] = K40Data;
         m_nData++;
+        m_nGam++;
 
         nHData  = new gammaData("nH", 900, 1300, 100);
         source_name[m_nData] = "nH"; 
         gammaData_array[m_nData] = nHData;
         m_nData++;
+        m_nGam++;
 
         //Co60Data  = new gammaData("Co60", 900, 1300, 100);
         //source_name[m_nData] = "Co60"; 
@@ -80,21 +86,25 @@ junoNLChiFunction::junoNLChiFunction() {
         source_name[m_nData] = "Tl208"; 
         gammaData_array[m_nData] = Tl208Data;
         m_nData++;
+        m_nGam++;
 
         nC12Data  = new gammaData("nC12", 900, 1300, 100);
         source_name[m_nData] = "nC12"; 
         gammaData_array[m_nData] = nC12Data;
         m_nData++;
+        m_nGam++;
 
         O16Data  = new gammaData("O16", 900, 1300, 100);
         source_name[m_nData] = "O16"; 
         gammaData_array[m_nData] = O16Data;
         m_nData++;
+        m_nGam++;
 
         nFe56Data  = new gammaData("nFe56", 900, 1300, 100);
         source_name[m_nData] = "nFe56"; 
         gammaData_array[m_nData] = nFe56Data;
         m_nData++;
+        m_nGam++;
 
     }
 
@@ -103,7 +113,7 @@ junoNLChiFunction::junoNLChiFunction() {
     cout << "Nonlinearity formula form " << m_nonlMode << endl;
 
     if (m_doB12Fit) {
-        junoB12 = new junoSpectrum(14400, 100, 3, 1,
+        junoB12 = new junoSpectrum(14400, 100, 3, 2,
                              0, 15, 0, 15, m_nonlMode, "B12");
     }
 
@@ -161,19 +171,28 @@ void junoNLChiFunction::ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Do
 
 void junoNLChiFunction::SetParameters(double *par)
 {
-    if (m_nonlMode == "histogram") {
-        electronQuench::setkA               (par[0]);
-        electronQuench::setBirk1            (par[1]);
-        electronCerenkov::setkC             (par[2]);
-        electronCerenkov::setEnergyScale    (par[3]);
+    if (junoParameters::scintillatorParameterization == kSimulation) { 
+        if (m_nonlMode == "histogram") {
+            electronQuench::setkA               (par[0]);
+            electronQuench::setBirk1            (par[1]);
+            electronCerenkov::setkC             (par[2]);
+            electronCerenkov::setEnergyScale    (par[3]);
+        }
+
+        if (m_nonlMode == "analytic") {
+            electronResponse::setp0(par[0]);
+            electronResponse::setp1(par[1]);
+            electronResponse::setp2(par[2]);
+            electronResponse::setp3(par[3]);
+            electronResponse::SetParameters();
+        }
     }
 
-    if (m_nonlMode == "analytic") {
-        electronResponse::setp0(par[0]);
-        electronResponse::setp1(par[1]);
-        electronResponse::setp2(par[2]);
-        electronResponse::setp3(par[3]);
-        electronResponse::SetParameters();
+    if (junoParameters::scintillatorParameterization == kSimulationCalc) {
+        electronQuench::setkA               (par[0]);
+        electronCerenkov::setkC             (par[1]);
+        electronQuench::setEnergyScale      (par[2]);
+        electronCerenkov::setEnergyScale    (par[2]);
     }
 }
 
@@ -191,22 +210,30 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     junoNLMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     // Configurate parameters
-    if (m_nonlMode == "histogram") {
-        junoNLMinuit->mnparm(iPar, "kA", 0.96, 0.001, 0.9, 1.1, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.5e-3, 7.5e-3, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0.9, 1.10, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 1500, 1, 1450, 1550, ierrflag); iPar++;
+    if (junoParameters::scintillatorParameterization == kSimulation) {
+        if (m_nonlMode == "histogram") {
+            junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0., 0., ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.1e-3, 7.5e-3, ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0., 0., ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 0, 0, ierrflag); iPar++;
+        }
+
+        if (m_nonlMode == "analytic") {
+            junoNLMinuit->mnparm(iPar, "p0", 1.025, 0.001, 0.9, 1.1, ierrflag);    iPar++;
+            junoNLMinuit->mnparm(iPar, "p1", 0.1122,0.0001,  0, 0.2, ierrflag);    iPar++;
+            junoNLMinuit->mnparm(iPar, "p2", 1.394, 0.001, 1.1, 4.0, ierrflag);    iPar++;
+            junoNLMinuit->mnparm(iPar, "p3", 5.55e-4, 1e-5, 1e-5, 1e-2, ierrflag); iPar++;
+        }
     }
 
-    if (m_nonlMode == "analytic") {
-        junoNLMinuit->mnparm(iPar, "p0", 1.025, 0.001, 0.9, 1.1, ierrflag);    iPar++;
-        junoNLMinuit->mnparm(iPar, "p1", 0.1122,0.0001,  0, 0.2, ierrflag);    iPar++;
-        junoNLMinuit->mnparm(iPar, "p2", 1.394, 0.001, 1.1, 4.0, ierrflag);    iPar++;
-        junoNLMinuit->mnparm(iPar, "p3", 5.55e-4, 1e-5, 1e-5, 1e-2, ierrflag); iPar++;
+    if (junoParameters::scintillatorParameterization == kSimulationCalc) {
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1300, 1600, ierrflag); iPar++;
     }
-    
+
     //junoNLMinuit->FixParameter(0);
-    junoNLMinuit->FixParameter(1);
+    //junoNLMinuit->FixParameter(1);
     //junoNLMinuit->FixParameter(2);
     //junoNLMinuit->FixParameter(3);
 
@@ -218,6 +245,8 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     arglist[0] = 5000; //maxCalls
     arglist[1] = 0.01; // tolerance
     junoNLMinuit->mnexcm("MIGrad", arglist, 1, ierrflag);
+
+    junoNLMinuit->fCstatu.Data();
 
     double min, edm, errdef;
     int nvpar, nparx, icstat;
@@ -246,7 +275,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
 void junoNLChiFunction::Plot()
 {
-    electronResponse::Plot();
+    //electronResponse::Plot();
     if(m_doGamFit)
         GammaPlot();
     if(m_doB12Fit)
@@ -256,7 +285,7 @@ void junoNLChiFunction::Plot()
 
 void junoNLChiFunction::GammaPlot()
 {
-    cout << "Draw Gamma NL Fitting Results" << endl;
+    cout << " >>> Draw Gamma NL Fitting Results <<< " << endl;
 
     if (not m_DoFit) {
         cout << "Fitting has not been finished ...";
@@ -269,7 +298,7 @@ void junoNLChiFunction::GammaPlot()
     gNonlCalc->SetName("gNonlCalc");
 
     int index = 0;
-    for(int iData=0; iData<m_nData; iData++) {
+    for(int iData=0; iData<m_nGam; iData++) {
         std::string source = source_name[iData];
         gammaData* tmpGammaData = gammaData_array[iData];
         //tmpGammaData->calcGammaNPE();
@@ -285,21 +314,6 @@ void junoNLChiFunction::GammaPlot()
         index++;
     }
 
-    //TGraphErrors* gNonlNom  = new TGraphErrors();
-    //gNonlNom->SetName("gNonlNom");
-    //double nom_kA = 0.96;
-    //double nom_kB = 6.5e-3;
-    //double nom_kC = 1;
-    //double nom_es = 3350./2.22;
-    //electronQuench::setkA(nom_kA);
-    //electronQuench::setBirk1(nom_kB);
-    //electronCerenkov::setkC(nom_kC);
-    //electronCerenkov::setEnergyScale(nom_es);
-    //for (int i=0; i<m_nData; i++) {
-    //    gammaData_array[i]->calcGammaResponse();
-    //    gNonlNom->SetPoint(i, gammaData_array[i]->GetEtrue(), gammaData_array[i]->GetNonlPred());
-    //}
-
     gNonlData->SetMarkerStyle(20);
     gNonlData->SetMarkerColor(kBlue+1);
     gNonlData->SetLineColor(kBlue+1);
@@ -310,11 +324,6 @@ void junoNLChiFunction::GammaPlot()
     gNonlCalc->SetMarkerSize(1.2);
     gNonlCalc->SetLineColor(kRed+1);
     gNonlCalc->SetLineWidth(2);
-    //gNonlNom->SetMarkerStyle(21);
-    //gNonlNom->SetMarkerColor(kViolet+1);
-    //gNonlNom->SetMarkerSize(1.2);
-    //gNonlNom->SetLineColor(kViolet+1);
-    //gNonlNom->SetLineWidth(2);
 
     TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
     c1->cd(); c1->SetGrid();
@@ -322,12 +331,10 @@ void junoNLChiFunction::GammaPlot()
     //gNonlData->GetYaxis()->SetRangeUser(0.01,0.045);
     gNonlData->Draw("APL");
     gNonlCalc->Draw("P SAME");
-    //gNonlNom->Draw("L SAME");
     TLegend* led = new TLegend();
     led->SetFillColor(kWhite);
     led->AddEntry(gNonlData, "data", "PL");
     led->AddEntry(gNonlCalc, "calc", "PL");
-    //led->AddEntry(gNonlNom, "nominal", "PL");
     led->Draw("SAME");
 
     c1->SaveAs("GamNLFit.root");    

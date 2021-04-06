@@ -6,7 +6,7 @@
 
 double electronResponse::m_SimEtrue[m_nSimData];
 double electronResponse::m_SimNonl[m_nSimData];
-double electronResponse::m_scale = 3382/2.22;
+double electronResponse::m_scale = 3300.371/2.223;
 bool electronResponse::m_loadSimFile = false;
 bool electronResponse::m_doFit = false;
 
