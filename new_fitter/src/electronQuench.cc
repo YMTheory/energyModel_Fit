@@ -165,6 +165,23 @@ double electronQuench::ScintillatorNL    (double eTrue)  {
     return nl;
 }
 
+double electronQuench::ScintillatorPE(double eTrue) {
+    if (!m_loadScintPE) LoadScintPE();
+
+    double deltaE = 0.05; 
+    int lowbin  = int(eTrue/0.05);
+    int highbin = int(eTrue/0.05) + 1; 
+    if ( highbin > 320 ) {
+        cout << " >> Energy Beyond Range !!! <<< " << endl;
+        return -1;
+    }   
+
+    double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
+    double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
+
+    return m_kA * scintPE;
+}
+
 double electronQuench::ScintillatorShape (double eTrue)  {
     if (junoParameters::scintillatorParameterization == kIntegral) {
         return IntegralNLShape (eTrue);

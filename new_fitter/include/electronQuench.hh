@@ -36,6 +36,8 @@ class electronQuench
 
         static double ScintillatorNL (double eTrue);
 
+        static double ScintillatorPE (double eTrue);
+
         static void Plot ();
 
 
