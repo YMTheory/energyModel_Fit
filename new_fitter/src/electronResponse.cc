@@ -6,7 +6,7 @@
 
 double electronResponse::m_SimEtrue[m_nSimData];
 double electronResponse::m_SimNonl[m_nSimData];
-double electronResponse::m_scale = 3300.371/2.223;
+double electronResponse::m_scale = 1503.664;
 bool electronResponse::m_loadSimFile = false;
 bool electronResponse::m_doFit = false;
 
@@ -16,6 +16,9 @@ double electronResponse::m_p0 = 1.025;
 double electronResponse::m_p1 = 0.1122;
 double electronResponse::m_p2 = 1.394;
 double electronResponse::m_p3 = 5.55e-4;
+
+TGraphErrors* electronResponse::gMinElecNonl;
+
 
 double electronResponse::getElecNonl(double Etrue)
 {
@@ -49,6 +52,31 @@ void electronResponse::loadSimElecNonl()
     m_loadSimFile = true;
     return;
 }
+
+void electronResponse::loadMinSimElecNonl()
+{
+    gMinElecNonl = new TGraphErrors();
+    ifstream in;
+    in.open("./data/electron/electron_response.txt");
+    if (!in) std::cout << " >>> No electron response file!!! <<< " << std::endl;
+    string line;
+    double Etrue, totpe, totpe_err, sigma, sigma_err;
+    int index = 0;
+    while(getline(in, line)) {
+        istringstream ss(line);
+        ss >> Etrue >> totpe >> totpe_err >> sigma >> sigma_err;
+        gMinElecNonl->SetPoint(index, Etrue, totpe/Etrue/m_scale);
+        gMinElecNonl->SetPointError(index, 0, 0.001);
+        index++;
+    }
+
+    in.close();
+}
+
+
+
+
+
 
 void electronResponse::FuncConstruct()
 {

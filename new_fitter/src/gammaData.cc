@@ -58,8 +58,8 @@ void gammaData::LoadGammaData()
             m_Etrue = tmp_E;
             m_nonlData = tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
-            m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
-            //m_nonlDataErr = 0.001;
+            //m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
+            m_nonlDataErr = 0.001;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;

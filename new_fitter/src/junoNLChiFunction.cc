@@ -229,7 +229,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     if (junoParameters::scintillatorParameterization == kSimulationCalc) {
         junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1300, 1600, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 1600, ierrflag); iPar++;
     }
 
     //junoNLMinuit->FixParameter(0);
@@ -292,11 +292,14 @@ void junoNLChiFunction::GammaPlot()
         return;
     }
 
+
     TGraphErrors* gNonlData = new TGraphErrors();
     TGraphErrors* gNonlCalc = new TGraphErrors();
     gNonlData->SetName("gNonlData");
     gNonlCalc->SetName("gNonlCalc");
 
+    double fit_pars[3] = {m_bestFit[0], m_bestFit[1], m_bestFit[2]};
+    SetParameters(fit_pars);
     int index = 0;
     for(int iData=0; iData<m_nGam; iData++) {
         std::string source = source_name[iData];
@@ -318,12 +321,34 @@ void junoNLChiFunction::GammaPlot()
     gNonlData->SetMarkerColor(kBlue+1);
     gNonlData->SetLineColor(kBlue+1);
     gNonlData->SetLineWidth(2);
-    gNonlData->SetMarkerSize(1.2);
+    gNonlData->SetMarkerSize(1.0);
     gNonlCalc->SetMarkerStyle(21);
     gNonlCalc->SetMarkerColor(kRed+1);
-    gNonlCalc->SetMarkerSize(1.2);
+    gNonlCalc->SetMarkerSize(1.0);
     gNonlCalc->SetLineColor(kRed+1);
     gNonlCalc->SetLineWidth(2);
+
+    double nom_pars[3] = {1.0, 1.0, 3300.371/2.223};
+    SetParameters(nom_pars);
+    TGraphErrors* gNom = new TGraphErrors();
+    for(int iData=0; iData<m_nGam; iData++) {
+        std::string source = source_name[iData];
+        gammaData* tmpGammaData = gammaData_array[iData];
+        tmpGammaData->calcGammaResponse();
+        //tmpGammaData->calcGammaNPE();
+        double tmp_E       = tmpGammaData->GetEtrue();
+        double tmp_pred    = tmpGammaData->GetNonlPred();
+        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl
+        gNom->SetPoint(index, tmp_E, tmp_pred);
+
+        index++;
+    }
+    gNom->SetMarkerStyle(21);
+    gNom->SetMarkerColor(kOrange+1);
+    gNom->SetMarkerSize(1.0);
+    gNom->SetLineColor(kOrange+1);
+    gNom->SetLineWidth(2);
+
 
     TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
     c1->cd(); c1->SetGrid();
@@ -331,6 +356,7 @@ void junoNLChiFunction::GammaPlot()
     //gNonlData->GetYaxis()->SetRangeUser(0.01,0.045);
     gNonlData->Draw("APL");
     gNonlCalc->Draw("P SAME");
+    gNom->Draw("P SAME");
     TLegend* led = new TLegend();
     led->SetFillColor(kWhite);
     led->AddEntry(gNonlData, "data", "PL");
