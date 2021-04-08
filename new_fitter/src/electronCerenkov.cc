@@ -77,6 +77,31 @@ double electronCerenkov::getCerenkovPE(double E)
     }
 }
 
+
+double electronCerenkov::getCerPE(double E)
+{
+    if(!m_LoadCerenkov)   LoadCerenkov();
+
+    if(m_Cerenkov.size() == 0) {
+        cout << " >>> No Data in Cerenkov Vector <<< " << endl; return -1;
+    } else if (m_Cerenkov.size() != m_Etrue.size()){
+        cout << " >>> Cerenkov Vector Length are Different !! <<< " << endl; 
+    } else {
+
+        // get Cerenkov PE
+        int num = m_Cerenkov.size();
+        for(int i=1; i<num; i++){
+            if(m_Etrue[i-1]<=E and m_Etrue[i]>=E){  
+                return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]));
+                //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
+            }
+        }
+        cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
+    }
+}
+
+
+
 void electronCerenkov::Plot()
 {
     cout << " >>> Plot Cerenkov Curve <<< " << endl;

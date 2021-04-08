@@ -21,6 +21,8 @@ class electronCerenkov
         
         static double getCerenkovPE(double E);
 
+        static double getCerPE(double E);
+
         static void Plot();
 
     private:
