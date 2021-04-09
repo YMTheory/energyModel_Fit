@@ -135,7 +135,7 @@ void gammaData::calcGammaResponse()
         double denominator = 0;
         
         double numerator1 = 0;
-        double denominator1 = 0;
+        double denominator1 = 1e5;
         for(int iBin=1; iBin<m_max_eTrue; iBin++) {
             double E1 = m_pdf_eTrue[iBin-1];
             double E2 = m_pdf_eTrue[iBin];
@@ -164,23 +164,25 @@ void gammaData::calcGammaResponse()
                 NPE2 = electronQuench::ScintillatorPE(E2) + electronCerenkov::getCerPE(E2);
             }
 
-            cout << "mid-process " << (prob1*NPE1 + prob2*NPE2) *(E2-E1)/2 << " " << (prob1 + prob2) * (E2-E1)/2 << endl;
-            numerator1 += (prob1*NPE1 + prob2*NPE2) * (E2-E1) /2;
-            denominator1 += (prob1 + prob2) *(E2-E1) /2;
+            //numerator1 += (prob1*NPE1 + prob2*NPE2) * (E2-E1) /2;
+            //denominator1 += (prob1 + prob2) *(E2-E1) /2;
+            numerator1 += (NPE1+NPE2)/2 * (prob1+prob2)/2;
+            //denominator1 += (prob1 + prob2) /2;
         }
 
         if (denominator == 0) cout << "Errors Happend While Using GammaPdf Calculation..." << endl;
 
         m_nonlCalc = numerator / denominator;
-        m_totpeCalc = m_nonlCalc * m_Etrue * m_scale;
+        //m_totpeCalc = m_nonlCalc * m_Etrue * m_scale;
+        m_totpeCalc = numerator1 / denominator1;
         m_nonlCalc1 = numerator1 /denominator1 / m_scale / m_Etrue;
-        cout << numerator1 << " " << denominator1 << " " << m_scale << " " << m_Etrue << endl;
+        //cout << numerator1 << " " << denominator1 << " " << m_scale << " " << m_Etrue << endl;
 
     }  else if (m_calcOption == "twolayer") {
+        hEmean->Reset();
+        hPEmean->Reset();
+
         for (int iSample=0; iSample<m_nSamples; iSample++) {
-            hEmean->Reset();
-            hPEmean->Reset();
-        
             // apply Nonlinearity curve
             double tmp_mean = 0;
             double tmp_pe= 0;
@@ -242,3 +244,12 @@ double gammaData::GetChi2()
     return chi2;
 }
 
+
+
+void gammaData::SaveHist()
+{
+    TFile* out = new TFile((m_name+"hist.root").c_str(), "recreate");    
+    hEmean->Write();
+    hPEmean->Write();
+    out->Close();
+}

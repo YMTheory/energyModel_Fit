@@ -18,7 +18,7 @@ std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
 // Options in Fitter ...
 bool JUNOP::fitGammaSources           = true;
 bool JUNOP::fitB12                    = false;
-std::string JUNOP::m_calcOption       = "prmelec";
+std::string JUNOP::m_calcOption       = "twolayer";
 std::string JUNOP::m_nonlMode         = "histogram";
 
 // pull term

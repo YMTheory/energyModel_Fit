@@ -326,6 +326,8 @@ void junoNLChiFunction::GammaPlot()
         gNonlData->SetPointError(index, 0, tmp_dataErr);
         gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
 
+        tmpGammaData->SaveHist();
+
         index++;
     }
 
