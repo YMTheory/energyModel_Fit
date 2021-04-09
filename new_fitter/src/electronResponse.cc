@@ -3,6 +3,7 @@
 #include "electronCerenkov.hh"
 
 #include <TFile.h>
+#include <TGraph.h>
 
 double electronResponse::m_SimEtrue[m_nSimData];
 double electronResponse::m_SimNonl[m_nSimData];
@@ -122,3 +123,53 @@ void electronResponse::EmpiricalFit()
 
     m_doFit = true;
 }
+
+
+void electronResponse::FitPlot()
+{
+    TGraph* gNom = new TGraph();
+    TGraph* gFit = new TGraph();
+    gNom->SetName("nom");
+    gFit->SetName("fit");
+
+
+    electronQuench::setkA(1);
+    electronQuench::setEnergyScale(3300.371/2.223);
+    electronCerenkov::setkC(1);
+    electronCerenkov::setEnergyScale(3300.371/2.223);
+    for(int i=0; i<500; i++) {
+        double Etrue = 10./500 * (i+1);
+        double nonl_nom = electronResponse::getElecNonl(Etrue);
+        gNom->SetPoint(i, Etrue, nonl_nom);
+    }
+
+    gNom->SetLineWidth(2);
+    gNom->SetLineColor(kBlue+1);
+
+
+    electronQuench::setkA(1.01959e+00);
+    electronQuench::setEnergyScale(3300.371/2.223);
+    electronCerenkov::setkC(7.09311e-01);
+    electronCerenkov::setEnergyScale(3300.371/2.223);
+    for(int i=0; i<500; i++) {
+        double Etrue = 10./500 * (i+1);
+        double nonl_fit = electronResponse::getElecNonl(Etrue);
+        gFit->SetPoint(i, Etrue, nonl_fit);
+    }
+
+    gFit->SetLineWidth(2);
+    gFit->SetLineColor(kGreen+1);
+
+
+    TFile* out = new TFile("ElecNonlCompare.root", "recreate");
+    gNom->Write();
+    gFit->Write();
+    out->Close();
+
+
+}
+
+
+
+
+

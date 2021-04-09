@@ -48,6 +48,8 @@ string junoNLChiFunction::m_nonlMode;
 
 junoNLChiFunction::junoNLChiFunction() {
 
+    cout << ">>>>>>>>>>>> Fitting Mode ==> " << junoParameters::m_calcOption << endl;
+
     m_nData = 0;
     m_nGam  = 0;
 
@@ -177,6 +179,7 @@ void junoNLChiFunction::SetParameters(double *par)
             electronQuench::setBirk1            (par[1]);
             electronCerenkov::setkC             (par[2]);
             electronCerenkov::setEnergyScale    (par[3]);
+            junoParameters::m_nuGamma = par[4];
         }
 
         if (m_nonlMode == "analytic") {
@@ -193,6 +196,7 @@ void junoNLChiFunction::SetParameters(double *par)
         electronCerenkov::setkC             (par[1]);
         electronQuench::setEnergyScale      (par[2]);
         electronCerenkov::setEnergyScale    (par[2]);
+        junoParameters::m_nuGamma = par[3];
     }
 }
 
@@ -212,10 +216,11 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     // Configurate parameters
     if (junoParameters::scintillatorParameterization == kSimulation) {
         if (m_nonlMode == "histogram") {
-            junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0., 0., ierrflag); iPar++;
-            junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.1e-3, 7.5e-3, ierrflag); iPar++;
-            junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0., 0., ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0., 0., ierrflag);              iPar++;
+            junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.1e-3, 7.5e-3, ierrflag);     iPar++;
+            junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0., 0., ierrflag);               iPar++;
             junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 0, 0, ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "nuGamma", 0.01, 0.0001, 0., 1, ierrflag);         iPar++;
         }
 
         if (m_nonlMode == "analytic") {
@@ -230,12 +235,13 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 1600, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
     }
 
     //junoNLMinuit->FixParameter(0);
     //junoNLMinuit->FixParameter(1);
-    //junoNLMinuit->FixParameter(2);
-    //junoNLMinuit->FixParameter(3);
+    junoNLMinuit->FixParameter(2);
+    junoNLMinuit->FixParameter(3);
 
     // Minimization strategy
     junoNLMinuit->SetErrorDef(1);
@@ -276,6 +282,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 void junoNLChiFunction::Plot()
 {
     //electronResponse::Plot();
+    //GammaPEPlot();
     if(m_doGamFit)
         GammaPlot();
     if(m_doB12Fit)
@@ -292,13 +299,14 @@ void junoNLChiFunction::GammaPlot()
         return;
     }
 
+    std::cout << " >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< " << std::endl;
 
     TGraphErrors* gNonlData = new TGraphErrors();
     TGraphErrors* gNonlCalc = new TGraphErrors();
     gNonlData->SetName("gNonlData");
     gNonlCalc->SetName("gNonlCalc");
 
-    double fit_pars[3] = {m_bestFit[0], m_bestFit[1], m_bestFit[2]};
+    double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
     SetParameters(fit_pars);
     int index = 0;
     for(int iData=0; iData<m_nGam; iData++) {
@@ -307,9 +315,13 @@ void junoNLChiFunction::GammaPlot()
         //tmpGammaData->calcGammaNPE();
         double tmp_E       = tmpGammaData->GetEtrue();
         double tmp_pred    = tmpGammaData->GetNonlPred();
+        double tmp_pred1   = tmpGammaData->GetNonlPred1();
         double tmp_data    = tmpGammaData->GetNonlData();
         double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
-        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl
+        double tmp_pedata  = tmpGammaData->GetPEData();
+        double tmp_pecalc  = tmpGammaData->GetPECalc();
+        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " "
+             << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
         gNonlData->SetPoint(index, tmp_E, tmp_data);
         gNonlData->SetPointError(index, 0, tmp_dataErr);
         gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
@@ -328,9 +340,11 @@ void junoNLChiFunction::GammaPlot()
     gNonlCalc->SetLineColor(kRed+1);
     gNonlCalc->SetLineWidth(2);
 
-    double nom_pars[3] = {1.0, 1.0, 3300.371/2.223};
+    cout << " >>> Nominal Outputs <<< " << endl;
+    double nom_pars[4] = {1.0, 1.0, 3300.371/2.223, 0};
     SetParameters(nom_pars);
     TGraphErrors* gNom = new TGraphErrors();
+    index = 0;
     for(int iData=0; iData<m_nGam; iData++) {
         std::string source = source_name[iData];
         gammaData* tmpGammaData = gammaData_array[iData];
@@ -338,7 +352,13 @@ void junoNLChiFunction::GammaPlot()
         //tmpGammaData->calcGammaNPE();
         double tmp_E       = tmpGammaData->GetEtrue();
         double tmp_pred    = tmpGammaData->GetNonlPred();
-        //cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl
+        double tmp_pred1   = tmpGammaData->GetNonlPred1();
+        double tmp_data    = tmpGammaData->GetNonlData();
+        double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
+        double tmp_pedata  = tmpGammaData->GetPEData();
+        double tmp_pecalc  = tmpGammaData->GetPECalc();
+        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " "
+             << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
         gNom->SetPoint(index, tmp_E, tmp_pred);
 
         index++;
@@ -353,14 +373,15 @@ void junoNLChiFunction::GammaPlot()
     TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
     c1->cd(); c1->SetGrid();
     gNonlData->SetTitle("Nonlinearity Fitting; Etrue/MeV; Nonlinearity");
-    //gNonlData->GetYaxis()->SetRangeUser(0.01,0.045);
+    gNonlData->GetYaxis()->SetRangeUser(0.90, 1.05);
     gNonlData->Draw("APL");
     gNonlCalc->Draw("P SAME");
-    gNom->Draw("P SAME");
+    gNom->Draw("LP SAME");
     TLegend* led = new TLegend();
     led->SetFillColor(kWhite);
     led->AddEntry(gNonlData, "data", "PL");
     led->AddEntry(gNonlCalc, "calc", "PL");
+    led->AddEntry(gNom, "nominal", "PL");
     led->Draw("SAME");
 
     c1->SaveAs("GamNLFit.root");    
@@ -368,4 +389,86 @@ void junoNLChiFunction::GammaPlot()
 }
 
 
+
+void junoNLChiFunction::GammaPEPlot()
+{
+    std::cout << " >>>>>>>>>>>> GammaPE Outputs <<<<<<<<<<<< " << std::endl;
+
+    TGraphErrors* gPEData = new TGraphErrors();
+    TGraphErrors* gPECalc = new TGraphErrors();
+    TGraphErrors* gPENomi = new TGraphErrors();
+
+    gPEData->SetName("PEData");
+    gPECalc->SetName("PECalc");
+    gPENomi->SetName("PENomi");
+
+    std::cout << " >>>>>>> GammaPE Fitting Outputs <<<<<<< " << std::endl;
+    double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    SetParameters(fit_pars);
+    int index = 0;
+    for(int iData=0; iData<m_nGam; iData++) {
+        std::string source = source_name[iData];
+        gammaData* tmpGammaData = gammaData_array[iData];
+        tmpGammaData->calcGammaResponse();
+        double tmp_E       = tmpGammaData->GetEtrue();
+        double tmp_pred    = tmpGammaData->GetPECalc();
+        double tmp_data    = tmpGammaData->GetPEData();
+
+        cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
+        gPEData->SetPoint(index, tmp_E, tmp_data);
+        gPECalc->SetPoint(index, tmp_E, tmp_pred);
+
+        index++;
+    }
+
+    std::cout << " >>>>>>> GammaPE Nominal Outputs <<<<<<< " << std::endl;
+    index = 0;
+    double nom_pars[4] = {1, 1, 3300.371/2.223, 0};
+    SetParameters(nom_pars);
+    for(int iData=0; iData<m_nGam; iData++) {
+        std::string source = source_name[iData];
+        gammaData* tmpGammaData = gammaData_array[iData];
+        tmpGammaData->calcGammaResponse();
+        double tmp_E       = tmpGammaData->GetEtrue();
+        double tmp_pred    = tmpGammaData->GetPECalc();
+
+        cout << tmp_E << " " << tmp_pred << endl;
+        gPENomi->SetPoint(index, tmp_E, tmp_pred);
+
+        index++;
+    }
+
+    gPEData->SetMarkerStyle(20);
+    gPEData->SetMarkerColor(kBlue+1);
+    gPEData->SetLineColor(kBlue+1);
+    gPEData->SetLineWidth(2);
+    gPEData->SetMarkerSize(1.0);
+    gPECalc->SetMarkerStyle(21);
+    gPECalc->SetMarkerColor(kRed+1);
+    gPECalc->SetMarkerSize(1.0);
+    gPECalc->SetLineColor(kRed+1);
+    gPECalc->SetLineWidth(2);
+    gPENomi->SetMarkerStyle(21);
+    gPENomi->SetMarkerColor(kOrange+1);
+    gPENomi->SetMarkerSize(1.0);
+    gPENomi->SetLineColor(kOrange+1);
+    gPENomi->SetLineWidth(2);
+
+    TCanvas* c1 = new TCanvas("totPE", "totPE");
+    c1->cd(); c1->SetGrid();
+    gPEData->SetTitle("PEinearity Fitting; Etrue/MeV; totpe");
+    //gPEData->GetYaxis()->SetRangeUser(0.90, 1.05);
+    gPEData->Draw("APL");
+    gPECalc->Draw("P SAME");
+    gPENomi->Draw("LP SAME");
+    TLegend* led = new TLegend();
+    led->SetFillColor(kWhite);
+    led->AddEntry(gPEData, "data", "PL");
+    led->AddEntry(gPECalc, "calc", "PL");
+    led->AddEntry(gPENomi, "nominal", "PL");
+    led->Draw("SAME");
+
+    c1->SaveAs("GamPECheck.root");    
+
+}
 

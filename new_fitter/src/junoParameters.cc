@@ -21,6 +21,9 @@ bool JUNOP::fitB12                    = false;
 std::string JUNOP::m_calcOption       = "prmelec";
 std::string JUNOP::m_nonlMode         = "histogram";
 
+// pull term
+double JUNOP::m_nuGamma               = 0;
+
 // gamma fitter 
 std::string JUNOP::gammaLSNL_File     = "data/gamma/gamma_response.txt";
 std::string JUNOP::gammaPdf_File      = "data/gamma/Gamma_Electron3.root";

@@ -8,6 +8,7 @@
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
 #include "electronResponse.hh"
+#include "electronFitter.hh"
 #include "gammaData.hh"
 #include "gammaFitter.hh"
 #include "junoSpectrum.hh"

@@ -4,6 +4,12 @@ int main()
 {
     SetStyle();
 
+    // electron fake nonl fitting :
+    //electronFitter* efitter = new electronFitter();
+    //efitter->Initialize();
+    //efitter->Minimization();
+    //efitter->Plot();
+
     // gamma calibration source
     //gammaFitter*  gfitter = new gammaFitter();
     //gfitter->Initialize();
@@ -28,7 +34,9 @@ int main()
     fitter->LoadData();
     fitter->GetChiSquare();
     fitter->Plot();
+    //
 
+    //electronResponse::FitPlot();
 
     return 1.0;
 }

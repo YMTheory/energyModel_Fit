@@ -31,6 +31,10 @@ class junoParameters
         static double m_gammaError;
         static bool fitGammaSources;
 
+
+        // pull term management :
+        static double m_nuGamma;
+
         static ScintillatorParameterization scintillatorParameterization;
 
         static std::string specTheoMode;

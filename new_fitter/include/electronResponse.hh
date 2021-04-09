@@ -2,6 +2,7 @@
 #define _electronResponse_h
 
 #include <TGraph.h>
+#include <TGraphErrors.h>
 #include <TF1.h>
 class electronResponse
 {
@@ -12,9 +13,12 @@ class electronResponse
         static double getElecNonl(double Etrue);
         
         static void loadSimElecNonl();
+        static void loadMinSimElecNonl();
         static void EmpiricalFit();
 
         static void Plot();
+
+        static void FitPlot();
 
         static void FuncConstruct();
 
@@ -50,6 +54,8 @@ class electronResponse
 
         static void SetParameters();
         static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}
+
+        static TGraphErrors* gMinElecNonl;
 
 };
 

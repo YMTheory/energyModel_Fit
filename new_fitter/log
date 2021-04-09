@@ -1,24 +1,21 @@
 Nonlinearity formula form histogram
- eMin         = 0
- eMax         = 15
- fitMin         = 0
- fitMax         = 15
- nMaxBins     = 14400
- nMaxBinsData = 100
- nMaxBr       = 3
- nMaxGam      = 2
- NonlMode     = histogram
 Empirical ElecNonl Function has been constructed...
- >>> Loading theoretical B12 spectrum <<< 
- specCalcMode = sim
- >>> Total Branch Number = 3
- >>> 0 with 0 gamma and branch ratio is 0.973024
- >>> 1 with 1 gamma and branch ratio is 0.012472
-gamma energy = 4440 keV
- >>> 2 with 2 gamma and branch ratio is 0.014504
-gamma energy = 4440 keV
-gamma energy = 3215 keV
- >>> Loading data B12spectrum <<< 
+ >>> Loading Naked Gamma Cs137 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma Mn54 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma K40 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma nH Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma Tl208 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma nC12 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma O16 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
+ >>> Loading Naked Gamma nFe56 Data <<< 
+ >>> Load Primary Electron Distribution <<< 
  **********
  **    1 **SET PRINT           1
  **********
@@ -28,10 +25,10 @@ gamma energy = 3215 keV
  MINUIT MEMORY CLEARED. NO PARAMETERS NOW DEFINED.
  PARAMETER DEFINITIONS:
     NO.   NAME         VALUE      STEP SIZE      LIMITS
-     1 kA           1.00000e+00  1.00000e-03    9.00000e-01  1.10000e+00
-     2 kB           6.50000e-03  1.00000e-05    5.50000e-03  7.50000e-03
-     3 kC           1.00000e+00  1.00000e-03    9.00000e-01  1.10000e+00
-     4 energyScale   1.52159e+03  1.00000e+00    1.45000e+03  1.55000e+03
+     1 kA           1.00000e+00  1.00000e-03     no limits
+     2 kC           1.00000e+00  1.00000e-03     no limits
+     3 energyScale   1.48465e+03  1.00000e+00    1.40000e+03  1.60000e+03
+     4 nuGamma      1.00000e-02  1.00000e-04    0.00000e+00  1.00000e+00
  **********
  **    3 **SET ERRDEF           1
  **********
@@ -43,110 +40,723 @@ gamma energy = 3215 keV
  **    5 **MIGRAD        5000
  **********
  FIRST CALL TO USER FUNCTION AT NEW START POINT, WITH IFLAG=4.
- >>> Start Loading Primary electron distribution ...
-Loading PrmElecDist for gamma4440keV
-Loading PrmElecDist for gamma4440keV
-Loading PrmElecDist for gamma3215keV
- >>> Loading Quenching NL Data <<< 
+ >>> Load scintillation PE file <<< 
  >>> Loading Electron Cerenkov Shape <<< 
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
  START MIGRAD MINIMIZATION.  STRATEGY  2.  CONVERGENCE WHEN EDM .LT. 1.00e-04
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 1 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 2 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 3 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 4 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== 1.42921e+20 added to diagonal of error matrix
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.148 0.91892
+prmelec -> Mn54 1156.21 0.933789
+prmelec -> K40 2103.77 0.969893
+prmelec -> nH 3277.26 0.992996
+prmelec -> Tl208 3883.95 1.00079
+prmelec -> nC12 7520.76 1.02441
+prmelec -> O16 9375.26 1.03015
+prmelec -> nFe56 11735.6 1.03504
+prmelec -> Cs137 902.969 0.918738
+prmelec -> Mn54 1155.98 0.933604
+prmelec -> K40 2103.36 0.969704
+prmelec -> nH 3276.62 0.992805
+prmelec -> Tl208 3883.21 1.0006
+prmelec -> nC12 7519.33 1.02421
+prmelec -> O16 9373.49 1.02995
+prmelec -> nFe56 11733.4 1.03485
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933697
+prmelec -> K40 2103.57 0.969801
+prmelec -> nH 3276.95 0.992904
+prmelec -> Tl208 3883.59 1.0007
+prmelec -> nC12 7520.08 1.02431
+prmelec -> O16 9374.42 1.03006
+prmelec -> nFe56 11734.6 1.03495
+prmelec -> Cs137 903.058 0.918828
+prmelec -> Mn54 1156.1 0.933695
+prmelec -> K40 2103.56 0.969796
+prmelec -> nH 3276.93 0.992897
+prmelec -> Tl208 3883.56 1.00069
+prmelec -> nC12 7520 1.0243
+prmelec -> O16 9374.32 1.03004
+prmelec -> nFe56 11734.4 1.03494
+prmelec -> Cs137 903.071 0.918841
+prmelec -> Mn54 1156.13 0.933719
+prmelec -> K40 2103.68 0.969855
+prmelec -> nH 3277.21 0.992983
+prmelec -> Tl208 3883.94 1.00079
+prmelec -> nC12 7520.95 1.02443
+prmelec -> O16 9375.57 1.03018
+prmelec -> nFe56 11736.1 1.03509
+prmelec -> Cs137 903.047 0.918817
+prmelec -> Mn54 1156.07 0.933674
+prmelec -> K40 2103.44 0.969743
+prmelec -> nH 3276.67 0.992818
+prmelec -> Tl208 3883.22 1.00061
+prmelec -> nC12 7519.13 1.02418
+prmelec -> O16 9373.17 1.02992
+prmelec -> nFe56 11732.9 1.03481
+prmelec -> Cs137 903.059 0.918767
+prmelec -> Mn54 1156.1 0.933633
+prmelec -> K40 2103.56 0.969733
+prmelec -> nH 3276.94 0.992834
+prmelec -> Tl208 3883.58 1.00063
+prmelec -> nC12 7520.04 1.02424
+prmelec -> O16 9374.37 1.02998
+prmelec -> nFe56 11734.5 1.03488
+prmelec -> Cs137 903.059 0.918891
+prmelec -> Mn54 1156.1 0.933759
+prmelec -> K40 2103.56 0.969864
+prmelec -> nH 3276.94 0.992967
+prmelec -> Tl208 3883.58 1.00077
+prmelec -> nC12 7520.04 1.02438
+prmelec -> O16 9374.37 1.03012
+prmelec -> nFe56 11734.5 1.03502
+prmelec -> Cs137 903.059 0.918741
+prmelec -> Mn54 1156.1 0.933607
+prmelec -> K40 2103.56 0.969706
+prmelec -> nH 3276.94 0.992806
+prmelec -> Tl208 3883.58 1.0006
+prmelec -> nC12 7520.04 1.02421
+prmelec -> O16 9374.37 1.02995
+prmelec -> nFe56 11734.5 1.03485
+prmelec -> Cs137 903.059 0.918916
+prmelec -> Mn54 1156.1 0.933785
+prmelec -> K40 2103.56 0.969891
+prmelec -> nH 3276.94 0.992995
+prmelec -> Tl208 3883.58 1.00079
+prmelec -> nC12 7520.04 1.02441
+prmelec -> O16 9374.37 1.03015
+prmelec -> nFe56 11734.5 1.03505
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.061 0.918831
+prmelec -> Mn54 1156.1 0.933698
+prmelec -> K40 2103.57 0.969801
+prmelec -> nH 3276.95 0.992903
+prmelec -> Tl208 3883.59 1.0007
+prmelec -> nC12 7520.06 1.02431
+prmelec -> O16 9374.39 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.057 0.918827
+prmelec -> Mn54 1156.1 0.933694
+prmelec -> K40 2103.56 0.969797
+prmelec -> nH 3276.93 0.992898
+prmelec -> Tl208 3883.57 1.0007
+prmelec -> nC12 7520.03 1.02431
+prmelec -> O16 9374.35 1.03005
+prmelec -> nFe56 11734.5 1.03494
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933697
+prmelec -> K40 2103.56 0.9698
+prmelec -> nH 3276.95 0.992902
+prmelec -> Tl208 3883.59 1.0007
+prmelec -> nC12 7520.06 1.02431
+prmelec -> O16 9374.4 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.058 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969797
+prmelec -> nH 3276.93 0.992899
+prmelec -> Tl208 3883.57 1.0007
+prmelec -> nC12 7520.02 1.02431
+prmelec -> O16 9374.35 1.03005
+prmelec -> nFe56 11734.5 1.03494
+prmelec -> Cs137 903.059 0.918827
+prmelec -> Mn54 1156.1 0.933694
+prmelec -> K40 2103.56 0.969797
+prmelec -> nH 3276.94 0.992898
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03494
+prmelec -> Cs137 903.059 0.918831
+prmelec -> Mn54 1156.1 0.933698
+prmelec -> K40 2103.56 0.969801
+prmelec -> nH 3276.94 0.992903
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.059 0.918829
+prmelec -> Mn54 1156.1 0.933696
+prmelec -> K40 2103.56 0.969799
+prmelec -> nH 3276.94 0.9929
+prmelec -> Tl208 3883.58 1.0007
+prmelec -> nC12 7520.04 1.02431
+prmelec -> O16 9374.37 1.03005
+prmelec -> nFe56 11734.5 1.03495
+prmelec -> Cs137 903.16 0.918933
+prmelec -> Mn54 1156.24 0.933811
+prmelec -> K40 2103.89 0.969949
+prmelec -> nH 3277.53 0.993079
+prmelec -> Tl208 3884.31 1.00089
+prmelec -> nC12 7521.66 1.02453
+prmelec -> O16 9376.46 1.03028
+prmelec -> nFe56 11737.2 1.03518
+prmelec -> Cs137 903.148 0.918833
+prmelec -> Mn54 1156.21 0.9337
+prmelec -> K40 2103.77 0.969801
+prmelec -> nH 3277.26 0.992901
+prmelec -> Tl208 3883.95 1.0007
+prmelec -> nC12 7520.76 1.02431
+prmelec -> O16 9375.26 1.03005
+prmelec -> nFe56 11735.6 1.03495
+prmelec -> Cs137 903.071 0.918754
+prmelec -> Mn54 1156.13 0.93363
+prmelec -> K40 2103.68 0.969762
+prmelec -> nH 3277.21 0.992889
+prmelec -> Tl208 3883.94 1.0007
+prmelec -> nC12 7520.95 1.02433
+prmelec -> O16 9375.57 1.03008
+prmelec -> nFe56 11736.1 1.03499
+prmelec -> Cs137 903.148 0.91892
+prmelec -> Mn54 1156.21 0.933789
+prmelec -> K40 2103.77 0.969893
+prmelec -> nH 3277.26 0.992996
+prmelec -> Tl208 3883.95 1.00079
+prmelec -> nC12 7520.76 1.02441
+prmelec -> O16 9375.26 1.03015
+prmelec -> nFe56 11735.6 1.03504
+prmelec -> Cs137 903.071 0.918841
+prmelec -> Mn54 1156.13 0.933719
+prmelec -> K40 2103.68 0.969855
+prmelec -> nH 3277.21 0.992983
+prmelec -> Tl208 3883.94 1.00079
+prmelec -> nC12 7520.95 1.02443
+prmelec -> O16 9375.57 1.03018
+prmelec -> nFe56 11736.1 1.03509
+prmelec -> Cs137 903.059 0.918741
+prmelec -> Mn54 1156.1 0.933607
+prmelec -> K40 2103.56 0.969706
+prmelec -> nH 3276.94 0.992806
+prmelec -> Tl208 3883.58 1.0006
+prmelec -> nC12 7520.04 1.02421
+prmelec -> O16 9374.37 1.02995
+prmelec -> nFe56 11734.5 1.03485
  EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -2.1953e+37 -9.6789e+10  0.0000e+00  2.1953e+37
+        -4.1918e-03  8.5466e-02  1.7364e-01  3.7451e+00
  MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 21974501091562981341218490925258375168.000000 TO DIAGONAL.
- MINUIT WARNING IN HESSE
- ============== Matrix inversion fails.
-  MNHESS FAILS AND WILL RETURN DIAGONAL MATRIX. 
- FCN=2806.25 FROM HESSE     STATUS=FAILED         75 CALLS          76 TOTAL
-                     EDM=2.69011e+36    STRATEGY= 2  ERROR MATRIX UNCERTAINTY 100.0 per cent
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.007937 TO DIAGONAL.
+ FCN=295.736 FROM HESSE     STATUS=NOT POSDEF     29 CALLS          30 TOTAL
+                     EDM=292.463    STRATEGY= 2      ERR MATRIX NOT POS-DEF
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  kA           1.00000e+00   1.49388e-01   1.00002e-09  -1.15977e+18
-   2  kB           6.50000e-03   1.49388e-03   1.00002e-09  -1.14316e+03
-   3  kC           1.00000e+00   1.49388e-01   1.00002e-09   9.41424e+02
-   4  energyScale   1.52159e+03   8.13852e+01   2.21770e-07  -2.54430e+02
- MINUIT WARNING IN MIGRAD  
- ============== Negative diagonal element 3 in Error Matrix
- MINUIT WARNING IN MIGRAD  
- ============== 2.44069 added to diagonal of error matrix
- MIGRAD FAILS TO FIND IMPROVEMENT
- EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -3.3657e+00 -3.5876e-01  2.8858e+00  4.8386e+00
- MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 3.370495 TO DIAGONAL.
- FCN=1238.28 FROM HESSE     STATUS=NOT POSDEF     31 CALLS         204 TOTAL
-                     EDM=1.07206e+10    STRATEGY= 2      ERR MATRIX NOT POS-DEF
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  kA           9.46913e-01   1.03691e-01   1.72819e+10  -4.98801e-04
-   2  kB           6.65402e-03   1.38037e-04   1.63002e-01  -1.17211e+03
-   3  kC           1.09549e+00   1.57134e-06   1.89357e-04  -1.22412e+03
-   4  energyScale   1.46227e+03   6.80104e-04   2.65568e-05   1.01361e+03
- MIGRAD FAILS TO FIND IMPROVEMENT
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 3 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 4 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== 5.14162e+09 added to diagonal of error matrix
- EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -5.3510e+03  1.0000e+00  1.0002e+00  5.3530e+03
- MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 5356.377557 TO DIAGONAL.
- FCN=292.103 FROM HESSE     STATUS=NOT POSDEF     29 CALLS         256 TOTAL
-                     EDM=2476.47    STRATEGY= 2      ERR MATRIX NOT POS-DEF
-  EXT PARAMETER                APPROXIMATE        STEP         FIRST   
-  NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  kA           9.77955e-01   0.00000e+00   1.73023e+10  -3.00615e-04
-   2  kB           5.88072e-03   2.18734e-10   1.56098e-01   1.36743e+02
-   3  kC           1.08134e+00   3.54554e-07   1.86801e-04  -1.87658e+07
-   4  energyScale   1.54799e+03   5.88222e+00   2.75778e-05  -3.44120e+01
- MIGRAD FAILS TO FIND IMPROVEMENT
+   1  kA           1.00000e+00   4.15122e-03   1.00000e-04   5.05465e+04
+   2  kC           1.00000e+00   1.97820e-02   2.31536e-03   3.46997e+03
+   3  energyScale   1.48465e+03   6.29978e+00   1.43215e-03  -3.59520e+03
+   4  nuGamma      1.00000e-02   8.61454e-04   8.94353e-04   5.32135e+03
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.461 0.923085
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989256
+prmelec -> Tl208 3823.51 0.995958
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936816
+prmelec -> K40 2079.52 0.969164
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.74 1.01602
+prmelec -> O16 9190.41 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923085
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.41 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936816
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923085
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 897.46 0.923084
+prmelec -> Mn54 1147.46 0.936817
+prmelec -> K40 2079.52 0.969165
+prmelec -> nH 3229.71 0.989255
+prmelec -> Tl208 3823.51 0.995957
+prmelec -> nC12 7378.75 1.01602
+prmelec -> O16 9190.42 1.02084
+prmelec -> nFe56 11496 1.02496
+prmelec -> Cs137 898.737 0.923288
+prmelec -> Mn54 1149.09 0.937027
+prmelec -> K40 2082.51 0.969393
+prmelec -> nH 3234.38 0.989496
+prmelec -> Tl208 3829.05 0.996203
+prmelec -> nC12 7389.5 1.01628
+prmelec -> O16 9203.83 1.02111
+prmelec -> nFe56 11512.8 1.02523
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.54 0.923258
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.66 0.98946
+prmelec -> Tl208 3828.19 0.996166
+prmelec -> nC12 7387.84 1.01624
+prmelec -> O16 9201.76 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936994
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.66 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.84 1.01624
+prmelec -> O16 9201.76 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923258
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.539 0.923257
+prmelec -> Mn54 1148.84 0.936995
+prmelec -> K40 2082.05 0.969358
+prmelec -> nH 3233.65 0.989459
+prmelec -> Tl208 3828.19 0.996165
+prmelec -> nC12 7387.83 1.01624
+prmelec -> O16 9201.75 1.02107
+prmelec -> nFe56 11510.2 1.02519
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.534 0.923297
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969375
+prmelec -> nH 3233.5 0.989462
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.09 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996161
+prmelec -> nC12 7387.32 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937029
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
  MIGRAD MINIMIZATION HAS CONVERGED.
  MIGRAD WILL VERIFY CONVERGENCE AND ERROR MATRIX.
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 3 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== Negative diagonal element 4 in Error Matrix
- MINUIT WARNING IN HESSE   
- ============== 4.33053e+09 added to diagonal of error matrix
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.534 0.923297
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969375
+prmelec -> nH 3233.5 0.989462
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.09 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996161
+prmelec -> nC12 7387.32 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937029
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.534 0.923297
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969375
+prmelec -> nH 3233.5 0.989462
+prmelec -> Tl208 3827.99 0.996163
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.09 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.534 0.923296
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.09 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.534 0.923297
+prmelec -> Mn54 1148.83 0.937029
+prmelec -> K40 2081.98 0.969375
+prmelec -> nH 3233.5 0.989462
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.09 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
+prmelec -> Cs137 898.533 0.923296
+prmelec -> Mn54 1148.82 0.937028
+prmelec -> K40 2081.98 0.969374
+prmelec -> nH 3233.5 0.989461
+prmelec -> Tl208 3827.99 0.996162
+prmelec -> nC12 7387.33 1.01622
+prmelec -> O16 9201.08 1.02104
+prmelec -> nFe56 11509.3 1.02516
  EIGENVALUES OF SECOND-DERIVATIVE MATRIX:
-        -6.7051e+03  1.0000e+00  1.0005e+00  6.7071e+03
+        -5.9237e-07 -2.8097e-08  1.6180e-01  3.8382e+00
  MINUIT WARNING IN HESSE   
- ============== MATRIX FORCED POS-DEF BY ADDING 6711.828603 TO DIAGONAL.
- MIGRAD TERMINATED WITHOUT CONVERGENCE.
- FCN=286.883 FROM MIGRAD    STATUS=FAILED        324 CALLS         325 TOTAL
-                     EDM=3338.01    STRATEGY= 2      ERR MATRIX NOT POS-DEF
+ ============== MATRIX FORCED POS-DEF BY ADDING 0.003839 TO DIAGONAL.
+ FCN=0.5114 FROM MIGRAD    STATUS=CONVERGED      80 CALLS          81 TOTAL
+                     EDM=7.13631e-06    STRATEGY= 2      ERR MATRIX NOT POS-DEF
   EXT PARAMETER                APPROXIMATE        STEP         FIRST   
   NO.   NAME      VALUE            ERROR          SIZE      DERIVATIVE 
-   1  kA           9.77955e-01   0.00000e+00   1.73023e+10  -3.00501e-04
-   2  kB           5.88072e-03   3.12315e-09   1.56098e-01   1.11469e+02
-   3  kC           1.08134e+00   2.54284e-07   1.86801e-04  -1.86899e+07
-   4  energyScale   1.55000e+03   3.68311e+00   2.77135e-05** at limit **
+   1  kA           9.96560e-01   4.75562e-03   4.75197e-07   4.04037e+00
+   2  kC           7.24014e-01   1.88108e-02   5.11182e-06  -3.87754e-02
+   3  energyScale   1.47006e+03   6.91492e+00   3.28402e-06  -2.59512e-01
+   4  nuGamma      1.03079e-02   4.75463e-03   2.13285e-06   3.99730e-01
  EXTERNAL ERROR MATRIX.    NDIM=  26    NPAR=  4    ERR DEF=1
-  6.546e-16 -3.035e-28  2.472e-26 -1.619e-23 
- -3.035e-28  9.754e-18 -7.910e-16  5.181e-13 
-  2.472e-26 -7.910e-16  6.466e-14 -4.220e-11 
- -1.619e-23  5.181e-13 -4.220e-11  2.764e-08 
+  2.262e-05  1.166e-05  1.652e-02 -1.135e-05 
+  1.166e-05  3.538e-04  1.802e-02 -1.238e-05 
+  1.652e-02  1.802e-02  4.790e+01  1.589e-02 
+ -1.135e-05 -1.238e-05  1.589e-02  2.262e-05 
 ERR MATRIX NOT POS-DEF
  PARAMETER  CORRELATION COEFFICIENTS  
        NO.  GLOBAL      1      2      3      4
-        1  0.00000   1.000 -0.000  0.000 -0.000
-        2  0.99782  -0.000  1.000 -0.996  0.998
-        3  0.99816   0.000 -0.996  1.000 -0.998
-        4  0.99900  -0.000  0.998 -0.998  1.000
+        1  0.99708   1.000  0.130  0.502 -0.502
+        2  0.89211   0.130  1.000  0.138 -0.138
+        3  0.99716   0.502  0.138  1.000  0.483
+        4  0.99716  -0.502 -0.138  0.483  1.000
  ERR MATRIX NOT POS-DEF
  ====================== 
-    minChi2: 286.883 with nData = 92 and nPar = 4
+    minChi2: 0.5114 with nData = 8 and nPar = 4
  ====================== 
- >>> Plot junoSpectum <<< 
+ >>> Draw Gamma NL Fitting Results <<< 
+ >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< 
+0.662 917.119 917.119 898.533
+0.834 1171.94 1171.94 1148.82
+1.461 2123.31 2123.31 2081.98
+2.223 3300.37 3300.37 3233.5
+2.614 3905.88 3905.88 3827.99
+4.945 7537.15 7537.15 7387.33
+6.13 9389.58 9389.58 9201.08
+7.637 11741.9 11741.9 11509.3
+prmelec -> Cs137 903.059 0.918829
+0.662 903.059
+prmelec -> Mn54 1156.1 0.933696
+0.834 1156.1
+prmelec -> K40 2103.56 0.969799
+1.461 2103.56
+prmelec -> nH 3276.94 0.9929
+2.223 3276.94
+prmelec -> Tl208 3883.58 1.0007
+2.614 3883.58
+prmelec -> nC12 7520.04 1.02431
+4.945 7520.04
+prmelec -> O16 9374.37 1.03005
+6.13 9374.37
+prmelec -> nFe56 11734.5 1.03495
+7.637 11734.5
+Info in <TCanvas::SaveAs>: ROOT file GamNLFit.root has been created

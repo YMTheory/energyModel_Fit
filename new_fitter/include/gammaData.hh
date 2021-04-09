@@ -1,9 +1,13 @@
 #ifndef _gammaData_h
 #define _gammaData_h
 
+#include <iostream>
 #include <string>
 #include <vector>
 #include <TH2D.h>
+#include <TH1D.h>
+
+using namespace std;
 
 class gammaData
 {
@@ -20,12 +24,17 @@ class gammaData
     public:
         double GetEtrue         () {return m_Etrue;}
         double GetEvis          () {return m_Evis;}
+        double GetPEData        () {return m_totpeData;}
+        double GetPECalc        () {return m_totpeCalc;}
         double GetNonlPred      () {return m_nonlCalc;}
         double GetNonlData      () {return m_nonlData;}
         double GetNonlDataErr   () {return m_nonlDataErr;}
         double GetResolPred     () {return m_resCalc;}
         double GetResolData     () {return m_resData;}
         double GetResolDataErr  () {return m_resDataErr;}
+
+        double GetNonlPred1     () {return m_nonlCalc1;}
+
         void LoadData           ();
         void Plot               ();
         double GetChi2          ();
@@ -48,6 +57,8 @@ class gammaData
 
         double m_Etrue;
         double m_Evis;
+        double m_totpeCalc;
+        double m_totpeData;
         double m_nonlCalc;
         double m_nonlData;
         double m_nonlDataErr;
@@ -55,8 +66,14 @@ class gammaData
         double m_resData;
         double m_resDataErr;
 
+        // back-up
+        double m_nonlCalc1;
+        double m_sctPE;
+        double m_cerPE;
+
     private:
         double m_scale;
+        double m_nuGamma;
 
     private:
         static const unsigned int m_nMaxPdf = 800;
@@ -68,6 +85,9 @@ class gammaData
         TH2D* elec_hist;
         static const unsigned int m_nSamples = 5000;
         double m_mean[m_nSamples];
+        double m_meanpe[m_nSamples];
+        TH1D* hEmean;
+        TH1D* hPEmean;
 
     private:
         static std::string m_calcOption;  // prmelec ; twolayer

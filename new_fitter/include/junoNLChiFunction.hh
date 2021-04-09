@@ -18,6 +18,7 @@ class junoNLChiFunction
         static double GetChi2         ( double maxChi2 = 100000 );  
     
         static void GammaPlot         ();
+        static void GammaPEPlot       ();
         static void Plot              ();
 
     private:
@@ -61,6 +62,8 @@ class junoNLChiFunction
 
     private:
         static string m_nonlMode;
+
+    
 };
 
 #endif
