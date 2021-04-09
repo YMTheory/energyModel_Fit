@@ -13,6 +13,7 @@
 #include <TH1.h>
 # include <TSystem.h>
 #include <TMath.h>
+#include <TRandom.h>
 
 using namespace std;
 
@@ -191,9 +192,7 @@ void gammaData::calcGammaResponse()
                 NPE2 = electronQuench::ScintillatorPE(E2) + electronCerenkov::getCerPE(E2);
             }
 
-            //numerator1 += (prob1*NPE1 + prob2*NPE2) * (E2-E1) /2;
-            //denominator1 += (prob1 + prob2) *(E2-E1) /2;
-            numerator1 += (NPE1+NPE2)/2 * (prob1+prob2)/2;
+            numerator1 += NPE1 * prob1;
             //denominator1 += (prob1 + prob2) /2;
         }
 
@@ -203,7 +202,8 @@ void gammaData::calcGammaResponse()
         //m_totpeCalc = m_nonlCalc * m_Etrue * m_scale;
         m_totpeCalc = numerator1 / denominator1;
         m_nonlCalc1 = numerator1 /denominator1 / m_scale / m_Etrue;
-        //cout << numerator1 << " " << denominator1 << " " << m_scale << " " << m_Etrue << endl;
+
+        cout << m_name << " " << m_totpeData << " " << m_totpeCalc << endl;
 
     }  else if (m_calcOption == "twolayer") {
         hEmean->Reset();
@@ -217,22 +217,20 @@ void gammaData::calcGammaResponse()
             double tmp_pe= 0;
             double tmp_cerpe = 0;
             double tmp_sctpe = 0;
+            double tmp_sigma = 0;
             for (int iSec=0; iSec<100; iSec++) {
                 double tmp_E = elec_hist->GetBinContent(iSample+1, iSec+1);
                 if (tmp_E == 0) break;
-                double tmp_Edep;
                 double tmp_sigpe;
                 double tmp_sigcerpe;
                 double tmp_sigsctpe;
                 double resol;;
                 if(m_nonlMode == "histogram") {
-                    tmp_Edep = tmp_E * electronResponse::getElecNonl(tmp_E);
-                    tmp_sigpe = tmp_E * (electronQuench::ScintillatorNL(tmp_E) + electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
-                    tmp_sigsctpe = tmp_E * (electronQuench::ScintillatorNL(tmp_E)) * m_scale;
-                    tmp_sigcerpe = tmp_E * (electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
+                    tmp_pe += tmp_E * (electronQuench::ScintillatorNL(tmp_E) + electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
+                    //tmp_sigsctpe = tmp_E * (electronQuench::ScintillatorNL(tmp_E)) * m_scale;
+                    //tmp_sigcerpe = tmp_E * (electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
 
-                    tmp_sigpe += TMath::Gaus(0, electronResponse::gElecResol->Eval(tmp_E));
-                    tmp_Edep = tmp_sigpe / m_scale;
+                    tmp_sigma += electronResponse::gElecResol->Eval(tmp_E) * electronResponse::gElecResol->Eval(tmp_E);
 
                     //tmp_sigpe = (electronQuench::ScintillatorPE(tmp_E) +electronCerenkov::getCerPE(tmp_E)); // alreadly include nonl
                     //tmp_sigcerpe = electronCerenkov::getCerPE(tmp_E);
@@ -243,38 +241,40 @@ void gammaData::calcGammaResponse()
                     //tmp_sigcerpe += TMath::Gaus(0, 1) * resol * tmp_sigcerpe;
                     //tmp_sigsctpe += TMath::Gaus(0, 1) * resol * tmp_sigsctpe;
                 }
-                if(m_nonlMode == "analytic") {
-                    tmp_Edep = tmp_E * electronResponse::calcElecNonl(tmp_E);
-                }
+                //if(m_nonlMode == "analytic") {
+                //    tmp_Edep = tmp_E * electronResponse::calcElecNonl(tmp_E);
+                //}
 
-                tmp_mean += tmp_Edep;
-                tmp_cerpe += tmp_sigcerpe;
-                tmp_sctpe += tmp_sigsctpe;
-                tmp_pe += tmp_sigpe;
+                //tmp_mean += tmp_Edep;
+                //tmp_cerpe += tmp_sigcerpe;
+                //tmp_sctpe += tmp_sigsctpe;
+                //tmp_pe += tmp_sigpe;
+
+                tmp_sigma = TMath::Sqrt(tmp_sigma);
                 
             }
-            m_mean[iSample] = tmp_mean;
-            //m_meanpe[iSample] = tmp_pe;
-            
-            hEmean->Fill(tmp_mean);
-            hPEmean->Fill(tmp_pe);
-            hCerPEmean->Fill(tmp_cerpe);
-            hSctPEmean->Fill(tmp_sctpe);
+            double sample_pe = gRandom->Gaus(tmp_pe, tmp_sigma);
+            //double sample_pe = tmp_pe;
+
+            //hEmean->Fill(tmp_mean);
+            hPEmean->Fill(sample_pe);
+            //hCerPEmean->Fill(tmp_cerpe);
+            //hSctPEmean->Fill(tmp_sctpe);
         }
 
         // calculate pe distribution
-        double mean_Edep = 0;
-        double mean_pe = 0;
-        for (int i=0; i<m_nSamples; i++) {
-            mean_Edep += m_mean[i];
-            //mean_pe += m_meanpe[i];
-        }
-        mean_Edep /= m_nSamples;
+        //double mean_Edep = 0;
+        //double mean_pe = 0;
+        //for (int i=0; i<m_nSamples; i++) {
+        //    mean_Edep += m_mean[i];
+        //    //mean_pe += m_meanpe[i];
+        //}
+        //mean_Edep /= m_nSamples;
         //mean_pe /= m_nSamples;
         //m_totpeCalc = mean_pe;
-        m_nonlCalc = mean_Edep / m_Etrue;
-        m_nonlCalc1 = hEmean->GetMean() / m_Etrue;
         m_totpeCalc = hPEmean->GetMean();
+        m_nonlCalc = hPEmean->GetMean() / m_scale / m_Etrue;
+        m_nonlCalc1 = hPEmean->GetMean() / m_scale / m_Etrue;
         m_sctPE = hSctPEmean->GetMean();
         m_cerPE = hCerPEmean->GetMean();
         //m_nonlCalc = hEmean->GetMean() / m_Etrue;
@@ -295,7 +295,7 @@ double gammaData::GetChi2()
     // calculate totpe sigma
     calcGammaResponse();
 
-    chi2 += (m_nonlCalc1- m_nonlData) * (m_nonlCalc1- m_nonlData) / m_nonlDataErr / m_nonlDataErr;
+    chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
 
     return chi2;
 }

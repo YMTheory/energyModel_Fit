@@ -424,8 +424,8 @@ void junoNLChiFunction::GammaPEPlot()
     gPEDiff->SetName("PEDiff");
 
     std::cout << " >>>>>>> GammaPE Fitting Outputs <<<<<<< " << std::endl;
-    double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
-    //double fit_pars[4] = {1, 1, 3300.371/2.223, 0};
+    //double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    double fit_pars[4] = {1, 1, 3300.371/2.223, 0};
     SetParameters(fit_pars);
     int index = 0;
     for(int iData=0; iData<m_nGam; iData++) {
