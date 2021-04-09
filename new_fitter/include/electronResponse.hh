@@ -14,6 +14,7 @@ class electronResponse
         
         static void loadSimElecNonl();
         static void loadMinSimElecNonl();
+        static void loadElecResol();
         static void EmpiricalFit();
 
         static void Plot();
@@ -56,6 +57,7 @@ class electronResponse
         static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}
 
         static TGraphErrors* gMinElecNonl;
+        static TGraphErrors* gElecResol;
 
 };
 

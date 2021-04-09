@@ -26,10 +26,6 @@ class gammaData
         double GetEvis          () {return m_Evis;}
         double GetPEData        () {return m_totpeData;}
         double GetPECalc        () {return m_totpeCalc;}
-        double GetCerPECalc     () {return m_cerPE;}
-        double GetSctPECalc     () {return m_sctPE;}
-        double GetCerPEData     () {return m_cerPEData;}
-        double GetSctPEData     () {return m_sctPEData;}
         double GetNonlPred      () {return m_nonlCalc;}
         double GetNonlData      () {return m_nonlData;}
         double GetNonlDataErr   () {return m_nonlDataErr;}
@@ -45,7 +41,6 @@ class gammaData
         void SaveHist           ();
 
         void LoadGammaData ();
-        void LoadGammaPEComp();
         void LoadPrimElecDist();
         void LoadPrimElecSamples();
 
@@ -76,8 +71,6 @@ class gammaData
         double m_nonlCalc1;
         double m_sctPE;
         double m_cerPE;
-        double m_sctPEData;
-        double m_cerPEData;
 
     private:
         double m_scale;
@@ -94,7 +87,6 @@ class gammaData
         static const unsigned int m_nSamples = 5000;
         double m_mean[m_nSamples];
         double m_meanpe[m_nSamples];
-        //double m_sigmape[m_nSamples];
         TH1D* hEmean;
         TH1D* hPEmean;
         TH1D* hCerPEmean;

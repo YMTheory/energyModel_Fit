@@ -5,6 +5,7 @@
 #include "junoParameters.hh"
 #include "junoSpectrum.hh"
 
+#include <TFile.h>
 #include <TGraphErrors.h>
 #include <TCanvas.h>
 #include <TLegend.h>
@@ -120,6 +121,7 @@ junoNLChiFunction::junoNLChiFunction() {
     }
 
     electronResponse::FuncConstruct();
+    electronResponse::loadElecResol();
 }
 
 junoNLChiFunction::~junoNLChiFunction() {
@@ -282,7 +284,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 void junoNLChiFunction::Plot()
 {
     //electronResponse::Plot();
-    //GammaPEPlot();
+    GammaPEPlot();
     if(m_doGamFit)
         GammaPlot();
     if(m_doB12Fit)
@@ -320,7 +322,9 @@ void junoNLChiFunction::GammaPlot()
         double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
         double tmp_pedata  = tmpGammaData->GetPEData();
         double tmp_pecalc  = tmpGammaData->GetPECalc();
-        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " "
+        double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
+        double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
+        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " " << tmp_sctpecalc << " " << tmp_cerpecalc << " "
              << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
         gNonlData->SetPoint(index, tmp_E, tmp_data);
         gNonlData->SetPointError(index, 0, tmp_dataErr);
@@ -399,13 +403,29 @@ void junoNLChiFunction::GammaPEPlot()
     TGraphErrors* gPEData = new TGraphErrors();
     TGraphErrors* gPECalc = new TGraphErrors();
     TGraphErrors* gPENomi = new TGraphErrors();
+    TGraphErrors* gCerPEData = new TGraphErrors();
+    TGraphErrors* gCerPECalc = new TGraphErrors();
+    TGraphErrors* gCerPENomi = new TGraphErrors();
+    TGraphErrors* gSctPEData = new TGraphErrors();
+    TGraphErrors* gSctPECalc = new TGraphErrors();
+    TGraphErrors* gSctPENomi = new TGraphErrors();
+    TGraphErrors* gPEDiff = new TGraphErrors();
+    
 
     gPEData->SetName("PEData");
     gPECalc->SetName("PECalc");
     gPENomi->SetName("PENomi");
+    gCerPEData->SetName("CerPEData");
+    gCerPECalc->SetName("CerPECalc");
+    gCerPENomi->SetName("CerPENomi");
+    gSctPEData->SetName("SctPEData");
+    gSctPECalc->SetName("SctPECalc");
+    gSctPENomi->SetName("SctPENomi");
+    gPEDiff->SetName("PEDiff");
 
     std::cout << " >>>>>>> GammaPE Fitting Outputs <<<<<<< " << std::endl;
     double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    //double fit_pars[4] = {1, 1, 3300.371/2.223, 0};
     SetParameters(fit_pars);
     int index = 0;
     for(int iData=0; iData<m_nGam; iData++) {
@@ -415,14 +435,59 @@ void junoNLChiFunction::GammaPEPlot()
         double tmp_E       = tmpGammaData->GetEtrue();
         double tmp_pred    = tmpGammaData->GetPECalc();
         double tmp_data    = tmpGammaData->GetPEData();
+        double tmp_cerdata = tmpGammaData->GetCerPEData();
+        double tmp_cerpred = tmpGammaData->GetCerPECalc();
+        double tmp_sctdata = tmpGammaData->GetSctPEData();
+        double tmp_sctpred = tmpGammaData->GetSctPECalc();
+        double tmp_deltape = (tmp_pred - tmp_data) / tmp_pred;
 
-        cout << tmp_E << " " << tmp_data << " " << tmp_pred << endl;
         gPEData->SetPoint(index, tmp_E, tmp_data);
         gPECalc->SetPoint(index, tmp_E, tmp_pred);
+        gSctPEData->SetPoint(index, tmp_E, tmp_sctdata);
+        gSctPECalc->SetPoint(index, tmp_E, tmp_sctpred);
+        gCerPEData->SetPoint(index, tmp_E, tmp_cerdata);
+        gCerPECalc->SetPoint(index, tmp_E, tmp_cerpred);
+        gPEDiff->SetPoint(index, tmp_E, tmp_deltape);
 
         index++;
     }
 
+    gPEData->SetMarkerStyle(20);
+    gPEData->SetMarkerColor(kBlue+1);
+    gPEData->SetLineColor(kBlue+1);
+    gPEData->SetLineWidth(2);
+    gPEData->SetMarkerSize(1.0);
+    gPECalc->SetMarkerStyle(21);
+    gPECalc->SetMarkerColor(kRed+1);
+    gPECalc->SetMarkerSize(1.0);
+    gPECalc->SetLineColor(kRed+1);
+    gPECalc->SetLineWidth(2);
+    gSctPEData->SetMarkerStyle(20);
+    gSctPEData->SetMarkerColor(kBlue+1);
+    gSctPEData->SetLineColor(kBlue+1);
+    gSctPEData->SetLineWidth(2);
+    gSctPEData->SetMarkerSize(1.0);
+    gSctPECalc->SetMarkerStyle(21);
+    gSctPECalc->SetMarkerColor(kRed+1);
+    gSctPECalc->SetMarkerSize(1.0);
+    gSctPECalc->SetLineColor(kRed+1);
+    gSctPECalc->SetLineWidth(2);
+    gCerPEData->SetMarkerStyle(20);
+    gCerPEData->SetMarkerColor(kBlue+1);
+    gCerPEData->SetLineColor(kBlue+1);
+    gCerPEData->SetLineWidth(2);
+    gCerPEData->SetMarkerSize(1.0);
+    gCerPECalc->SetMarkerStyle(21);
+    gCerPECalc->SetMarkerColor(kRed+1);
+    gCerPECalc->SetMarkerSize(1.0);
+    gCerPECalc->SetLineColor(kRed+1);
+    gCerPECalc->SetLineWidth(2);
+    gPEDiff->SetMarkerStyle(20);
+    gPEDiff->SetMarkerColor(kBlue+1);
+    gPEDiff->SetLineColor(kBlue+1);
+    gPEDiff->SetLineWidth(2);
+    gPEDiff->SetMarkerSize(1.0);
+    /*
     std::cout << " >>>>>>> GammaPE Nominal Outputs <<<<<<< " << std::endl;
     index = 0;
     double nom_pars[4] = {1, 1, 3300.371/2.223, 0};
@@ -440,37 +505,22 @@ void junoNLChiFunction::GammaPEPlot()
         index++;
     }
 
-    gPEData->SetMarkerStyle(20);
-    gPEData->SetMarkerColor(kBlue+1);
-    gPEData->SetLineColor(kBlue+1);
-    gPEData->SetLineWidth(2);
-    gPEData->SetMarkerSize(1.0);
-    gPECalc->SetMarkerStyle(21);
-    gPECalc->SetMarkerColor(kRed+1);
-    gPECalc->SetMarkerSize(1.0);
-    gPECalc->SetLineColor(kRed+1);
-    gPECalc->SetLineWidth(2);
     gPENomi->SetMarkerStyle(21);
     gPENomi->SetMarkerColor(kOrange+1);
     gPENomi->SetMarkerSize(1.0);
     gPENomi->SetLineColor(kOrange+1);
     gPENomi->SetLineWidth(2);
+    */
 
-    TCanvas* c1 = new TCanvas("totPE", "totPE");
-    c1->cd(); c1->SetGrid();
-    gPEData->SetTitle("PEinearity Fitting; Etrue/MeV; totpe");
-    //gPEData->GetYaxis()->SetRangeUser(0.90, 1.05);
-    gPEData->Draw("APL");
-    gPECalc->Draw("P SAME");
-    gPENomi->Draw("LP SAME");
-    TLegend* led = new TLegend();
-    led->SetFillColor(kWhite);
-    led->AddEntry(gPEData, "data", "PL");
-    led->AddEntry(gPECalc, "calc", "PL");
-    led->AddEntry(gPENomi, "nominal", "PL");
-    led->Draw("SAME");
-
-    c1->SaveAs("GamPECheck.root");    
+    TFile* out = new TFile("GamPECheck.root", "recreate");
+    gPEData->Write();
+    gPECalc->Write();
+    gCerPEData->Write();
+    gCerPECalc->Write();
+    gSctPEData->Write();
+    gSctPECalc->Write();
+    gPEDiff->Write();
+    out->Close();
 
 }
 

@@ -14,6 +14,7 @@ std::string JUNOP::cerenkov_outFile   = "output/electron/CerenkovNL.root";
 std::string JUNOP::cerenkovNL_File    = "data/electron/cerenkovPE.txt";
 std::string JUNOP::electronLSNL_File  = "data/electron/electron_total.txt";
 std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
+std::string JUNOP::electronResol_File = "data/electron/elecResol.txt";
 
 // Options in Fitter ...
 bool JUNOP::fitGammaSources           = true;
@@ -25,6 +26,7 @@ std::string JUNOP::m_nonlMode         = "histogram";
 double JUNOP::m_nuGamma               = 0;
 
 // gamma fitter 
+std::string JUNOP::gammaPE_File       = "data/gamma/gamma_component.txt";
 std::string JUNOP::gammaLSNL_File     = "data/gamma/gamma_response.txt";
 std::string JUNOP::gammaPdf_File      = "data/gamma/Gamma_Electron3.root";
 std::string JUNOP::gammaOut_File      = "output/gamma/gammaFit.root";

@@ -23,7 +23,9 @@ class junoParameters
         static std::string electronOut_File;
         static std::string quenchNL_outFile;
         static std::string cerenkov_outFile;
+        static std::string electronResol_File;
     
+        static std::string gammaPE_File;
         static std::string gammaLSNL_File;
         static std::string gammaPdf_File;
         static std::string gammaOut_File;

@@ -1,6 +1,7 @@
 #include "electronResponse.hh"
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
+#include "junoParameters.hh"
 
 #include <TFile.h>
 #include <TGraph.h>
@@ -19,6 +20,7 @@ double electronResponse::m_p2 = 1.394;
 double electronResponse::m_p3 = 5.55e-4;
 
 TGraphErrors* electronResponse::gMinElecNonl;
+TGraphErrors* electronResponse::gElecResol;
 
 
 double electronResponse::getElecNonl(double Etrue)
@@ -169,7 +171,21 @@ void electronResponse::FitPlot()
 
 }
 
-
+void electronResponse::loadElecResol()
+{
+    gElecResol = new TGraphErrors();
+    ifstream in; in.open(junoParameters::electronResol_File.c_str());
+    string line;
+    double tmp_E, tmp_mu, tmp_muerr, tmp_sigma, tmp_sigmaerr, tmp_resol, tmp_resolerr;
+    int index = 0;
+    while(getline(in, line)) {
+        istringstream ss(line);
+        ss >> tmp_E >> tmp_mu >> tmp_muerr >> tmp_sigma >> tmp_sigmaerr >> tmp_resol >> tmp_resolerr;
+        gElecResol->SetPoint(index, tmp_E, tmp_sigma);
+        index++;
+    }
+    in.close();
+}
 
 
 
