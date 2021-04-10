@@ -75,6 +75,7 @@ void gammaData::LoadGammaData()
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
             m_resDataErr = TMath::Sqrt(tmp_totPESigmaerr*tmp_totPESigmaerr/tmp_totPE/tmp_totPE + tmp_totPEerr*tmp_totPEerr*tmp_totPESigma*tmp_totPESigma/tmp_totPE/tmp_totPE/tmp_totPE/tmp_totPE);
+            break;
         }
     }
     in.close();
@@ -203,7 +204,6 @@ void gammaData::calcGammaResponse()
         m_totpeCalc = numerator1 / denominator1;
         m_nonlCalc1 = numerator1 /denominator1 / m_scale / m_Etrue;
 
-        cout << m_name << " " << m_totpeData << " " << m_totpeCalc << endl;
 
     }  else if (m_calcOption == "twolayer") {
         hEmean->Reset();

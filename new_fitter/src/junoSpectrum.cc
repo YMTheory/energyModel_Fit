@@ -197,7 +197,7 @@ void junoSpectrum::DataHistTree(string fileName)
 		double content = sigH->GetBinContent(i+1);
 		double error   = sigH->GetBinError  (i+1);
 		m_eData   [i] = content;
-		m_eDataErr[i] = error;
+		m_eDataErr[i] = error * 2;
     }
     
 	delete sigH;
@@ -410,7 +410,7 @@ double junoSpectrum::GetChi2()
             m_nData++;
         }
     }
-    //cout << m_name << " chi2: " << chi2 << " with nData : " << m_nData << endl;
+    cout << m_name << " chi2: " << chi2 << " with nData : " << m_nData << endl;
 	//if(nDoF>0) chi2 /= double(m_nData - nDoF);
 	return chi2;
 

@@ -48,6 +48,8 @@ class junoNLChiFunction
         static gammaData* nC12Data;
         static gammaData* O16Data;
         static gammaData* nFe56Data;
+        static gammaData* gamma4440Data;
+        static gammaData* gamma511Data;
 
         static junoSpectrum* junoB12;
 

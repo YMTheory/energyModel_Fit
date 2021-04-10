@@ -30,11 +30,15 @@ int main()
     //fitter->Initialize();
     //fitter->Minimization();
 
-    junoNLChiFunction* fitter = new junoNLChiFunction();
-    fitter->LoadData();
-    fitter->GetChiSquare();
-    fitter->Plot();
+    //junoNLChiFunction* fitter = new junoNLChiFunction();
+    //fitter->LoadData();
+    //fitter->GetChiSquare();
+    //fitter->Plot();
     //
+
+    spectrumFitter* sFitter = new spectrumFitter();
+    sFitter->Initialize();
+    sFitter->Minimization();
 
     //electronResponse::FitPlot();
 

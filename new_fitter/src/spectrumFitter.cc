@@ -1,4 +1,5 @@
 #include "spectrumFitter.hh"
+#include "junoParameters.hh"
 
 #include "Minuit2/Minuit2Minimizer.h"
 #include "Math/Minimizer.h"
@@ -34,7 +35,7 @@ void spectrumFitter::Initialize()
                                3, 1,
                                0, 15,
                                1, 14,
-                               "analytic",
+                               junoParameters::m_nonlMode,
                                "B12");
     junoB12->LoadData();
 }
@@ -44,9 +45,9 @@ double spectrumFitter::GetChi2(const double *par)
     double chi2 = 0;
 
     electronQuench::setkA(par[0]);
-    electronQuench::setBirk1(par[1]);
-    electronCerenkov::setkC(par[2]);
-    electronCerenkov::setEnergyScale(par[3]);
+    electronQuench::setEnergyScale(par[2]);
+    electronCerenkov::setkC(par[1]);
+    electronCerenkov::setEnergyScale(par[2]);
 
     chi2 += junoB12->GetChi2();
     return 1;
@@ -74,26 +75,22 @@ int spectrumFitter::Minimization()
     // start point :
     double variable[4];
     variable[0] = 0.96;
-    variable[1] = 6.5e-3;
-    variable[2] = 1.0;
-    variable[3] = 3350/2.22;
+    variable[1] = 1.0;
+    variable[2] = 3300.371/2.223;
 
     minimum->SetFunction(f);
 
     minimum->SetVariable(0, "kA", variable[0], step[0]);
-    minimum->SetVariable(1, "kB", variable[1], step[1]);
-    minimum->SetVariable(2, "kC", variable[2], step[2]);
-    minimum->SetVariable(3, "energyScale", variable[3], step[3]);
+    minimum->SetVariable(1, "kC", variable[1], step[1]);
+    minimum->SetVariable(2, "energyScale", variable[2], step[2]);
 
     minimum->SetVariableLimits(0, 0.9, 1.1);
-    minimum->SetVariableLimits(1, 5.0e-3, 7.5e-3);
-    minimum->SetVariableLimits(2, 0.9, 1.2);
-    minimum->SetVariableLimits(3, 1400, 1600);
+    minimum->SetVariableLimits(1, 0.9, 1.2);
+    minimum->SetVariableLimits(2, 1400, 1600);
 
     //minimum->FixVariable(0);
     //minimum->FixVariable(1);
     //minimum->FixVariable(2);
-    //minimum->FixVariable(3);
 
     minimum->Minimize();
 

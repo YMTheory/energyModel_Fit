@@ -21,6 +21,8 @@ gammaData* junoNLChiFunction::Tl208Data;
 gammaData* junoNLChiFunction::nC12Data;
 gammaData* junoNLChiFunction::O16Data;
 gammaData* junoNLChiFunction::nFe56Data;
+gammaData* junoNLChiFunction::gamma511Data;
+gammaData* junoNLChiFunction::gamma4440Data;
 
 junoSpectrum* junoNLChiFunction::junoB12;
 
@@ -55,6 +57,12 @@ junoNLChiFunction::junoNLChiFunction() {
     m_nGam  = 0;
 
     if (m_doGamFit) {
+
+        //gamma511Data = new gammaData("511keV", 700, 1100, 100);
+        //source_name[m_nData] = "gamma511"; 
+        //gammaData_array[m_nData] = gamma511Data;
+        //m_nData++;
+        //m_nGam++;
 
         Cs137Data = new gammaData("Cs137", 700, 1100, 100);
         source_name[m_nData] = "Cs137"; 
@@ -242,7 +250,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     //junoNLMinuit->FixParameter(0);
     //junoNLMinuit->FixParameter(1);
-    junoNLMinuit->FixParameter(2);
+    //junoNLMinuit->FixParameter(2);
     junoNLMinuit->FixParameter(3);
 
     // Minimization strategy
@@ -346,6 +354,7 @@ void junoNLChiFunction::GammaPlot()
     gNonlCalc->SetLineColor(kRed+1);
     gNonlCalc->SetLineWidth(2);
 
+    cout << "\n";
     cout << " >>> Nominal Outputs <<< " << endl;
     double nom_pars[4] = {1.0, 1.0, 3300.371/2.223, 0};
     SetParameters(nom_pars);
