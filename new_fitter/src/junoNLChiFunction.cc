@@ -4,6 +4,7 @@
 #include "electronResponse.hh"
 #include "junoParameters.hh"
 #include "junoSpectrum.hh"
+#include "junoB12.hh"
 
 #include <TFile.h>
 #include <TGraphErrors.h>
@@ -24,7 +25,9 @@ gammaData* junoNLChiFunction::nFe56Data;
 gammaData* junoNLChiFunction::gamma511Data;
 gammaData* junoNLChiFunction::gamma4440Data;
 
-junoSpectrum* junoNLChiFunction::junoB12;
+junoSpectrum* junoNLChiFunction::junoB12data;
+
+junoB12* junoNLChiFunction::b12data;
 
 double junoNLChiFunction::m_chi2    = 0.;
 double junoNLChiFunction::m_chi2Min = 100000;
@@ -124,8 +127,9 @@ junoNLChiFunction::junoNLChiFunction() {
     cout << "Nonlinearity formula form " << m_nonlMode << endl;
 
     if (m_doB12Fit) {
-        junoB12 = new junoSpectrum(14400, 100, 3, 2,
+        junoB12data = new junoSpectrum(14400, 100, 3, 2,
                              0, 15, 0, 15, m_nonlMode, "B12");
+        //b12data = new junoB12();
     }
 
     electronResponse::FuncConstruct();
@@ -145,7 +149,8 @@ junoNLChiFunction::~junoNLChiFunction() {
         delete nFe56Data;
     }
     if(m_doB12Fit)
-        delete junoB12;
+        delete junoB12data;
+        //delete b12data;
 }
 
 void junoNLChiFunction::LoadData()
@@ -156,7 +161,8 @@ void junoNLChiFunction::LoadData()
         }
     }
     if (m_doB12Fit) {
-        junoB12->LoadData();
+        junoB12data->LoadData();
+        //b12data->Initialize();
     }
 }
 
@@ -170,7 +176,8 @@ double junoNLChiFunction::GetChi2( double maxChi2 )
         }
     }
     if(m_doB12Fit)
-    chi2 += junoB12->GetChi2();
+        chi2 += junoB12data->GetChi2();
+        //chi2 += b12data->GetChi2();    
 
     return chi2;
 }
@@ -278,7 +285,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     m_DoFit = true;
 
     if (m_doB12Fit)
-        m_nData += junoB12->getNData();
+        m_nData += junoB12data->getNData();
 
     cout << " ====================== " << endl;
     cout << "    minChi2: " << min << " with nData = " << m_nData << " and nPar = " << m_nParameter << endl;
@@ -296,7 +303,8 @@ void junoNLChiFunction::Plot()
     if(m_doGamFit)
         GammaPlot();
     if(m_doB12Fit)
-        junoB12->Plot();
+        junoB12data->Plot();
+        //b12data->Plot();
 }
 
 

@@ -45,6 +45,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_name      = name;
     m_specTheoMode = junoParameters::specTheoMode;
     m_loadPrmElec  = false;
+    m_construct = false;
 
 	m_binCenter = new double[nMaxBins];
     m_eVis      = new double[nMaxBins];
@@ -197,7 +198,7 @@ void junoSpectrum::DataHistTree(string fileName)
 		double content = sigH->GetBinContent(i+1);
 		double error   = sigH->GetBinError  (i+1);
 		m_eData   [i] = content;
-		m_eDataErr[i] = error * 2;
+		m_eDataErr[i] = error ;
     }
     
 	delete sigH;
@@ -246,6 +247,9 @@ void junoSpectrum::ApplyScintillatorNL()
     if (!m_loadPrmElec)
         LoadPrmElecDist();
 
+    if (!m_construct)
+        ConstGammaData();
+
     for (int i=0; i<m_nBins; i++) {
         m_eVis[i] = 0;
     }
@@ -261,6 +265,7 @@ void junoSpectrum::ApplyScintillatorNL()
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
         }
+    }
 
         // Nonlinearity on beta
         for (int i=0; i<m_nBins; i++) {
@@ -282,8 +287,26 @@ void junoSpectrum::ApplyScintillatorNL()
 			    if (newBinHig<m_nBins) m_eVis[newBinHig] += bias * m_eTru   [branchIdx][i];
             }
         }
-    }
 }
+
+void junoSpectrum::ConstGammaData()
+{
+    for (int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
+        for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
+			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
+            string eTru = to_string(m_eTruGamStr[branchIdx][gamIdx]);
+            string gamName = eTru+"keV";
+            cout << " >>> Construct gammaData for " << gamName << endl;
+
+            gammaData* gd = new gammaData(gamName, 0, 2000, 200);
+            //mapGammaData.insert(pair<int, gammaData*> (m_eTruGamStr[branchIdx][gamIdx], gd ));
+            //gammaDataArray[branchIdx][gamIdx] = gd;
+        }
+
+    }
+    m_construct = true;
+}
+
 
 void junoSpectrum::LoadPrmElecDist()
 {
@@ -406,6 +429,7 @@ double junoSpectrum::GetChi2()
     for(int i=0; i < m_nBinsData; i++) {
         if(i*binWidthData<m_fitMin or binWidthData*i>m_fitMax-0.1) continue;
         if( m_eDataErr[i]!=0 ) {
+            //cout << m_eData[i] << " " << m_eTheo[i] << " " << m_eDataErr[i] << endl;
             chi2 += pow( (m_eData[i] - m_eTheo[i])/m_eDataErr[i], 2); 
             m_nData++;
         }
@@ -478,6 +502,7 @@ void junoSpectrum::Plot()
     TFile* out = new TFile("spectrum.root", "recreate");
     hData->Write();
     hTheo->Write();
+    hRela->Write();
     out->Close();
 }
 

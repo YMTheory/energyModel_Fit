@@ -17,7 +17,7 @@ std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
 std::string JUNOP::electronResol_File = "data/electron/elecResol.txt";
 
 // Options in Fitter ...
-bool JUNOP::fitGammaSources           = false;
+bool JUNOP::fitGammaSources           = true;
 bool JUNOP::fitB12                    = true;
 std::string JUNOP::m_calcOption       = "prmelec";
 std::string JUNOP::m_nonlMode         = "histogram";

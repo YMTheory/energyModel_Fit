@@ -1,6 +1,8 @@
 #ifndef _junoSpectrum_h
 #define _junoSpectrum_h
 
+#include "gammaData.hh"
+
 #include <iostream>
 #include <string>
 #include <map>
@@ -36,6 +38,8 @@ class junoSpectrum
         void ApplyScintillatorNL();
         void LoadPrmElecDist();
         double EvisGamma(int Etrue);
+
+        void ConstGammaData();
 
         double GetChi2();
 
@@ -97,6 +101,10 @@ class junoSpectrum
     private:
         std::string m_nonlMode;
         std::string m_specTheoMode;
+
+    private:
+        gammaData** gammaDataArray;
+        bool m_construct;
 
 };
 

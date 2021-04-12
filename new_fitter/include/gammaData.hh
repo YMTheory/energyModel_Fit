@@ -84,7 +84,7 @@ class gammaData
         double m_nuGamma;
 
     private:
-        static const unsigned int m_nMaxPdf = 800;
+        static const unsigned int m_nMaxPdf = 1600;
         double m_pdf_eTrue[m_nMaxPdf];
         double m_pdf_prob[m_nMaxPdf];
         double m_max_eTrue;

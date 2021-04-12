@@ -3,6 +3,7 @@
 
 #include "gammaData.hh"
 #include "junoSpectrum.hh"
+#include "junoB12.hh"
 
 #include <TMinuit.h>
 
@@ -51,7 +52,9 @@ class junoNLChiFunction
         static gammaData* gamma4440Data;
         static gammaData* gamma511Data;
 
-        static junoSpectrum* junoB12;
+        static junoSpectrum* junoB12data;
+
+        static junoB12* b12data;
 
         static int m_nData;
         static int m_nGam;

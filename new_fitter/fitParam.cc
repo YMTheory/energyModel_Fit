@@ -30,17 +30,17 @@ int main()
     //fitter->Initialize();
     //fitter->Minimization();
 
-    //junoNLChiFunction* fitter = new junoNLChiFunction();
-    //fitter->LoadData();
-    //fitter->GetChiSquare();
-    //fitter->Plot();
+    junoNLChiFunction* fitter = new junoNLChiFunction();
+    fitter->LoadData();
+    fitter->GetChiSquare();
+    fitter->Plot();
     //
 
-    spectrumFitter* sFitter = new spectrumFitter();
-    sFitter->Initialize();
-    sFitter->Minimization();
-
     //electronResponse::FitPlot();
+
+    //junoB12* b12 = new junoB12();
+    //b12->Initialize();
+    //b12->ApplyScintillatorNL();
 
     return 1.0;
 }

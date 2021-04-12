@@ -275,8 +275,8 @@ void gammaData::calcGammaResponse()
         m_totpeCalc = hPEmean->GetMean();
         m_nonlCalc = hPEmean->GetMean() / m_scale / m_Etrue;
         m_nonlCalc1 = hPEmean->GetMean() / m_scale / m_Etrue;
-        m_sctPE = hSctPEmean->GetMean();
-        m_cerPE = hCerPEmean->GetMean();
+        //m_sctPE = hSctPEmean->GetMean();
+        //m_cerPE = hCerPEmean->GetMean();
         //m_nonlCalc = hEmean->GetMean() / m_Etrue;
         //m_nonlCalc1 = m_totpeCalc / m_scale / m_Etrue ;
     }
