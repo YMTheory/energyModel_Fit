@@ -38,9 +38,18 @@ int main()
 
     //electronResponse::FitPlot();
 
+    //junoSpectrum* junoB12data = new junoSpectrum(14400, 100, 3, 2,
+    //                         0, 15, 0, 15, "histogram", "B12");
+    //junoB12data->LoadData();
+    //cout << junoB12data->GetChi2() <<endl;
+    //junoB12data->Plot();
+
     //junoB12* b12 = new junoB12();
     //b12->Initialize();
-    //b12->ApplyScintillatorNL();
+    //b12->LoadDataSpec();
+    //b12->LoadTheoSpec();
+    //cout << b12->GetChi2() << endl;
+    //b12->Plot();
 
     return 1.0;
 }

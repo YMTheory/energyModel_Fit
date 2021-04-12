@@ -164,6 +164,8 @@ void gammaData::calcGammaResponse()
         double denominator = 0;
         
         double numerator1 = 0;
+        double numerator2 = 0;
+        double numerator3 = 0;
         double denominator1 = 1e5;
         for(int iBin=1; iBin<m_max_eTrue; iBin++) {
             double E1 = m_pdf_eTrue[iBin-1];
@@ -187,13 +189,16 @@ void gammaData::calcGammaResponse()
             numerator += (prob1*E1*fNL1 + prob2*E2*fNL2) * (E2-E1) / 2.;
             denominator += (prob1*E1 + prob2*E2) * (E2-E1) / 2.;
 
-            double NPE1, NPE2;
+            double NPE1, NPE2, NPE3;
             if (m_nonlMode == "histogram" ) {
                 NPE1 = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1);
-                NPE2 = electronQuench::ScintillatorPE(E2) + electronCerenkov::getCerPE(E2);
+                NPE2 = electronQuench::ScintillatorPE(E1) ;
+                NPE3 = electronCerenkov::getCerPE(E1);
             }
 
             numerator1 += NPE1 * prob1;
+            numerator2 += NPE2 * prob1;
+            numerator3 += NPE3 * prob1;
             //denominator1 += (prob1 + prob2) /2;
         }
 
@@ -202,6 +207,8 @@ void gammaData::calcGammaResponse()
         m_nonlCalc = numerator / denominator;
         //m_totpeCalc = m_nonlCalc * m_Etrue * m_scale;
         m_totpeCalc = numerator1 / denominator1;
+        m_sctPE = numerator2 /denominator1;
+        m_cerPE = numerator3 / denominator1;
         m_nonlCalc1 = numerator1 /denominator1 / m_scale / m_Etrue;
 
 

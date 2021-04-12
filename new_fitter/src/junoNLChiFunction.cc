@@ -127,7 +127,7 @@ junoNLChiFunction::junoNLChiFunction() {
     cout << "Nonlinearity formula form " << m_nonlMode << endl;
 
     if (m_doB12Fit) {
-        junoB12data = new junoSpectrum(14400, 100, 3, 2,
+        junoB12data = new junoSpectrum(1500, 100, 3, 2,
                              0, 15, 0, 15, m_nonlMode, "B12");
         //b12data = new junoB12();
     }
@@ -249,8 +249,8 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     }
 
     if (junoParameters::scintillatorParameterization == kSimulationCalc) {
-        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 0.0, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 1600, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
     }
@@ -299,9 +299,11 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 void junoNLChiFunction::Plot()
 {
     //electronResponse::Plot();
-    GammaPEPlot();
     if(m_doGamFit)
+    {
+        GammaPEPlot();
         GammaPlot();
+    }
     if(m_doB12Fit)
         junoB12data->Plot();
         //b12data->Plot();
@@ -340,6 +342,8 @@ void junoNLChiFunction::GammaPlot()
         double tmp_pecalc  = tmpGammaData->GetPECalc();
         double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
         double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
+        double tmp_sctpedata = tmpGammaData->GetSctPEData();
+        double tmp_cerpedate = tmpGammaData->GetCerPEData();
         cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " " << tmp_sctpecalc << " " << tmp_cerpecalc << " "
              << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
         gNonlData->SetPoint(index, tmp_E, tmp_data);
@@ -372,7 +376,6 @@ void junoNLChiFunction::GammaPlot()
         std::string source = source_name[iData];
         gammaData* tmpGammaData = gammaData_array[iData];
         tmpGammaData->calcGammaResponse();
-        //tmpGammaData->calcGammaNPE();
         double tmp_E       = tmpGammaData->GetEtrue();
         double tmp_pred    = tmpGammaData->GetNonlPred();
         double tmp_pred1   = tmpGammaData->GetNonlPred1();
@@ -380,8 +383,18 @@ void junoNLChiFunction::GammaPlot()
         double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
         double tmp_pedata  = tmpGammaData->GetPEData();
         double tmp_pecalc  = tmpGammaData->GetPECalc();
-        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " "
-             << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
+        double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
+        double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
+        double tmp_sctpedata = tmpGammaData->GetSctPEData();
+        double tmp_cerpedate = tmpGammaData->GetCerPEData();
+        //tmpGammaData->calcGammaNPE();
+        cout << "\n";
+        cout << source_name[iData] << " " << tmp_E << endl;
+        cout << tmp_pedata << " " << tmp_pecalc << endl;
+        cout << tmp_sctpedata << " " << tmp_sctpecalc << endl;
+        cout << tmp_cerpedate << " " << tmp_cerpecalc << endl;
+        cout << tmp_data << " " << tmp_pred << endl;
+        cout << "\n";
         gNom->SetPoint(index, tmp_E, tmp_pred);
 
         index++;

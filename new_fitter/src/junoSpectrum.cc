@@ -45,7 +45,6 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_name      = name;
     m_specTheoMode = junoParameters::specTheoMode;
     m_loadPrmElec  = false;
-    m_construct = false;
 
 	m_binCenter = new double[nMaxBins];
     m_eVis      = new double[nMaxBins];
@@ -247,9 +246,6 @@ void junoSpectrum::ApplyScintillatorNL()
     if (!m_loadPrmElec)
         LoadPrmElecDist();
 
-    if (!m_construct)
-        ConstGammaData();
-
     for (int i=0; i<m_nBins; i++) {
         m_eVis[i] = 0;
     }
@@ -259,11 +255,14 @@ void junoSpectrum::ApplyScintillatorNL()
     double bias;
 	double eVisGam[m_nBranch];
 
+    cout << "Current fitting params " << electronQuench::getkA() << " " << electronCerenkov::getkC() <<" " << electronQuench::getEnergyScale()<<endl;
+
     for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
         // Nonlinearity on gamma
         for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
+            cout << "gamma " << m_eTruGam[branchIdx][gamIdx] << " " << EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) << " "<< eVisGam[branchIdx] << endl;
         }
     }
 
@@ -287,24 +286,6 @@ void junoSpectrum::ApplyScintillatorNL()
 			    if (newBinHig<m_nBins) m_eVis[newBinHig] += bias * m_eTru   [branchIdx][i];
             }
         }
-}
-
-void junoSpectrum::ConstGammaData()
-{
-    for (int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
-        for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
-			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
-            string eTru = to_string(m_eTruGamStr[branchIdx][gamIdx]);
-            string gamName = eTru+"keV";
-            cout << " >>> Construct gammaData for " << gamName << endl;
-
-            gammaData* gd = new gammaData(gamName, 0, 2000, 200);
-            //mapGammaData.insert(pair<int, gammaData*> (m_eTruGamStr[branchIdx][gamIdx], gd ));
-            //gammaDataArray[branchIdx][gamIdx] = gd;
-        }
-
-    }
-    m_construct = true;
 }
 
 
@@ -337,6 +318,7 @@ void junoSpectrum::LoadPrmElecDist()
             mapPdfEtrue.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtrue));
             mapPdfProb.insert(pair<int, double*> (m_eTruGamStr[branchIdx][gamIdx], tmp_pdfProb));
 
+
             delete gGammaPdf;
         }
 
@@ -366,6 +348,7 @@ double junoSpectrum::EvisGamma(int Etrue)
         if(m_nonlMode == "histogram") {
             fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
             fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+            //cout << E1 << " " << fNL1 << " " << E2<<" " <<fNL2 << endl; 
         }
 
         if (m_nonlMode == "analytic") {

@@ -1,5 +1,6 @@
 #include "junoB12.hh"
 #include "electronResponse.hh"
+#include "gammaData.hh"
 
 #include <iostream>
 
@@ -10,26 +11,6 @@ using namespace std;
 
 junoB12::junoB12() 
 {
-    m_loadData = false;
-    m_loadTheo = false;
-
-    // binning method :
-    m_binWidth = (15 - 0.) / 14000.;
-    for (int i=0; i<14000; i++ ){
-        m_binCenter[i] = m_binWidth/2. + m_binWidth * i;
-    }
-
-    gammaData* gamma4440 = new gammaData("4440keV", 900, 5000, 6000);
-    gammaData* gamma3215 = new gammaData("3215keV", 900, 4000, 5000);
-    gamma4440->LoadData();
-    gamma3215->LoadData();
-
-    m_eTruGam[0][0] = 0;
-    m_eTruGam[0][1] = 0;
-    m_eTruGam[1][0] = 4.44;
-    m_eTruGam[1][1] = 0;
-    m_eTruGam[2][0] = 4.44;
-    m_eTruGam[2][1] = 3.215;
 }
 
 junoB12::~junoB12()
@@ -42,14 +23,38 @@ junoB12::~junoB12()
 
 void junoB12::Initialize()
 {
+    gamma4440 = new gammaData("4440keV", 900, 5000, 6000);
+    gamma3215 = new gammaData("3215keV", 900, 4000, 5000);
+    gamma4440->LoadData();
+    gamma3215->LoadData();
+
+    m_loadData = false;
+    m_loadTheo = false;
+
+    // binning method :
+    m_binWidth = (15 - 0.) / 1500.;
+    for (int i=0; i<1500; i++ ){
+        m_binCenter[i] = m_binWidth/2. + m_binWidth * i;
+    }
+
+
+    m_eTruGam[0][0] = 0;
+    m_eTruGam[0][1] = 0;
+    m_eTruGam[1][0] = 4.44;
+    m_eTruGam[1][1] = 0;
+    m_eTruGam[2][0] = 4.44;
+    m_eTruGam[2][1] = 3.215;
+
     LoadDataSpec();
     LoadTheoSpec();
+
 }
+
 
 void junoB12::LoadDataSpec()
 {
     double scale = 3300.371/2.223;
-    TH1D* sigH = new TH1D("B12_data", "", 14000, 0, 15);
+    TH1D* sigH = new TH1D("B12_data", "", 100, 0, 15);
 
     TFile* ff = new TFile("./data/spectrum/data/B12_data.root", "read");
     if(!ff) cout << "No such B12 data file " <<  endl;
@@ -61,11 +66,11 @@ void junoB12::LoadDataSpec()
         double tmp_Evis = m_totpe / scale;
         sigH->Fill(tmp_Evis);
     }
-    for (int i=0; i<14000; i++) {
+    for (int i=0; i<100; i++) {
 		double content = sigH->GetBinContent(i+1);
 		double error   = sigH->GetBinError  (i+1);
 		m_eData   [i] = content;
-		m_eDataErr[i] = error * 2;
+		m_eDataErr[i] = error * 1.5;
     }
     
 	delete sigH;
@@ -79,9 +84,9 @@ void junoB12::LoadDataSpec()
 
 void junoB12::LoadTheoSpec()
 {
-    if (not m_loadData) LoadDataSpec();
+    cout <<"Etrue = " << gamma4440->GetEtrue() << endl;
 
-    TFile* ff = new TFile("./data/spectrum/theo/B12_theo.root");
+    TFile* ff = new TFile("./data/spectrum/theo/B12_sim.root");
     if (!ff) cout << "No such B12 theo file !" << endl;
     TTree* tt = (TTree*)ff->Get("T");
     int eGammaStr[10];
@@ -94,7 +99,7 @@ void junoB12::LoadTheoSpec()
 
         // beta
         TH1F* electronHist = (TH1F*)ff->Get(Form("hh%d", branchIdx));
-        for (int binIdx=0;binIdx!=14000;binIdx++)
+        for (int binIdx=0;binIdx!=1500;binIdx++)
         {
             weight = electronHist->Interpolate(m_binCenter[binIdx]);
             m_eTru[branchIdx][binIdx] = branchRatio * weight;
@@ -109,13 +114,18 @@ void junoB12::LoadTheoSpec()
     cout << " >>> Load Theo Spectrum for B12 <<< " << endl;
 }
 
+int junoB12::ApplyNL()
+{
+    cout << gamma4440->GetEtrue() << endl;
+    return 1.0;
+}
 
 void junoB12::ApplyScintillatorNL()
 {
     if (not m_loadData) LoadDataSpec();
     if (not m_loadTheo) LoadTheoSpec();
 
-    for (int i=0; i<100; i++) {
+    for (int i=0; i<1500; i++) {
         m_eVis[i] = 0;
     }
 
@@ -133,11 +143,11 @@ void junoB12::ApplyScintillatorNL()
     m_eVisGam[1][1] = 0;
     m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlPred();
     m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlPred();
-    cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
-    cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
+    //cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
+    //cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
 
     // beta
-    for (int i=0; i<14000; i++) {
+    for (int i=0; i<1500; i++) {
         double eTru = m_binCenter[i];
         double eVis = eTru * electronResponse::getElecNonl(eTru);
         for (int j=0; j<3; j++) {
@@ -146,10 +156,10 @@ void junoB12::ApplyScintillatorNL()
             newBinLow = int((eVis-0)/m_binWidth);
             newBinHig = newBinLow + 1;
             bias      = (eVis - 0 - newBinLow * m_binWidth) / m_binWidth;
-            cout << newBinLow << " " << newBinHig << " " << bias << endl;
+            //cout << newBinLow << " " << newBinHig << " " << bias << endl;
 
-            if (newBinLow < 14000) m_eVis[newBinLow] += (1-bias) * m_eTru[j][i];
-            if (newBinHig < 14000) m_eVis[newBinHig] += bias * m_eTru[j][i];
+            if (newBinLow < 1500) m_eVis[newBinLow] += (1-bias) * m_eTru[j][i];
+            if (newBinHig < 1500) m_eVis[newBinHig] += bias * m_eTru[j][i];
         }
     }
 }
@@ -159,7 +169,7 @@ void junoB12::ApplyScintillatorNL()
 void junoB12::Normalize()
 {
     // Normalize spectrum for data and pred
-	int   rebin = 14000/100;
+	int   rebin = 1500/100;
 	double binWidthData = m_binWidth * rebin;
 	double nTheo = 0;
 	double nData = 0;
@@ -197,7 +207,7 @@ double junoB12::GetChi2()
     Normalize();
 
     double chi2 = 0;
-    int rebin = 14000 / 100;
+    int rebin = 1500 / 100;
     double binWidthData = m_binWidth * rebin;
     int m_nData = 0;
     for(int i=0; i < 100; i++) {
@@ -211,6 +221,7 @@ double junoB12::GetChi2()
 	//if(nDoF>0) chi2 /= double(m_nData - nDoF);
 	return chi2;
 }
+
 
 void junoB12::Plot()
 {
@@ -256,3 +267,4 @@ void junoB12::Plot()
 
 
 }
+

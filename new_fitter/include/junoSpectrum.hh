@@ -39,8 +39,6 @@ class junoSpectrum
         void LoadPrmElecDist();
         double EvisGamma(int Etrue);
 
-        void ConstGammaData();
-
         double GetChi2();
 
         void Plot();
@@ -104,7 +102,6 @@ class junoSpectrum
 
     private:
         gammaData** gammaDataArray;
-        bool m_construct;
 
 };
 
