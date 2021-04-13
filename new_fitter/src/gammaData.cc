@@ -121,6 +121,17 @@ void gammaData::LoadPrimElecDist()
             break;
         }
     }
+    delete gGammaPdf;
+
+    // Load Positron distribution
+    pdfName = "antigamma" + m_name;
+    TH1D* gAntiGammaPdf = (TH1D*)file->Get(pdfName.c_str());
+    if (!gAntiGammaPdf) cout << "No such positron Pdf : " << pdfName << endl;
+    for(int i=0; i<gAntiGammaPdf->GetNbinsX(); i++) {
+        m_pdf_eTrue_posi[i] = gAntiGammaPdf->GetBinCenter(i+1);
+        m_pdf_prob_posi[i] = gAntiGammaPdf->GetBinContent(i+1);
+    }
+    delete gAntiGammaPdf;
 
     file->Close();
 
@@ -166,7 +177,9 @@ void gammaData::calcGammaResponse()
         double numerator1 = 0;
         double numerator2 = 0;
         double numerator3 = 0;
-        double denominator1 = 1e5;
+        double denominator1 = 1e6;
+
+        // electron part
         for(int iBin=1; iBin<m_max_eTrue; iBin++) {
             double E1 = m_pdf_eTrue[iBin-1];
             double E2 = m_pdf_eTrue[iBin];
@@ -176,6 +189,7 @@ void gammaData::calcGammaResponse()
             // based on DYB method...
             double fNL1, fNL2;
 
+            //cout << m_name << " " << iBin << " " << E1 <<" " << prob1 << " " << E2 << " " << prob2 << endl;
             if(m_nonlMode == "histogram") {
                 fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
                 fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
@@ -202,6 +216,31 @@ void gammaData::calcGammaResponse()
             //denominator1 += (prob1 + prob2) /2;
         }
 
+        for (int ibin=1; ibin<m_nMaxPdf; ibin++) {
+            double E1 = m_pdf_eTrue_posi[ibin-1];
+            double E2 = m_pdf_eTrue_posi[ibin];
+            double prob1 = m_pdf_prob_posi[ibin-1];
+            double prob2 = m_pdf_prob_posi[ibin];
+
+            double fNL1, fNL2;
+            fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
+            fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
+        
+            numerator += (prob1*E1*fNL1 + prob2*E2*fNL2) * (E2-E1) / 2.;
+            denominator += (prob1*E1 + prob2*E2) * (E2-E1) / 2.;
+
+            double NPE1, NPE2, NPE3;
+            if (m_nonlMode == "histogram" ) {
+                NPE1 = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1) + 695.53*2; 
+                NPE2 = electronQuench::ScintillatorPE(E1) ;
+                NPE3 = electronCerenkov::getCerPE(E1);
+            }
+
+            numerator1 += NPE1 * prob1;
+            numerator2 += NPE2 * prob1;
+            numerator3 += NPE3 * prob1;
+        }
+
         if (denominator == 0) cout << "Errors Happend While Using GammaPdf Calculation..." << endl;
 
         m_nonlCalc = numerator / denominator;
@@ -210,6 +249,8 @@ void gammaData::calcGammaResponse()
         m_sctPE = numerator2 /denominator1;
         m_cerPE = numerator3 / denominator1;
         m_nonlCalc1 = numerator1 /denominator1 / m_scale / m_Etrue;
+
+        //cout << m_name << " " << m_totpeData << " " << m_totpeCalc << " " << m_nonlData << " " << m_nonlCalc << " " << m_nonlCalc1 << endl;
 
 
     }  else if (m_calcOption == "twolayer") {
@@ -302,7 +343,7 @@ double gammaData::GetChi2()
     // calculate totpe sigma
     calcGammaResponse();
 
-    chi2 += (m_nonlCalc - m_nonlData) * (m_nonlCalc - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
+    chi2 += (m_nonlCalc1 - m_nonlData) * (m_nonlCalc1 - m_nonlData) / m_nonlDataErr / m_nonlDataErr;
 
     return chi2;
 }

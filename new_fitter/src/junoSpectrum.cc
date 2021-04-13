@@ -69,7 +69,7 @@ junoSpectrum::junoSpectrum( int nMaxBins,
     m_eData = new double[nMaxBinsData];
     m_eDataErr = new double[nMaxBinsData];
 
-    m_nPdfBins = 1200;
+    m_nPdfBins = 1000;
 
 	m_eTheo     = new double[nMaxBinsData];
 }
@@ -299,6 +299,7 @@ void junoSpectrum::LoadPrmElecDist()
         for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) { 
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             string eTru = to_string(m_eTruGamStr[branchIdx][gamIdx]);
+
             string pdfName = "gamma"+eTru+"keV";
             std::cout << "Loading PrmElecDist for " << pdfName << std::endl;
             TH1D* gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
@@ -314,9 +315,19 @@ void junoSpectrum::LoadPrmElecDist()
                 if (tmp_pdfProb[i] == 0) {  tmp_PdfMaxEtrue = i; break;}
             }
 
-            mapPdfMaxEtrue.insert(pair<int, int> (m_eTruGamStr[branchIdx][gamIdx], tmp_PdfMaxEtrue));
-            mapPdfEtrue.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtrue));
-            mapPdfProb.insert(pair<int, double*> (m_eTruGamStr[branchIdx][gamIdx], tmp_pdfProb));
+            pdfName = "antigamma"+eTru+"keV";
+            std::cout << "Loading PrmPosiDist for " << pdfName << std::endl;
+            gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
+            if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
+            double* tmp_pdfEtruePosi = new double[m_nPdfBins];
+            double* tmp_pdfProbPosi = new double[m_nPdfBins];
+            for(int i=0; i<gGammaPdf->GetNbinsX(); i++)  {
+                tmp_pdfEtruePosi[i] = gGammaPdf->GetBinCenter(i+1);
+                tmp_pdfProbPosi[i] = gGammaPdf->GetBinContent(i+1);
+            }
+
+            mapPdfEtruePosi.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtruePosi));
+            mapPdfProbPosi.insert(pair<int, double*> (m_eTruGamStr[branchIdx][gamIdx], tmp_pdfProbPosi));
 
 
             delete gGammaPdf;
@@ -331,32 +342,30 @@ void junoSpectrum::LoadPrmElecDist()
 
 double junoSpectrum::EvisGamma(int Etrue)
 {
-    int gamPdfMaxEtrue   = mapPdfMaxEtrue[Etrue];
-    double* gamPdfEtrue  = mapPdfEtrue[Etrue];
-    double* gamPdfProb   = mapPdfProb[Etrue];
+    int gamPdfMaxEtrue       = mapPdfMaxEtrue[Etrue];
+    double* gamPdfEtrue      = mapPdfEtrue[Etrue];
+    double* gamPdfProb       = mapPdfProb[Etrue];
+    double* gamPdfEtruePosi  = mapPdfEtruePosi[Etrue];
+    double* gamPdfProbPosi   = mapPdfProbPosi[Etrue];
 
-    double numerator = 0.; double denominator = 0.;
-    for(int iBin=1;  iBin<gamPdfMaxEtrue; iBin++) {
-        double E1 = gamPdfEtrue[iBin-1];
-        double E2 = gamPdfEtrue[iBin];
+    double numerator = 0.; double denominator = 1e6;
+    for(int iBin=0;  iBin<gamPdfMaxEtrue; iBin++) {
+        double E1 = gamPdfEtrue[iBin];
 
-        double prob1 = gamPdfProb[iBin-1];
-        double prob2 = gamPdfProb[iBin];
+        double prob1 = gamPdfProb[iBin];
 
-        double fNL1, fNL2;
+        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1);
 
-        if(m_nonlMode == "histogram") {
-            fNL1 = electronQuench::ScintillatorNL(E1) + electronCerenkov::getCerenkovPE(E1);
-            fNL2 = electronQuench::ScintillatorNL(E2) + electronCerenkov::getCerenkovPE(E2);
-            //cout << E1 << " " << fNL1 << " " << E2<<" " <<fNL2 << endl; 
-        }
+        numerator   += E1 * prob1;
+    } 
+    for(int iBin=0;  iBin<m_nPdfBins; iBin++) {
+        double E1 = gamPdfEtrue[iBin];
 
-        if (m_nonlMode == "analytic") {
-            fNL1 = electronResponse::calcElecNonl(E1);
-            fNL2 = electronResponse::calcElecNonl(E2);
-        }
-        numerator   += ( prob1*E1*fNL1 + prob2*E2*fNL2 ) * (E2-E1) /2.;
-        denominator += (prob1*E1 + prob2*E2) * (E2-E1)/ 2.;
+        double prob1 = gamPdfProb[iBin];
+
+        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1) + 695.53*2; 
+
+        numerator   += E1 * prob1;
     } 
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}

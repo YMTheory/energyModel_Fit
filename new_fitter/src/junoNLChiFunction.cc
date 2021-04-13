@@ -332,7 +332,7 @@ void junoNLChiFunction::GammaPlot()
     for(int iData=0; iData<m_nGam; iData++) {
         std::string source = source_name[iData];
         gammaData* tmpGammaData = gammaData_array[iData];
-        //tmpGammaData->calcGammaNPE();
+        tmpGammaData->calcGammaResponse();
         double tmp_E       = tmpGammaData->GetEtrue();
         double tmp_pred    = tmpGammaData->GetNonlPred();
         double tmp_pred1   = tmpGammaData->GetNonlPred1();

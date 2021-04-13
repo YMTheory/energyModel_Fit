@@ -84,10 +84,12 @@ class gammaData
         double m_nuGamma;
 
     private:
-        static const unsigned int m_nMaxPdf = 1600;
+        static const unsigned int m_nMaxPdf = 1000;
         double m_pdf_eTrue[m_nMaxPdf];
         double m_pdf_prob[m_nMaxPdf];
         double m_max_eTrue;
+        double m_pdf_eTrue_posi[m_nMaxPdf];
+        double m_pdf_prob_posi[m_nMaxPdf];
 
     private:
         TH2D* elec_hist;

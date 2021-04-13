@@ -38,7 +38,6 @@ class junoSpectrum
         void ApplyScintillatorNL();
         void LoadPrmElecDist();
         double EvisGamma(int Etrue);
-
         double GetChi2();
 
         void Plot();
@@ -91,6 +90,8 @@ class junoSpectrum
         map<int, int> mapPdfMaxEtrue;
         map<int, double*> mapPdfEtrue;
         map<int, double*> mapPdfProb;
+        map<int, double*> mapPdfEtruePosi;
+        map<int, double*> mapPdfProbPosi;
 
     public:
         int m_nData;
