@@ -20,8 +20,8 @@ using namespace std;
 //std::string gammaData::m_calcOption = "prmelec";
 std::string gammaData::m_calcOption = junoParameters::m_calcOption;
 
-//std::string gammaData::m_nonlMode = "histogram";
-std::string gammaData::m_nonlMode = junoParameters::m_nonlMode;
+std::string gammaData::m_nonlMode = "histogram";
+//std::string gammaData::m_nonlMode = junoParameters::m_nonlMode;
 
 gammaData::gammaData( std::string name,
                         double minPE,
@@ -39,10 +39,10 @@ gammaData::gammaData( std::string name,
 
     m_loadData = false;
 
-    hEmean = new TH1D(m_name.c_str(), "", 10000, 0, 10);
+    //hEmean = new TH1D(m_name.c_str(), "", 10000, 0, 10);
     hPEmean = new TH1D((m_name+"pe").c_str(), "", 5000, 0, 20000);
-    hCerPEmean = new TH1D((m_name+"cerpe").c_str(), "", 500, 0, 2000);
-    hSctPEmean = new TH1D((m_name+"sctpe").c_str(), "", 5000, 0, 20000);
+    //hCerPEmean = new TH1D((m_name+"cerpe").c_str(), "", 500, 0, 2000);
+    //hSctPEmean = new TH1D((m_name+"sctpe").c_str(), "", 5000, 0, 20000);
 
 }
 
@@ -70,7 +70,7 @@ void gammaData::LoadGammaData()
             m_nonlData = tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
-            m_nonlDataErr = 0.001;
+            m_nonlDataErr = 0.002;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
@@ -254,10 +254,12 @@ void gammaData::calcGammaResponse()
 
 
     }  else if (m_calcOption == "twolayer") {
-        hEmean->Reset();
+        if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
+
+        //hEmean->Reset();
         hPEmean->Reset();
-        hCerPEmean->Reset();
-        hSctPEmean->Reset();
+        //hCerPEmean->Reset();
+        //hSctPEmean->Reset();
 
         for (int iSample=0; iSample<m_nSamples; iSample++) {
             // apply Nonlinearity curve
@@ -272,9 +274,9 @@ void gammaData::calcGammaResponse()
                 double tmp_sigpe;
                 double tmp_sigcerpe;
                 double tmp_sigsctpe;
-                double resol;;
+                double resol;
                 if(m_nonlMode == "histogram") {
-                    tmp_pe += tmp_E * (electronQuench::ScintillatorNL(tmp_E) + electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
+                    tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) ;
                     //tmp_sigsctpe = tmp_E * (electronQuench::ScintillatorNL(tmp_E)) * m_scale;
                     //tmp_sigcerpe = tmp_E * (electronCerenkov::getCerenkovPE(tmp_E)) * m_scale;
 
@@ -299,7 +301,6 @@ void gammaData::calcGammaResponse()
                 //tmp_pe += tmp_sigpe;
 
                 tmp_sigma = TMath::Sqrt(tmp_sigma);
-                
             }
             double sample_pe = gRandom->Gaus(tmp_pe, tmp_sigma);
             //double sample_pe = tmp_pe;
@@ -327,6 +328,8 @@ void gammaData::calcGammaResponse()
         //m_cerPE = hCerPEmean->GetMean();
         //m_nonlCalc = hEmean->GetMean() / m_Etrue;
         //m_nonlCalc1 = m_totpeCalc / m_scale / m_Etrue ;
+        //cout << m_name << " " << m_totpeData << " " << m_totpeCalc << " \n" 
+        //     << m_nonlData << " " << m_nonlCalc << " " << m_nonlCalc1 << endl;
     }
 
     // pull term for gamma :

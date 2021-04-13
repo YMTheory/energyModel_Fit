@@ -12,6 +12,7 @@
 #include "gammaData.hh"
 #include "gammaFitter.hh"
 #include "junoB12.hh"
+#include "gammaResponse.hh"
 #include "junoSpectrum.hh"
 #include "spectrumFitter.hh"
 #include "junoNLChiFunction.hh"

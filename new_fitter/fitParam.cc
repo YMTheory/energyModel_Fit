@@ -51,10 +51,15 @@ int main()
     //cout << b12->GetChi2() << endl;
     //b12->Plot();
 
-    //gammaData* cs137 = new gammaData("3215keV", 700, 1100, 100);
+    //gammaData* cs137 = new gammaData("nFe56", 700, 1100, 100);
     //cs137->LoadData();
     //cs137->calcGammaResponse();
     //cout << cs137->GetChi2();
+    
+    //gammaResponse* cs137 = new gammaResponse("Cs137", 200, 500, 1500);
+    //cs137->LoadData();
+    //cs137->LoadPrmElec();
+    //cs137->calcGamResponse();
 
     return 1.0;
 }

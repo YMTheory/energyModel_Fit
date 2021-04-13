@@ -139,18 +139,18 @@ void junoB12::ApplyScintillatorNL()
     // gamma
     m_eVisGam[0][0] = 0;
     m_eVisGam[0][1] = 0;
-    m_eVisGam[1][0] = m_eTruGam[1][0] * gamma4440->GetNonlPred();
+    m_eVisGam[1][0] = m_eTruGam[1][0] * gamma4440->GetNonlPred1();
     m_eVisGam[1][1] = 0;
-    m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlPred();
-    m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlPred();
-    //cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
-    //cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
+    m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlPred1();
+    m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlPred1();
+    cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
+    cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
 
     // beta
     for (int i=0; i<1500; i++) {
         double eTru = m_binCenter[i];
         double eVis = eTru * electronResponse::getElecNonl(eTru);
-        for (int j=0; j<3; j++) {
+        for (int j=0; j<2; j++) {
             eVis += m_eVisGam[j][0] + m_eVisGam[j][1];
 
             newBinLow = int((eVis-0)/m_binWidth);

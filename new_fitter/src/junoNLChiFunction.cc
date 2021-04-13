@@ -25,6 +25,10 @@ gammaData* junoNLChiFunction::nFe56Data;
 gammaData* junoNLChiFunction::gamma511Data;
 gammaData* junoNLChiFunction::gamma4440Data;
 
+gammaResponse* junoNLChiFunction::Cs137;
+gammaResponse* junoNLChiFunction::Mn54;
+gammaResponse* junoNLChiFunction::K40;
+
 junoSpectrum* junoNLChiFunction::junoB12data;
 
 junoB12* junoNLChiFunction::b12data;
@@ -45,7 +49,9 @@ bool junoNLChiFunction::m_DoFit = false;
 int junoNLChiFunction::m_nGam;
 int junoNLChiFunction::m_nData;
 std::string junoNLChiFunction::source_name[20];
-gammaData* junoNLChiFunction::gammaData_array[20];
+//gammaData* junoNLChiFunction::gammaData_array[20];
+gammaResponse* junoNLChiFunction::gammaData_array[10];
+
 
 bool junoNLChiFunction::m_doGamFit = junoParameters::fitGammaSources;
 bool junoNLChiFunction::m_doB12Fit = junoParameters::fitB12;
@@ -67,23 +73,23 @@ junoNLChiFunction::junoNLChiFunction() {
         //m_nData++;
         //m_nGam++;
 
-        Cs137Data = new gammaData("Cs137", 700, 1100, 100);
-        source_name[m_nData] = "Cs137"; 
-        gammaData_array[m_nData] = Cs137Data;
-        m_nData++;
-        m_nGam++;
+        //Cs137Data = new gammaData("Cs137", 700, 1100, 100);
+        //source_name[m_nData] = "Cs137"; 
+        //gammaData_array[m_nData] = Cs137Data;
+        //m_nData++;
+        //m_nGam++;
 
-        Mn54Data  = new gammaData("Mn54", 900, 1300, 100);
-        source_name[m_nData] = "Mn54"; 
-        gammaData_array[m_nData] = Mn54Data;
-        m_nData++;
-        m_nGam++;
+        //Mn54Data  = new gammaData("Mn54", 900, 1300, 100);
+        //source_name[m_nData] = "Mn54"; 
+        //gammaData_array[m_nData] = Mn54Data;
+        //m_nData++;
+        //m_nGam++;
 
-        K40Data  = new gammaData("K40", 900, 1300, 100);
-        source_name[m_nData] = "K40"; 
-        gammaData_array[m_nData] = K40Data;
-        m_nData++;
-        m_nGam++;
+        //K40Data  = new gammaData("K40", 900, 1300, 100);
+        //source_name[m_nData] = "K40"; 
+        //gammaData_array[m_nData] = K40Data;
+        //m_nData++;
+        //m_nGam++;
 
         //nHData  = new gammaData("nH", 900, 1300, 100);
         //source_name[m_nData] = "nH"; 
@@ -120,6 +126,28 @@ junoNLChiFunction::junoNLChiFunction() {
         //m_nData++;
         //m_nGam++;
 
+        Cs137 = new gammaResponse("Cs137", 1000, 0, 10000);
+        source_name[m_nData] = "Cs137";
+        gammaData_array[m_nData] = Cs137;
+        m_nData++;
+        m_nGam++;
+
+        Mn54 = new gammaResponse("Mn54", 1000, 0, 10000);
+        source_name[m_nData] = "Mn54";
+        gammaData_array[m_nData] = Mn54;
+        m_nData++;
+        m_nGam++;
+
+        K40 = new gammaResponse("K40", 1000, 0, 10000);
+        source_name[m_nData] = "K40";
+        gammaData_array[m_nData] = K40;
+        m_nData++;
+        m_nGam++;
+
+
+
+
+
     }
 
     // Nonlinearity mode
@@ -128,7 +156,7 @@ junoNLChiFunction::junoNLChiFunction() {
 
     if (m_doB12Fit) {
         junoB12data = new junoSpectrum(1500, 100, 3, 2,
-                             0, 15, 0, 15, m_nonlMode, "B12");
+                             0, 15, 1, 14, m_nonlMode, "B12");
         //b12data = new junoB12();
     }
 
@@ -251,13 +279,13 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     if (junoParameters::scintillatorParameterization == kSimulationCalc) {
         junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 1600, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 2700, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
     }
 
     //junoNLMinuit->FixParameter(0);
     //junoNLMinuit->FixParameter(1);
-    //junoNLMinuit->FixParameter(2);
+    junoNLMinuit->FixParameter(2);
     junoNLMinuit->FixParameter(3);
 
     // Minimization strategy
@@ -312,115 +340,115 @@ void junoNLChiFunction::Plot()
 
 void junoNLChiFunction::GammaPlot()
 {
-    cout << " >>> Draw Gamma NL Fitting Results <<< " << endl;
+    //cout << " >>> Draw Gamma NL Fitting Results <<< " << endl;
 
-    if (not m_DoFit) {
-        cout << "Fitting has not been finished ...";
-        return;
-    }
+    //if (not m_DoFit) {
+    //    cout << "Fitting has not been finished ...";
+    //    return;
+    //}
 
-    std::cout << " >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< " << std::endl;
+    //std::cout << " >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< " << std::endl;
 
-    TGraphErrors* gNonlData = new TGraphErrors();
-    TGraphErrors* gNonlCalc = new TGraphErrors();
-    gNonlData->SetName("gNonlData");
-    gNonlCalc->SetName("gNonlCalc");
+    //TGraphErrors* gNonlData = new TGraphErrors();
+    //TGraphErrors* gNonlCalc = new TGraphErrors();
+    //gNonlData->SetName("gNonlData");
+    //gNonlCalc->SetName("gNonlCalc");
 
-    double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
-    SetParameters(fit_pars);
-    int index = 0;
-    for(int iData=0; iData<m_nGam; iData++) {
-        std::string source = source_name[iData];
-        gammaData* tmpGammaData = gammaData_array[iData];
-        tmpGammaData->calcGammaResponse();
-        double tmp_E       = tmpGammaData->GetEtrue();
-        double tmp_pred    = tmpGammaData->GetNonlPred();
-        double tmp_pred1   = tmpGammaData->GetNonlPred1();
-        double tmp_data    = tmpGammaData->GetNonlData();
-        double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
-        double tmp_pedata  = tmpGammaData->GetPEData();
-        double tmp_pecalc  = tmpGammaData->GetPECalc();
-        double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
-        double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
-        double tmp_sctpedata = tmpGammaData->GetSctPEData();
-        double tmp_cerpedate = tmpGammaData->GetCerPEData();
-        cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " " << tmp_sctpecalc << " " << tmp_cerpecalc << " "
-             << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
-        gNonlData->SetPoint(index, tmp_E, tmp_data);
-        gNonlData->SetPointError(index, 0, tmp_dataErr);
-        gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
+    //double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    //SetParameters(fit_pars);
+    //int index = 0;
+    //for(int iData=0; iData<m_nGam; iData++) {
+    //    std::string source = source_name[iData];
+    //    gammaData* tmpGammaData = gammaData_array[iData];
+    //    tmpGammaData->calcGammaResponse();
+    //    double tmp_E       = tmpGammaData->GetEtrue();
+    //    double tmp_pred    = tmpGammaData->GetNonlPred();
+    //    double tmp_pred1   = tmpGammaData->GetNonlPred1();
+    //    double tmp_data    = tmpGammaData->GetNonlData();
+    //    double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
+    //    double tmp_pedata  = tmpGammaData->GetPEData();
+    //    double tmp_pecalc  = tmpGammaData->GetPECalc();
+    //    double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
+    //    double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
+    //    double tmp_sctpedata = tmpGammaData->GetSctPEData();
+    //    double tmp_cerpedate = tmpGammaData->GetCerPEData();
+    //    cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " " << tmp_sctpecalc << " " << tmp_cerpecalc << " "
+    //         << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
+    //    gNonlData->SetPoint(index, tmp_E, tmp_data);
+    //    gNonlData->SetPointError(index, 0, tmp_dataErr);
+    //    gNonlCalc->SetPoint(index, tmp_E, tmp_pred1);
 
-        tmpGammaData->SaveHist();
+    //    //tmpGammaData->SaveHist();
 
-        index++;
-    }
+    //    index++;
+    //}
 
-    gNonlData->SetMarkerStyle(20);
-    gNonlData->SetMarkerColor(kBlue+1);
-    gNonlData->SetLineColor(kBlue+1);
-    gNonlData->SetLineWidth(2);
-    gNonlData->SetMarkerSize(1.0);
-    gNonlCalc->SetMarkerStyle(21);
-    gNonlCalc->SetMarkerColor(kRed+1);
-    gNonlCalc->SetMarkerSize(1.0);
-    gNonlCalc->SetLineColor(kRed+1);
-    gNonlCalc->SetLineWidth(2);
+    //gNonlData->SetMarkerStyle(20);
+    //gNonlData->SetMarkerColor(kBlue+1);
+    //gNonlData->SetLineColor(kBlue+1);
+    //gNonlData->SetLineWidth(2);
+    //gNonlData->SetMarkerSize(1.0);
+    //gNonlCalc->SetMarkerStyle(21);
+    //gNonlCalc->SetMarkerColor(kRed+1);
+    //gNonlCalc->SetMarkerSize(1.0);
+    //gNonlCalc->SetLineColor(kRed+1);
+    //gNonlCalc->SetLineWidth(2);
 
-    cout << "\n";
-    cout << " >>> Nominal Outputs <<< " << endl;
-    double nom_pars[4] = {1.0, 1.0, 3300.371/2.223, 0};
-    SetParameters(nom_pars);
-    TGraphErrors* gNom = new TGraphErrors();
-    index = 0;
-    for(int iData=0; iData<m_nGam; iData++) {
-        std::string source = source_name[iData];
-        gammaData* tmpGammaData = gammaData_array[iData];
-        tmpGammaData->calcGammaResponse();
-        double tmp_E       = tmpGammaData->GetEtrue();
-        double tmp_pred    = tmpGammaData->GetNonlPred();
-        double tmp_pred1   = tmpGammaData->GetNonlPred1();
-        double tmp_data    = tmpGammaData->GetNonlData();
-        double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
-        double tmp_pedata  = tmpGammaData->GetPEData();
-        double tmp_pecalc  = tmpGammaData->GetPECalc();
-        double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
-        double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
-        double tmp_sctpedata = tmpGammaData->GetSctPEData();
-        double tmp_cerpedate = tmpGammaData->GetCerPEData();
-        //tmpGammaData->calcGammaNPE();
-        cout << "\n";
-        cout << source_name[iData] << " " << tmp_E << endl;
-        cout << tmp_pedata << " " << tmp_pecalc << endl;
-        cout << tmp_sctpedata << " " << tmp_sctpecalc << endl;
-        cout << tmp_cerpedate << " " << tmp_cerpecalc << endl;
-        cout << tmp_data << " " << tmp_pred << endl;
-        cout << "\n";
-        gNom->SetPoint(index, tmp_E, tmp_pred);
+    //cout << "\n";
+    //cout << " >>> Nominal Outputs <<< " << endl;
+    //double nom_pars[4] = {1.0, 1.0, 3300.371/2.223, 0};
+    //SetParameters(nom_pars);
+    //TGraphErrors* gNom = new TGraphErrors();
+    //index = 0;
+    //for(int iData=0; iData<m_nGam; iData++) {
+    //    std::string source = source_name[iData];
+    //    gammaData* tmpGammaData = gammaData_array[iData];
+    //    tmpGammaData->calcGammaResponse();
+    //    double tmp_E       = tmpGammaData->GetEtrue();
+    //    double tmp_pred    = tmpGammaData->GetNonlPred();
+    //    double tmp_pred1   = tmpGammaData->GetNonlPred1();
+    //    double tmp_data    = tmpGammaData->GetNonlData();
+    //    double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
+    //    double tmp_pedata  = tmpGammaData->GetPEData();
+    //    double tmp_pecalc  = tmpGammaData->GetPECalc();
+    //    double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
+    //    double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
+    //    double tmp_sctpedata = tmpGammaData->GetSctPEData();
+    //    double tmp_cerpedate = tmpGammaData->GetCerPEData();
+    //    //tmpGammaData->calcGammaNPE();
+    //    cout << "\n";
+    //    cout << source_name[iData] << " " << tmp_E << endl;
+    //    cout << tmp_pedata << " " << tmp_pecalc << endl;
+    //    cout << tmp_sctpedata << " " << tmp_sctpecalc << endl;
+    //    cout << tmp_cerpedate << " " << tmp_cerpecalc << endl;
+    //    cout << tmp_data << " " << tmp_pred << endl;
+    //    cout << "\n";
+    //    gNom->SetPoint(index, tmp_E, tmp_pred1);
 
-        index++;
-    }
-    gNom->SetMarkerStyle(21);
-    gNom->SetMarkerColor(kOrange+1);
-    gNom->SetMarkerSize(1.0);
-    gNom->SetLineColor(kOrange+1);
-    gNom->SetLineWidth(2);
+    //    index++;
+    //}
+    //gNom->SetMarkerStyle(21);
+    //gNom->SetMarkerColor(kOrange+1);
+    //gNom->SetMarkerSize(1.0);
+    //gNom->SetLineColor(kOrange+1);
+    //gNom->SetLineWidth(2);
 
 
-    TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
-    c1->cd(); c1->SetGrid();
-    gNonlData->SetTitle("Nonlinearity Fitting; Etrue/MeV; Nonlinearity");
-    gNonlData->GetYaxis()->SetRangeUser(0.90, 1.05);
-    gNonlData->Draw("APL");
-    gNonlCalc->Draw("P SAME");
-    gNom->Draw("LP SAME");
-    TLegend* led = new TLegend();
-    led->SetFillColor(kWhite);
-    led->AddEntry(gNonlData, "data", "PL");
-    led->AddEntry(gNonlCalc, "calc", "PL");
-    led->AddEntry(gNom, "nominal", "PL");
-    led->Draw("SAME");
+    //TCanvas* c1 = new TCanvas("Nonlinearity", "Nonlinearity");
+    //c1->cd(); c1->SetGrid();
+    //gNonlData->SetTitle("Nonlinearity Fitting; Etrue/MeV; Nonlinearity");
+    //gNonlData->GetYaxis()->SetRangeUser(0.90, 1.05);
+    //gNonlData->Draw("APL");
+    //gNonlCalc->Draw("P SAME");
+    //gNom->Draw("LP SAME");
+    //TLegend* led = new TLegend();
+    //led->SetFillColor(kWhite);
+    //led->AddEntry(gNonlData, "data", "PL");
+    //led->AddEntry(gNonlCalc, "calc", "PL");
+    //led->AddEntry(gNom, "nominal", "PL");
+    //led->Draw("SAME");
 
-    c1->SaveAs("GamNLFit.root");    
+    //c1->SaveAs("GamNLFit.root");    
     
 }
 
@@ -428,129 +456,129 @@ void junoNLChiFunction::GammaPlot()
 
 void junoNLChiFunction::GammaPEPlot()
 {
-    std::cout << " >>>>>>>>>>>> GammaPE Outputs <<<<<<<<<<<< " << std::endl;
+    //std::cout << " >>>>>>>>>>>> GammaPE Outputs <<<<<<<<<<<< " << std::endl;
 
-    TGraphErrors* gPEData = new TGraphErrors();
-    TGraphErrors* gPECalc = new TGraphErrors();
-    TGraphErrors* gPENomi = new TGraphErrors();
-    TGraphErrors* gCerPEData = new TGraphErrors();
-    TGraphErrors* gCerPECalc = new TGraphErrors();
-    TGraphErrors* gCerPENomi = new TGraphErrors();
-    TGraphErrors* gSctPEData = new TGraphErrors();
-    TGraphErrors* gSctPECalc = new TGraphErrors();
-    TGraphErrors* gSctPENomi = new TGraphErrors();
-    TGraphErrors* gPEDiff = new TGraphErrors();
-    
+    //TGraphErrors* gPEData = new TGraphErrors();
+    //TGraphErrors* gPECalc = new TGraphErrors();
+    //TGraphErrors* gPENomi = new TGraphErrors();
+    //TGraphErrors* gCerPEData = new TGraphErrors();
+    //TGraphErrors* gCerPECalc = new TGraphErrors();
+    //TGraphErrors* gCerPENomi = new TGraphErrors();
+    //TGraphErrors* gSctPEData = new TGraphErrors();
+    //TGraphErrors* gSctPECalc = new TGraphErrors();
+    //TGraphErrors* gSctPENomi = new TGraphErrors();
+    //TGraphErrors* gPEDiff = new TGraphErrors();
+    //
 
-    gPEData->SetName("PEData");
-    gPECalc->SetName("PECalc");
-    gPENomi->SetName("PENomi");
-    gCerPEData->SetName("CerPEData");
-    gCerPECalc->SetName("CerPECalc");
-    gCerPENomi->SetName("CerPENomi");
-    gSctPEData->SetName("SctPEData");
-    gSctPECalc->SetName("SctPECalc");
-    gSctPENomi->SetName("SctPENomi");
-    gPEDiff->SetName("PEDiff");
+    //gPEData->SetName("PEData");
+    //gPECalc->SetName("PECalc");
+    //gPENomi->SetName("PENomi");
+    //gCerPEData->SetName("CerPEData");
+    //gCerPECalc->SetName("CerPECalc");
+    //gCerPENomi->SetName("CerPENomi");
+    //gSctPEData->SetName("SctPEData");
+    //gSctPECalc->SetName("SctPECalc");
+    //gSctPENomi->SetName("SctPENomi");
+    //gPEDiff->SetName("PEDiff");
 
-    std::cout << " >>>>>>> GammaPE Fitting Outputs <<<<<<< " << std::endl;
-    //double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
-    double fit_pars[4] = {1, 1, 3300.371/2.223, 0};
-    SetParameters(fit_pars);
-    int index = 0;
-    for(int iData=0; iData<m_nGam; iData++) {
-        std::string source = source_name[iData];
-        gammaData* tmpGammaData = gammaData_array[iData];
-        tmpGammaData->calcGammaResponse();
-        double tmp_E       = tmpGammaData->GetEtrue();
-        double tmp_pred    = tmpGammaData->GetPECalc();
-        double tmp_data    = tmpGammaData->GetPEData();
-        double tmp_cerdata = tmpGammaData->GetCerPEData();
-        double tmp_cerpred = tmpGammaData->GetCerPECalc();
-        double tmp_sctdata = tmpGammaData->GetSctPEData();
-        double tmp_sctpred = tmpGammaData->GetSctPECalc();
-        double tmp_deltape = (tmp_pred - tmp_data) / tmp_pred;
+    //std::cout << " >>>>>>> GammaPE Fitting Outputs <<<<<<< " << std::endl;
+    ////double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    //double fit_pars[4] = {1, 1, 3300.371/2.223, 0};
+    //SetParameters(fit_pars);
+    //int index = 0;
+    //for(int iData=0; iData<m_nGam; iData++) {
+    //    std::string source = source_name[iData];
+    //    gammaData* tmpGammaData = gammaData_array[iData];
+    //    tmpGammaData->calcGammaResponse();
+    //    double tmp_E       = tmpGammaData->GetEtrue();
+    //    double tmp_pred    = tmpGammaData->GetPECalc();
+    //    double tmp_data    = tmpGammaData->GetPEData();
+    //    double tmp_cerdata = tmpGammaData->GetCerPEData();
+    //    double tmp_cerpred = tmpGammaData->GetCerPECalc();
+    //    double tmp_sctdata = tmpGammaData->GetSctPEData();
+    //    double tmp_sctpred = tmpGammaData->GetSctPECalc();
+    //    double tmp_deltape = (tmp_pred - tmp_data) / tmp_pred;
 
-        gPEData->SetPoint(index, tmp_E, tmp_data);
-        gPECalc->SetPoint(index, tmp_E, tmp_pred);
-        gSctPEData->SetPoint(index, tmp_E, tmp_sctdata);
-        gSctPECalc->SetPoint(index, tmp_E, tmp_sctpred);
-        gCerPEData->SetPoint(index, tmp_E, tmp_cerdata);
-        gCerPECalc->SetPoint(index, tmp_E, tmp_cerpred);
-        gPEDiff->SetPoint(index, tmp_E, tmp_deltape);
+    //    gPEData->SetPoint(index, tmp_E, tmp_data);
+    //    gPECalc->SetPoint(index, tmp_E, tmp_pred);
+    //    gSctPEData->SetPoint(index, tmp_E, tmp_sctdata);
+    //    gSctPECalc->SetPoint(index, tmp_E, tmp_sctpred);
+    //    gCerPEData->SetPoint(index, tmp_E, tmp_cerdata);
+    //    gCerPECalc->SetPoint(index, tmp_E, tmp_cerpred);
+    //    gPEDiff->SetPoint(index, tmp_E, tmp_deltape);
 
-        index++;
-    }
+    //    index++;
+    //}
 
-    gPEData->SetMarkerStyle(20);
-    gPEData->SetMarkerColor(kBlue+1);
-    gPEData->SetLineColor(kBlue+1);
-    gPEData->SetLineWidth(2);
-    gPEData->SetMarkerSize(1.0);
-    gPECalc->SetMarkerStyle(21);
-    gPECalc->SetMarkerColor(kRed+1);
-    gPECalc->SetMarkerSize(1.0);
-    gPECalc->SetLineColor(kRed+1);
-    gPECalc->SetLineWidth(2);
-    gSctPEData->SetMarkerStyle(20);
-    gSctPEData->SetMarkerColor(kBlue+1);
-    gSctPEData->SetLineColor(kBlue+1);
-    gSctPEData->SetLineWidth(2);
-    gSctPEData->SetMarkerSize(1.0);
-    gSctPECalc->SetMarkerStyle(21);
-    gSctPECalc->SetMarkerColor(kRed+1);
-    gSctPECalc->SetMarkerSize(1.0);
-    gSctPECalc->SetLineColor(kRed+1);
-    gSctPECalc->SetLineWidth(2);
-    gCerPEData->SetMarkerStyle(20);
-    gCerPEData->SetMarkerColor(kBlue+1);
-    gCerPEData->SetLineColor(kBlue+1);
-    gCerPEData->SetLineWidth(2);
-    gCerPEData->SetMarkerSize(1.0);
-    gCerPECalc->SetMarkerStyle(21);
-    gCerPECalc->SetMarkerColor(kRed+1);
-    gCerPECalc->SetMarkerSize(1.0);
-    gCerPECalc->SetLineColor(kRed+1);
-    gCerPECalc->SetLineWidth(2);
-    gPEDiff->SetMarkerStyle(20);
-    gPEDiff->SetMarkerColor(kBlue+1);
-    gPEDiff->SetLineColor(kBlue+1);
-    gPEDiff->SetLineWidth(2);
-    gPEDiff->SetMarkerSize(1.0);
-    /*
-    std::cout << " >>>>>>> GammaPE Nominal Outputs <<<<<<< " << std::endl;
-    index = 0;
-    double nom_pars[4] = {1, 1, 3300.371/2.223, 0};
-    SetParameters(nom_pars);
-    for(int iData=0; iData<m_nGam; iData++) {
-        std::string source = source_name[iData];
-        gammaData* tmpGammaData = gammaData_array[iData];
-        tmpGammaData->calcGammaResponse();
-        double tmp_E       = tmpGammaData->GetEtrue();
-        double tmp_pred    = tmpGammaData->GetPECalc();
+    //gPEData->SetMarkerStyle(20);
+    //gPEData->SetMarkerColor(kBlue+1);
+    //gPEData->SetLineColor(kBlue+1);
+    //gPEData->SetLineWidth(2);
+    //gPEData->SetMarkerSize(1.0);
+    //gPECalc->SetMarkerStyle(21);
+    //gPECalc->SetMarkerColor(kRed+1);
+    //gPECalc->SetMarkerSize(1.0);
+    //gPECalc->SetLineColor(kRed+1);
+    //gPECalc->SetLineWidth(2);
+    //gSctPEData->SetMarkerStyle(20);
+    //gSctPEData->SetMarkerColor(kBlue+1);
+    //gSctPEData->SetLineColor(kBlue+1);
+    //gSctPEData->SetLineWidth(2);
+    //gSctPEData->SetMarkerSize(1.0);
+    //gSctPECalc->SetMarkerStyle(21);
+    //gSctPECalc->SetMarkerColor(kRed+1);
+    //gSctPECalc->SetMarkerSize(1.0);
+    //gSctPECalc->SetLineColor(kRed+1);
+    //gSctPECalc->SetLineWidth(2);
+    //gCerPEData->SetMarkerStyle(20);
+    //gCerPEData->SetMarkerColor(kBlue+1);
+    //gCerPEData->SetLineColor(kBlue+1);
+    //gCerPEData->SetLineWidth(2);
+    //gCerPEData->SetMarkerSize(1.0);
+    //gCerPECalc->SetMarkerStyle(21);
+    //gCerPECalc->SetMarkerColor(kRed+1);
+    //gCerPECalc->SetMarkerSize(1.0);
+    //gCerPECalc->SetLineColor(kRed+1);
+    //gCerPECalc->SetLineWidth(2);
+    //gPEDiff->SetMarkerStyle(20);
+    //gPEDiff->SetMarkerColor(kBlue+1);
+    //gPEDiff->SetLineColor(kBlue+1);
+    //gPEDiff->SetLineWidth(2);
+    //gPEDiff->SetMarkerSize(1.0);
+    ///*
+    //std::cout << " >>>>>>> GammaPE Nominal Outputs <<<<<<< " << std::endl;
+    //index = 0;
+    //double nom_pars[4] = {1, 1, 3300.371/2.223, 0};
+    //SetParameters(nom_pars);
+    //for(int iData=0; iData<m_nGam; iData++) {
+    //    std::string source = source_name[iData];
+    //    gammaData* tmpGammaData = gammaData_array[iData];
+    //    tmpGammaData->calcGammaResponse();
+    //    double tmp_E       = tmpGammaData->GetEtrue();
+    //    double tmp_pred    = tmpGammaData->GetPECalc();
 
-        cout << tmp_E << " " << tmp_pred << endl;
-        gPENomi->SetPoint(index, tmp_E, tmp_pred);
+    //    cout << tmp_E << " " << tmp_pred << endl;
+    //    gPENomi->SetPoint(index, tmp_E, tmp_pred);
 
-        index++;
-    }
+    //    index++;
+    //}
 
-    gPENomi->SetMarkerStyle(21);
-    gPENomi->SetMarkerColor(kOrange+1);
-    gPENomi->SetMarkerSize(1.0);
-    gPENomi->SetLineColor(kOrange+1);
-    gPENomi->SetLineWidth(2);
-    */
+    //gPENomi->SetMarkerStyle(21);
+    //gPENomi->SetMarkerColor(kOrange+1);
+    //gPENomi->SetMarkerSize(1.0);
+    //gPENomi->SetLineColor(kOrange+1);
+    //gPENomi->SetLineWidth(2);
+    //*/
 
-    TFile* out = new TFile("GamPECheck.root", "recreate");
-    gPEData->Write();
-    gPECalc->Write();
-    gCerPEData->Write();
-    gCerPECalc->Write();
-    gSctPEData->Write();
-    gSctPECalc->Write();
-    gPEDiff->Write();
-    out->Close();
+    //TFile* out = new TFile("GamPECheck.root", "recreate");
+    //gPEData->Write();
+    //gPECalc->Write();
+    //gCerPEData->Write();
+    //gCerPECalc->Write();
+    //gSctPEData->Write();
+    //gSctPECalc->Write();
+    //gPEDiff->Write();
+    //out->Close();
 
 }
 

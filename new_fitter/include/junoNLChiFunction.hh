@@ -3,6 +3,7 @@
 
 #include "gammaData.hh"
 #include "junoSpectrum.hh"
+#include "gammaResponse.hh"
 #include "junoB12.hh"
 
 #include <TMinuit.h>
@@ -60,7 +61,12 @@ class junoNLChiFunction
         static int m_nGam;
         static std::string source_name[20];
 
-        static gammaData* gammaData_array[20];
+        //static gammaData* gammaData_array[20];
+
+        static gammaResponse* gammaData_array[10];
+        static gammaResponse* Cs137;
+        static gammaResponse* Mn54;
+        static gammaResponse* K40;
 
         static bool m_doGamFit;
         static bool m_doB12Fit;

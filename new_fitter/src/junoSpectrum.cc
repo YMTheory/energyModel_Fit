@@ -262,7 +262,7 @@ void junoSpectrum::ApplyScintillatorNL()
         for (int gamIdx=0; gamIdx<m_nGam; gamIdx++) {
 			if(m_eTruGam[branchIdx][gamIdx]==0) break;  // No more gamma in such branch
             eVisGam[branchIdx] += EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) * m_eTruGam[branchIdx][gamIdx] ;
-            cout << "gamma " << m_eTruGam[branchIdx][gamIdx] << " " << EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) << " "<< eVisGam[branchIdx] << endl;
+            //cout << "gamma " << m_eTruGam[branchIdx][gamIdx] << " " << EvisGamma(m_eTruGamStr[branchIdx][gamIdx]) << " "<< eVisGam[branchIdx] << endl;
         }
     }
 
@@ -353,7 +353,7 @@ double junoSpectrum::EvisGamma(int Etrue)
     double* gamPdfEtruePosi  = mapPdfEtruePosi[Etrue];
     double* gamPdfProbPosi   = mapPdfProbPosi[Etrue];
 
-    cout << Etrue << " " << gamPdfMaxEtrue << endl;
+    //cout << Etrue << " " << gamPdfMaxEtrue << endl;
     double numerator = 0.; double denominator = 1e6;
     for(int iBin=0;  iBin<m_nPdfBins; iBin++) {
         double E1 = gamPdfEtrue[iBin];
@@ -378,7 +378,7 @@ double junoSpectrum::EvisGamma(int Etrue)
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
     //return numerator/denominator;   // return totpe prediction value
-    cout << numerator << " " << denominator << " " << electronQuench::getEnergyScale() << " " << Etrue/1000. << " " << numerator/denominator/electronQuench::getEnergyScale()/(Etrue/1000.)<< endl;
+    //cout << numerator << " " << denominator << " " << electronQuench::getEnergyScale() << " " << Etrue/1000. << " " << numerator/denominator/electronQuench::getEnergyScale()/(Etrue/1000.)<< endl;
     return numerator / denominator / electronQuench::getEnergyScale() / (Etrue/1000.);
 }
 

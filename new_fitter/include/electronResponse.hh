@@ -32,6 +32,7 @@ class electronResponse
 
         static bool m_loadSimFile;
         static bool m_doFit;
+        static bool m_loadResol;
 
     private:
         static TGraph* gSimData;
@@ -52,6 +53,7 @@ class electronResponse
         static void setp2(double p2){m_p2 = p2;}
         static double getp3()       {return m_p3;}
         static void setp3(double p3){m_p3 = p3;}
+        static bool getLoadResol()  {return m_loadResol;}
 
         static void SetParameters();
         static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}

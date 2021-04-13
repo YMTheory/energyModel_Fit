@@ -11,6 +11,7 @@ double electronResponse::m_SimNonl[m_nSimData];
 double electronResponse::m_scale = 1503.664;
 bool electronResponse::m_loadSimFile = false;
 bool electronResponse::m_doFit = false;
+bool electronResponse::m_loadResol = false;
 
 TGraph* electronResponse::gSimData;
 TF1* electronResponse::fElecNonl;
@@ -185,6 +186,8 @@ void electronResponse::loadElecResol()
         index++;
     }
     in.close();
+
+    m_loadResol = true;
 }
 
 
