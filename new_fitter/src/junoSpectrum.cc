@@ -315,15 +315,19 @@ void junoSpectrum::LoadPrmElecDist()
                 if (tmp_pdfProb[i] == 0) {  tmp_PdfMaxEtrue = i; break;}
             }
 
+            mapPdfMaxEtrue.insert(pair<int, int>(m_eTruGamStr[branchIdx][gamIdx], tmp_PdfMaxEtrue));
+            mapPdfEtrue.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtrue));
+            mapPdfProb.insert(pair<int, double*> (m_eTruGamStr[branchIdx][gamIdx], tmp_pdfProb));
+
             pdfName = "antigamma"+eTru+"keV";
             std::cout << "Loading PrmPosiDist for " << pdfName << std::endl;
-            gGammaPdf = (TH1D*)file->Get(pdfName.c_str());
+            TH1D* gAntiGammaPdf = (TH1D*)file->Get(pdfName.c_str());
             if(!gGammaPdf) cout << "No Such Pdf : " << pdfName << endl;
             double* tmp_pdfEtruePosi = new double[m_nPdfBins];
             double* tmp_pdfProbPosi = new double[m_nPdfBins];
             for(int i=0; i<gGammaPdf->GetNbinsX(); i++)  {
-                tmp_pdfEtruePosi[i] = gGammaPdf->GetBinCenter(i+1);
-                tmp_pdfProbPosi[i] = gGammaPdf->GetBinContent(i+1);
+                tmp_pdfEtruePosi[i] = gAntiGammaPdf->GetBinCenter(i+1);
+                tmp_pdfProbPosi[i] = gAntiGammaPdf->GetBinContent(i+1);
             }
 
             mapPdfEtruePosi.insert(pair<int, double*>(m_eTruGamStr[branchIdx][gamIdx], tmp_pdfEtruePosi));
@@ -331,6 +335,7 @@ void junoSpectrum::LoadPrmElecDist()
 
 
             delete gGammaPdf;
+            delete gAntiGammaPdf;
         }
 
     }
@@ -348,29 +353,33 @@ double junoSpectrum::EvisGamma(int Etrue)
     double* gamPdfEtruePosi  = mapPdfEtruePosi[Etrue];
     double* gamPdfProbPosi   = mapPdfProbPosi[Etrue];
 
+    cout << Etrue << " " << gamPdfMaxEtrue << endl;
     double numerator = 0.; double denominator = 1e6;
-    for(int iBin=0;  iBin<gamPdfMaxEtrue; iBin++) {
-        double E1 = gamPdfEtrue[iBin];
-
-        double prob1 = gamPdfProb[iBin];
-
-        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1);
-
-        numerator   += E1 * prob1;
-    } 
     for(int iBin=0;  iBin<m_nPdfBins; iBin++) {
         double E1 = gamPdfEtrue[iBin];
 
         double prob1 = gamPdfProb[iBin];
 
-        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1) + 695.53*2; 
+        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1);
+        //cout << "beta " << E1 << " " << prob1 << " " << NPE << endl;
 
-        numerator   += E1 * prob1;
+        numerator   += NPE * prob1;
+    } 
+    for(int iBin=0;  iBin<m_nPdfBins; iBin++) {
+        double E1 = gamPdfEtruePosi[iBin];
+
+        double prob1 = gamPdfProbPosi[iBin];
+
+        double NPE = electronQuench::ScintillatorPE(E1) + electronCerenkov::getCerPE(E1) + 695.53*2; 
+        //cout << "beta+ " << E1 << " " << prob1 << " " << NPE << endl;
+
+        numerator   += NPE * prob1;
     } 
 
     if(denominator ==0) { cout << " >> Error Happens While CalculateGammaNL <<<" << endl; return 0;}
-    return numerator/denominator;
-
+    //return numerator/denominator;   // return totpe prediction value
+    cout << numerator << " " << denominator << " " << electronQuench::getEnergyScale() << " " << Etrue/1000. << " " << numerator/denominator/electronQuench::getEnergyScale()/(Etrue/1000.)<< endl;
+    return numerator / denominator / electronQuench::getEnergyScale() / (Etrue/1000.);
 }
 
 

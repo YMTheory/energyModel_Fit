@@ -85,40 +85,40 @@ junoNLChiFunction::junoNLChiFunction() {
         m_nData++;
         m_nGam++;
 
-        nHData  = new gammaData("nH", 900, 1300, 100);
-        source_name[m_nData] = "nH"; 
-        gammaData_array[m_nData] = nHData;
-        m_nData++;
-        m_nGam++;
-
-        //Co60Data  = new gammaData("Co60", 900, 1300, 100);
-        //source_name[m_nData] = "Co60"; 
-        //gammaData_array[m_nData] = Co60Data;
+        //nHData  = new gammaData("nH", 900, 1300, 100);
+        //source_name[m_nData] = "nH"; 
+        //gammaData_array[m_nData] = nHData;
         //m_nData++;
+        //m_nGam++;
 
-        Tl208Data  = new gammaData("Tl208", 900, 1300, 100);
-        source_name[m_nData] = "Tl208"; 
-        gammaData_array[m_nData] = Tl208Data;
-        m_nData++;
-        m_nGam++;
+        ////Co60Data  = new gammaData("Co60", 900, 1300, 100);
+        ////source_name[m_nData] = "Co60"; 
+        ////gammaData_array[m_nData] = Co60Data;
+        ////m_nData++;
 
-        nC12Data  = new gammaData("nC12", 900, 1300, 100);
-        source_name[m_nData] = "nC12"; 
-        gammaData_array[m_nData] = nC12Data;
-        m_nData++;
-        m_nGam++;
+        //Tl208Data  = new gammaData("Tl208", 900, 1300, 100);
+        //source_name[m_nData] = "Tl208"; 
+        //gammaData_array[m_nData] = Tl208Data;
+        //m_nData++;
+        //m_nGam++;
 
-        O16Data  = new gammaData("O16", 900, 1300, 100);
-        source_name[m_nData] = "O16"; 
-        gammaData_array[m_nData] = O16Data;
-        m_nData++;
-        m_nGam++;
+        //nC12Data  = new gammaData("nC12", 900, 1300, 100);
+        //source_name[m_nData] = "nC12"; 
+        //gammaData_array[m_nData] = nC12Data;
+        //m_nData++;
+        //m_nGam++;
 
-        nFe56Data  = new gammaData("nFe56", 900, 1300, 100);
-        source_name[m_nData] = "nFe56"; 
-        gammaData_array[m_nData] = nFe56Data;
-        m_nData++;
-        m_nGam++;
+        //O16Data  = new gammaData("O16", 900, 1300, 100);
+        //source_name[m_nData] = "O16"; 
+        //gammaData_array[m_nData] = O16Data;
+        //m_nData++;
+        //m_nGam++;
+
+        //nFe56Data  = new gammaData("nFe56", 900, 1300, 100);
+        //source_name[m_nData] = "nFe56"; 
+        //gammaData_array[m_nData] = nFe56Data;
+        //m_nData++;
+        //m_nGam++;
 
     }
 

@@ -30,9 +30,9 @@ int main()
     //fitter->Initialize();
     //fitter->Minimization();
 
-    //junoNLChiFunction* fitter = new junoNLChiFunction();
-    //fitter->LoadData();
-    //fitter->GetChiSquare();
+    junoNLChiFunction* fitter = new junoNLChiFunction();
+    fitter->LoadData();
+    fitter->GetChiSquare();
     //fitter->Plot();
     //
 
@@ -51,9 +51,9 @@ int main()
     //cout << b12->GetChi2() << endl;
     //b12->Plot();
 
-    gammaData* cs137 = new gammaData("3215keV", 700, 1100, 100);
-    cs137->LoadData();
-    cs137->calcGammaResponse();
+    //gammaData* cs137 = new gammaData("3215keV", 700, 1100, 100);
+    //cs137->LoadData();
+    //cs137->calcGammaResponse();
     //cout << cs137->GetChi2();
 
     return 1.0;
