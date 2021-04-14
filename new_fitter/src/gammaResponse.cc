@@ -11,6 +11,7 @@
 #include <TFile.h>
 #include <TRandom.h>
 #include <TF1.h>
+#include <TTree.h>
 
 gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax) {
     m_name = name;
@@ -18,14 +19,20 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     m_peMin = peMin;
     m_peMax = peMax;
 
+    hCalc = new TH1D((m_name+"_calc").c_str(), "", m_nBins, m_peMin, m_peMax); 
+    hData = new TH1D((m_name+"_data").c_str(), "", m_nBins, m_peMin, m_peMax); 
+
     m_loadData = false;
     m_loadPrm = false;
+    m_doSpecFit = true;
 }
 
 gammaResponse::~gammaResponse()
 {
     delete hPrmElec;
     delete hPrmPosi;
+
+    delete hCalc;
 }
 
 
@@ -57,6 +64,19 @@ void gammaResponse::LoadData()
         }
     }
     in.close();
+
+    if (m_doSpecFit) {
+        TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
+        if(!infile) cout << "No such gamma spectrum file!" << endl;
+        double m_totpe;
+        TTree* tt = (TTree*)infile->Get(m_name.c_str());
+        tt->SetBranchAddress("totpe", &m_totpe);
+        for(int i=0; i<tt->GetEntries(); i++) {
+            tt->GetEntry(i);
+            hData->Fill(m_totpe);
+        }
+    }
+
 
     LoadPrmBeta();
 }
@@ -114,18 +134,19 @@ double gammaResponse::SampleGamEnergy(int index)
 void gammaResponse::calcGamResponse()
 {
     if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
-    hTotPE = new TH1D("totpe", "", m_nBins, m_peMin, m_peMax); 
+    hCalc->Reset();
+
     for (int iSample = 0; iSample<m_nSamples; iSample++) {
         int index = gRandom->Integer(5000);
         double sample_pe = SampleGamEnergy(index);
-        hTotPE->Fill(sample_pe); 
+        hCalc->Fill(sample_pe); 
     }
-    //hTotPE->Fit("gaus", "Q0");
-    //double pe_mean  = hTotPE->GetFunction("gaus")->GetParameter(1);
-    //double pe_sigma = hTotPE->GetFunction("gaus")->GetParameter(2);
+    //hCalc->Fit("gaus", "Q0");
+    //double pe_mean  = hCalc->GetFunction("gaus")->GetParameter(1);
+    //double pe_sigma = hCalc->GetFunction("gaus")->GetParameter(2);
 
-    double pe_mean  = hTotPE->GetMean();
-    double pe_sigma = hTotPE->GetStdDev();
+    double pe_mean  = hCalc->GetMean();
+    double pe_sigma = hCalc->GetStdDev();
 
     m_nonlCalc = pe_mean / electronQuench::getEnergyScale() / m_Etrue;
     m_resCalc = pe_sigma / pe_mean;
@@ -139,8 +160,22 @@ double gammaResponse::GetChi2()
 
     calcGamResponse();
 
-    chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
+    if (not m_doSpecFit) 
+        chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
 
+    else{
+        for (int i=0; i<m_nBins; i++) {
+            double m_err = hData->GetBinError(i);
+            if (m_err != 0) {
+                double m_data = hData->GetBinContent(i);
+                double m_calc = hCalc->GetBinContent(i);
+
+                chi2 += TMath::Power((m_calc - m_data)/m_err, 2);
+                //cout << hData->GetBinCenter(i) << " " << hCalc->GetBinCenter(i) << " " << m_calc << " " << m_data << " " << m_err << " " << chi2 << endl;
+            }
+        }
+    }
+        
     return chi2 ;
 }
 
@@ -148,6 +183,9 @@ double gammaResponse::GetChi2()
 void gammaResponse::SaveHist()
 {
     string fileName = m_name + "hist.root";
-    hTotPE->SaveAs(fileName.c_str());
+    TFile* outfile = new TFile(fileName.c_str(), "recreate");
+    hData->Write();
+    hCalc->Write();
+    outfile->Close();
 }
 

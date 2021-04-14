@@ -28,6 +28,8 @@ gammaData* junoNLChiFunction::gamma4440Data;
 gammaResponse* junoNLChiFunction::Cs137;
 gammaResponse* junoNLChiFunction::Mn54;
 gammaResponse* junoNLChiFunction::K40;
+gammaResponse* junoNLChiFunction::O16;
+gammaResponse* junoNLChiFunction::nFe56;
 
 junoSpectrum* junoNLChiFunction::junoB12data;
 
@@ -126,26 +128,36 @@ junoNLChiFunction::junoNLChiFunction() {
         //m_nData++;
         //m_nGam++;
 
-        Cs137 = new gammaResponse("Cs137", 1000, 0, 10000);
-        source_name[m_nData] = "Cs137";
-        gammaData_array[m_nData] = Cs137;
+        //Cs137 = new gammaResponse("Cs137", 1000, 0, 10000);
+        //source_name[m_nData] = "Cs137";
+        //gammaData_array[m_nData] = Cs137;
+        //m_nData++;
+        //m_nGam++;
+
+        //Mn54 = new gammaResponse("Mn54", 1000, 0, 10000);
+        //source_name[m_nData] = "Mn54";
+        //gammaData_array[m_nData] = Mn54;
+        //m_nData++;
+        //m_nGam++;
+
+        //K40 = new gammaResponse("K40", 1000, 0, 10000);
+        //source_name[m_nData] = "K40";
+        //gammaData_array[m_nData] = K40;
+        //m_nData++;
+        //m_nGam++;
+
+
+        O16 = new gammaResponse("O16", 100, 9200, 9700);
+        source_name[m_nData] = "O16";
+        gammaData_array[m_nData] = O16;
         m_nData++;
         m_nGam++;
-
-        Mn54 = new gammaResponse("Mn54", 1000, 0, 10000);
-        source_name[m_nData] = "Mn54";
-        gammaData_array[m_nData] = Mn54;
+        
+        nFe56 = new gammaResponse("nFe56", 200, 11000, 12000);
+        source_name[m_nData] = "nFe56";
+        gammaData_array[m_nData] = nFe56;
         m_nData++;
         m_nGam++;
-
-        K40 = new gammaResponse("K40", 1000, 0, 10000);
-        source_name[m_nData] = "K40";
-        gammaData_array[m_nData] = K40;
-        m_nData++;
-        m_nGam++;
-
-
-
 
 
     }
@@ -277,8 +289,8 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     }
 
     if (junoParameters::scintillatorParameterization == kSimulationCalc) {
-        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.5, 1.5, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.8, 1.1, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 2700, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
     }
@@ -312,6 +324,8 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     m_DoFit = true;
 
+    O16->SaveHist();
+    nFe56->SaveHist();
     if (m_doB12Fit)
         m_nData += junoB12data->getNData();
 

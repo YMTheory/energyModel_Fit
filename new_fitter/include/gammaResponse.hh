@@ -58,8 +58,11 @@ class gammaResponse
         TH2D* hPrmElec;
         TH2D* hPrmPosi;
 
-        TH1D* hTotPE;
+        TH1D* hCalc;
+        TH1D* hData;
 
+    private:
+        bool m_doSpecFit;
 };
 
 
