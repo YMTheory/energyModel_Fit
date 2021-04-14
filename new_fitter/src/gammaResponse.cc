@@ -101,6 +101,9 @@ double gammaResponse::SampleGamEnergy(int index)
         tmp_sigma = TMath::Sqrt(tmp_sigma);
     
         double sample_pe = gRandom->Gaus(tmp_pe, tmp_sigma);
+        //if (sample_pe < 8000) { // for small p.e. events check...
+        //    cout << index << " " << tmp_pe << " " << tmp_sigma <<   endl;
+        //}
         return sample_pe;
     }
 }

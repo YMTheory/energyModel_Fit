@@ -91,6 +91,13 @@ int main()
     cout << nFe56->GetName() << " " << nFe56->GetNonlData() << " " << nFe56->GetNonlCalc() << endl;
 
     cs137->SaveHist();
+    Mn54->SaveHist();
+    K40->SaveHist();
+    nH->SaveHist();
+    Tl208->SaveHist();
+    nC12->SaveHist();
+    O16->SaveHist();
+    nFe56->SaveHist();
 
     return 1.0;
 }
