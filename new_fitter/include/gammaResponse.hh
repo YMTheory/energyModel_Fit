@@ -2,6 +2,7 @@
 #define gammaResponse_h
 
 #include <string>
+#include <TH1D.h>
 #include <TH2D.h>
 
 using namespace std;
@@ -21,6 +22,8 @@ class gammaResponse
 
         double GetChi2();
 
+        void SaveHist();
+        
     
     public:
         string GetName()                      {return m_name;}
@@ -51,9 +54,11 @@ class gammaResponse
         bool m_loadPrm;
 
         const int m_nEvents  = 5000;
-        const int m_nSamples = 1000;
+        const int m_nSamples = 5000;
         TH2D* hPrmElec;
         TH2D* hPrmPosi;
+
+        TH1D* hTotPE;
 
 };
 

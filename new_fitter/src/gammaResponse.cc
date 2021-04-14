@@ -111,7 +111,7 @@ double gammaResponse::SampleGamEnergy(int index)
 void gammaResponse::calcGamResponse()
 {
     if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
-    TH1D* hTotPE = new TH1D("totpe", "", 100, m_peMin, m_peMax); 
+    hTotPE = new TH1D("totpe", "", m_nBins, m_peMin, m_peMax); 
     for (int iSample = 0; iSample<m_nSamples; iSample++) {
         int index = gRandom->Integer(5000);
         double sample_pe = SampleGamEnergy(index);
@@ -127,7 +127,6 @@ void gammaResponse::calcGamResponse()
     m_nonlCalc = pe_mean / electronQuench::getEnergyScale() / m_Etrue;
     m_resCalc = pe_sigma / pe_mean;
 
-    delete hTotPE;
 }
 
 
@@ -143,4 +142,9 @@ double gammaResponse::GetChi2()
 }
 
 
+void gammaResponse::SaveHist()
+{
+    string fileName = m_name + "hist.root";
+    hTotPE->SaveAs(fileName.c_str());
+}
 

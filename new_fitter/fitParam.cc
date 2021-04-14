@@ -30,10 +30,10 @@ int main()
     //fitter->Initialize();
     //fitter->Minimization();
 
-    junoNLChiFunction* fitter = new junoNLChiFunction();
-    fitter->LoadData();
-    fitter->GetChiSquare();
-    fitter->Plot();
+    //junoNLChiFunction* fitter = new junoNLChiFunction();
+    //fitter->LoadData();
+    //fitter->GetChiSquare();
+    //fitter->Plot();
     //
 
     //electronResponse::FitPlot();
@@ -56,39 +56,41 @@ int main()
     //cs137->calcGammaResponse();
     //cout << cs137->GetChi2();
     
-    //gammaResponse* cs137 = new gammaResponse("Cs137", 2000, 0, 15000);
-    //cs137->LoadData();
-    //cs137->calcGamResponse();
-    //gammaResponse* Mn54 = new gammaResponse("Mn54", 2000, 0, 15000);
-    //Mn54->LoadData();
-    //Mn54->calcGamResponse();
-    //gammaResponse* K40 = new gammaResponse("K40", 2000, 0, 15000);
-    //K40->LoadData();
-    //K40->calcGamResponse();
-    //gammaResponse* nH = new gammaResponse("nH", 2000, 0, 15000);
-    //nH->LoadData();
-    //nH->calcGamResponse();
-    //gammaResponse* Tl208 = new gammaResponse("Tl208", 2000, 0, 15000);
-    //Tl208->LoadData();
-    //Tl208->calcGamResponse();
-    //gammaResponse* nC12 = new gammaResponse("nC12", 2000, 0, 15000);
-    //nC12->LoadData();
-    //nC12->calcGamResponse();
-    //gammaResponse* O16 = new gammaResponse("O16", 2000, 0, 15000);
-    //O16->LoadData();
-    //O16->calcGamResponse();
-    //gammaResponse* nFe56 = new gammaResponse("nFe56", 2000, 0, 15000);
-    //nFe56->LoadData();
-    //nFe56->calcGamResponse();
+    gammaResponse* cs137 = new gammaResponse("Cs137", 2000, 0, 14000);
+    cs137->LoadData();
+    cs137->calcGamResponse();
+    gammaResponse* Mn54 = new gammaResponse("Mn54", 2000, 0, 14000);
+    Mn54->LoadData();
+    Mn54->calcGamResponse();
+    gammaResponse* K40 = new gammaResponse("K40", 2000, 0, 14000);
+    K40->LoadData();
+    K40->calcGamResponse();
+    gammaResponse* nH = new gammaResponse("nH", 2000, 0, 14000);
+    nH->LoadData();
+    nH->calcGamResponse();
+    gammaResponse* Tl208 = new gammaResponse("Tl208", 2000, 0, 14000);
+    Tl208->LoadData();
+    Tl208->calcGamResponse();
+    gammaResponse* nC12 = new gammaResponse("nC12", 2000, 0, 14000);
+    nC12->LoadData();
+    nC12->calcGamResponse();
+    gammaResponse* O16 = new gammaResponse("O16", 2000, 0, 14000);
+    O16->LoadData();
+    O16->calcGamResponse();
+    gammaResponse* nFe56 = new gammaResponse("nFe56", 2000, 0, 14000);
+    nFe56->LoadData();
+    nFe56->calcGamResponse();
 
-    //cout << cs137->GetName() << " " << cs137->GetNonlData() << " " << cs137->GetNonlCalc() << endl;
-    //cout << Mn54->GetName() << " " << Mn54->GetNonlData() << " " << Mn54->GetNonlCalc() << endl;
-    //cout << K40->GetName() << " " << K40->GetNonlData() << " " << K40->GetNonlCalc() << endl;
-    //cout << nH->GetName() << " " << nH->GetNonlData() << " " << nH->GetNonlCalc() << endl;
-    //cout << Tl208->GetName() << " " << Tl208->GetNonlData() << " " << Tl208->GetNonlCalc() << endl;
-    //cout << nC12->GetName() << " " << nC12->GetNonlData() << " " << nC12->GetNonlCalc() << endl;
-    //cout << O16->GetName() << " " << O16->GetNonlData() << " " << O16->GetNonlCalc() << endl;
-    //cout << nFe56->GetName() << " " << nFe56->GetNonlData() << " " << nFe56->GetNonlCalc() << endl;
+    cout << cs137->GetName() << " " << cs137->GetNonlData() << " " << cs137->GetNonlCalc() << endl;
+    cout << Mn54->GetName() << " " << Mn54->GetNonlData() << " " << Mn54->GetNonlCalc() << endl;
+    cout << K40->GetName() << " " << K40->GetNonlData() << " " << K40->GetNonlCalc() << endl;
+    cout << nH->GetName() << " " << nH->GetNonlData() << " " << nH->GetNonlCalc() << endl;
+    cout << Tl208->GetName() << " " << Tl208->GetNonlData() << " " << Tl208->GetNonlCalc() << endl;
+    cout << nC12->GetName() << " " << nC12->GetNonlData() << " " << nC12->GetNonlCalc() << endl;
+    cout << O16->GetName() << " " << O16->GetNonlData() << " " << O16->GetNonlCalc() << endl;
+    cout << nFe56->GetName() << " " << nFe56->GetNonlData() << " " << nFe56->GetNonlCalc() << endl;
+
+    cs137->SaveHist();
 
     return 1.0;
 }
