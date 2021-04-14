@@ -19,12 +19,13 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     m_peMax = peMax;
 
     m_loadData = false;
-    m_loadPrmElec = false;
+    m_loadPrm = false;
 }
 
 gammaResponse::~gammaResponse()
 {
     delete hPrmElec;
+    delete hPrmPosi;
 }
 
 
@@ -57,17 +58,19 @@ void gammaResponse::LoadData()
     }
     in.close();
 
-    LoadPrmElec();
+    LoadPrmBeta();
 }
 
-void gammaResponse::LoadPrmElec()
+void gammaResponse::LoadPrmBeta()
 {
     cout << " >>> Load Primary Electron in Single Event <<< " << endl;
-    string filename = "./data/gamma/" + m_name + "_all.root";
+    string filename = "./data/gamma/" + m_name + "_new.root";
     TFile* file = new TFile(filename.c_str(), "read");
     if (!file) cout << " No such input file: " << filename << endl;
-    hPrmElec = (TH2D*)file->Get(m_name.c_str());
+    hPrmElec = (TH2D*)file->Get((m_name+"_elec").c_str());
+    hPrmPosi = (TH2D*)file->Get((m_name+"_posi").c_str());
     
+    m_loadPrm = true;
 }
 
 
@@ -77,11 +80,22 @@ double gammaResponse::SampleGamEnergy(int index)
     else {
         double tmp_pe = 0;
         double tmp_sigma = 0;
+        // electron
         for (int iSec=0; iSec<100; iSec++) {
             double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
             if (tmp_E == 0) break;
             tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
             tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
+        }
+
+        // positron
+        for(int iSec=0; iSec<100; iSec++) {
+            double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
+            if (tmp_E == 0) break;
+            tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 695.53*2;
+            tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
+            tmp_sigma += 2*TMath::Power(27.513, 2);
+            
         }
 
         tmp_sigma = TMath::Sqrt(tmp_sigma);
@@ -111,7 +125,7 @@ void gammaResponse::calcGamResponse()
     double pe_sigma = hTotPE->GetStdDev();
 
     m_nonlCalc = pe_mean / electronQuench::getEnergyScale() / m_Etrue;
-    m_resData = pe_sigma / pe_mean;
+    m_resCalc = pe_sigma / pe_mean;
 
     delete hTotPE;
 }

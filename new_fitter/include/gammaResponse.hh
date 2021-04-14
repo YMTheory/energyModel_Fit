@@ -14,12 +14,23 @@ class gammaResponse
 
     public:
         void LoadData();
-        void LoadPrmElec();
+        void LoadPrmBeta();
         
         double SampleGamEnergy(int index);
         void calcGamResponse();
 
         double GetChi2();
+
+    
+    public:
+        string GetName()                      {return m_name;}
+        double GetEtrue()                     {return m_Etrue;}
+        double GetPEData()                    {return m_totpeData;}
+        double GetNonlData()                  {return m_nonlData;}
+        double GetNonlCalc()                  {return m_nonlCalc;}
+        double GetResData()                   {return m_resData;}
+        double GetResCalc()                   {return m_resCalc;}
+
 
     private:
         string m_name;
@@ -34,13 +45,15 @@ class gammaResponse
         double m_Evis;
         double m_resData;
         double m_resDataErr;
+        double m_resCalc;
 
         bool m_loadData;
-        bool m_loadPrmElec;
+        bool m_loadPrm;
 
         const int m_nEvents  = 5000;
         const int m_nSamples = 1000;
         TH2D* hPrmElec;
+        TH2D* hPrmPosi;
 
 };
 
