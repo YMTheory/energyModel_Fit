@@ -22,9 +22,9 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     hCalc = new TH1D((m_name+"_calc").c_str(), "", m_nBins, m_peMin, m_peMax); 
     hData = new TH1D((m_name+"_data").c_str(), "", m_nBins, m_peMin, m_peMax); 
 
-    m_loadData = false;
-    m_loadPrm = false;
-    m_doSpecFit = true;
+    m_loadData  = false;
+    m_loadPrm   = false;
+    m_doSpecFit = false;
 }
 
 gammaResponse::~gammaResponse()

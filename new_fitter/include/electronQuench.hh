@@ -74,8 +74,8 @@ class electronQuench
         static std::vector<double> m_Etrue;
         static std::vector<double> m_StopPow;
 
-        static double m_simEtrue[321];
-        static double m_simScintPE[321];
+        static double m_simEtrue[370];
+        static double m_simScintPE[370];
 
         static double ScintillatorShape    (double eTrue);
         static double SimulationNLShape    (double eTrue);
