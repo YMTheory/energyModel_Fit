@@ -14,7 +14,7 @@ using namespace std;
 
 double electronCerenkov::m_kC = 1; //1.01533e+00;
 //double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
-double electronCerenkov::m_energyScale = 3300.371/2.223;
+double electronCerenkov::m_energyScale = 3134.078/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
 
 vector<double> electronCerenkov::m_Etrue;
@@ -22,6 +22,8 @@ vector<double> electronCerenkov::m_Cerenkov;
 
 double electronCerenkov::m_E[m_nData];
 double electronCerenkov::m_nonl[m_nData];
+
+TGraph* electronCerenkov::gNPE_elec = new TGraph();
 
 electronCerenkov::electronCerenkov()
 {}
@@ -39,7 +41,7 @@ void electronCerenkov::LoadCerenkov()
     }
     string line;
 
-    double tmp_Edep, tmp_rel, tmp_abs;
+    double tmp_Edep, tmp_rel, tmp_abs; int index = 0;
     while(getline(in,line)){
         istringstream ss(line);
         //ss >> tmp_Edep >> tmp_rel >> tmp_abs ;
@@ -47,6 +49,8 @@ void electronCerenkov::LoadCerenkov()
         m_Etrue.push_back(tmp_Edep);
         //m_Etrue.push_back(tmp_Edep/1000.);
         m_Cerenkov.push_back(tmp_abs);
+        gNPE_elec->SetPoint(index, tmp_Edep, tmp_abs);
+        index++;
     }
 
     in.close();
@@ -82,22 +86,24 @@ double electronCerenkov::getCerPE(double E)
 {
     if(!m_LoadCerenkov)   LoadCerenkov();
 
-    if(m_Cerenkov.size() == 0) {
-        cout << " >>> No Data in Cerenkov Vector <<< " << endl; return -1;
-    } else if (m_Cerenkov.size() != m_Etrue.size()){
-        cout << " >>> Cerenkov Vector Length are Different !! <<< " << endl; 
-    } else {
+    //if(m_Cerenkov.size() == 0) {
+    //    cout << " >>> No Data in Cerenkov Vector <<< " << endl; return -1;
+    //} else if (m_Cerenkov.size() != m_Etrue.size()){
+    //    cout << " >>> Cerenkov Vector Length are Different !! <<< " << endl; 
+    //} else {
 
-        // get Cerenkov PE
-        int num = m_Cerenkov.size();
-        for(int i=1; i<num; i++){
-            if(m_Etrue[i-1]<=E and m_Etrue[i]>=E){  
-                return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]));
-                //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
-            }
-        }
-        cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
-    }
+    //    // get Cerenkov PE
+    //    int num = m_Cerenkov.size();
+    //    for(int i=1; i<num; i++){
+    //        if(m_Etrue[i-1]<=E and m_Etrue[i]>=E){  
+    //            return m_kC*((m_Cerenkov[i]*(E-m_Etrue[i-1])+m_Cerenkov[i-1]*(m_Etrue[i]-E))/(m_Etrue[i]-m_Etrue[i-1]));
+    //            //return m_kC * m_Cerenkov[i-1]/m_energyScale/E; 
+    //        }
+    //    }
+    //    cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
+    //}
+
+    return m_kC*gNPE_elec->Eval(E, 0, "S");
 }
 
 

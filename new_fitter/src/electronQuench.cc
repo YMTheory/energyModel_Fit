@@ -36,9 +36,11 @@ vector<double> electronQuench::m_StopPow;
 double electronQuench::m_edep[1000] = {0.};
 double electronQuench::m_nonl[1000] = {0.};
 
-double electronQuench::m_simEtrue[370];
-double electronQuench::m_simScintPE[370];
-double electronQuench::m_scale = 3300.371/2.223;
+double electronQuench::m_simEtrue[900];
+double electronQuench::m_simScintPE[900];
+double electronQuench::m_scale = 3134.078/2.223;
+
+TGraph* electronQuench::gNPE_elec = new TGraph();
 
 electronQuench::electronQuench()
 {;}
@@ -109,6 +111,7 @@ void electronQuench::LoadScintPE() {
         ss >> tmpE >> tmpPE;
         m_simEtrue[index] = tmpE;
         m_simScintPE[index] = tmpPE;
+        gNPE_elec->SetPoint(index, tmpE, tmpPE);
         index++;
     }
     in.close();
@@ -168,25 +171,27 @@ double electronQuench::ScintillatorNL    (double eTrue)  {
 double electronQuench::ScintillatorPE(double eTrue) {
     if (!m_loadScintPE) LoadScintPE();
 
-    double deltaE = 0.05; 
-    int lowbin  ;
-    int highbin ; 
-    if (eTrue < 0.05) {
-        lowbin = eTrue / 0.001;
-        highbin = lowbin + 1;
-    }
-    else if (eTrue >= 0.05) {
-        lowbin = 50 + eTrue / deltaE;
-        highbin = lowbin + 1;
-    }
-    if ( highbin > 320 ) {
-        cout << " >> Energy Beyond Range !!! <<< " << endl;
-        return -1;
-    }   
+    //double deltaE = 0.05; 
+    //int lowbin  ;
+    //int highbin ; 
+    ////if (eTrue < 0.05) {
+    ////    lowbin = eTrue / 0.001;
+    ////    highbin = lowbin + 1;
+    ////}
+    ////else if (eTrue >= 0.05) {
+    ////    lowbin = 50 + eTrue / deltaE;
+    ////    highbin = lowbin + 1;
+    ////}
+    //lowbin  = eTrue / deltaE;
+    //highbin = lowbin + 1;
+    //if ( highbin > 320 ) {
+    //    cout << " >> Energy Beyond Range !!! <<< " << endl;
+    //    return -1;
+    //}   
 
-    double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
-    double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
-
+    //double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
+    //double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
+    double scintPE = gNPE_elec->Eval(eTrue, 0, "S");
     return m_kA * scintPE;
 }
 

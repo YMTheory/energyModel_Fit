@@ -43,7 +43,7 @@ void gammaResponse::LoadData()
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     string line;
 
-    double scale = 3300.371/2.223;
+    double scale = 3134.078/2.223;
     string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError, tmp_totPEerr, tmp_totPESigmaerr;
     while(getline(in,line)){
         istringstream ss(line);
@@ -55,7 +55,7 @@ void gammaResponse::LoadData()
             m_nonlData = tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_EvisError*tmp_totPE/scale/tmp_E;
             //m_nonlDataErr = tmp_totPEerr/scale/tmp_E;
-            m_nonlDataErr = 0.002;
+            m_nonlDataErr = 0.001;
             m_Evis = tmp_totPE/scale;
             m_resData = tmp_totPESigma/tmp_totPE;
             //m_resDataErr = 0.01 * tmp_totPESigma/tmp_totPE;
@@ -84,7 +84,7 @@ void gammaResponse::LoadData()
 void gammaResponse::LoadPrmBeta()
 {
     cout << " >>> Load Primary Electron in Single Event <<< " << endl;
-    string filename = "./data/gamma/" + m_name + "_new.root";
+    string filename = "./data/gamma/" + m_name + "_J19.root";
     TFile* file = new TFile(filename.c_str(), "read");
     if (!file) cout << " No such input file: " << filename << endl;
     hPrmElec = (TH2D*)file->Get((m_name+"_elec").c_str());
@@ -112,9 +112,9 @@ double gammaResponse::SampleGamEnergy(int index)
         for(int iSec=0; iSec<100; iSec++) {
             double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
             if (tmp_E == 0) break;
-            tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 695.53*2;
+            tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 660.8;
             tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
-            tmp_sigma += 2*TMath::Power(27.513, 2);
+            tmp_sigma += 2*TMath::Power(27.07, 2);
             
         }
 
@@ -145,8 +145,12 @@ void gammaResponse::calcGamResponse()
     //double pe_mean  = hCalc->GetFunction("gaus")->GetParameter(1);
     //double pe_sigma = hCalc->GetFunction("gaus")->GetParameter(2);
 
-    double pe_mean  = hCalc->GetMean();
-    double pe_sigma = hCalc->GetStdDev();
+    //double pe_mean  = hCalc->GetMean();
+    //double pe_sigma = hCalc->GetStdDev();
+
+    hCalc->Fit("gaus", "Q0");
+    double pe_mean =  hCalc->GetFunction("gaus")->GetParameter(1);
+    double pe_sigma = hCalc->GetFunction("gaus")->GetParameter(2);
 
     m_nonlCalc = pe_mean / electronQuench::getEnergyScale() / m_Etrue;
     m_resCalc = pe_sigma / pe_mean;
@@ -176,6 +180,7 @@ double gammaResponse::GetChi2()
         }
     }
         
+    cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }
 

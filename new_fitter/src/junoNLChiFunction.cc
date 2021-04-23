@@ -28,8 +28,12 @@ gammaData* junoNLChiFunction::gamma4440Data;
 gammaResponse* junoNLChiFunction::Cs137;
 gammaResponse* junoNLChiFunction::Mn54;
 gammaResponse* junoNLChiFunction::K40;
-gammaResponse* junoNLChiFunction::O16;
-gammaResponse* junoNLChiFunction::nFe56;
+gammaResponse* junoNLChiFunction::Ge68;
+gammaResponse* junoNLChiFunction::Co60;
+gammaResponse* junoNLChiFunction::nH;
+gammaResponse* junoNLChiFunction::AmBe;
+gammaResponse* junoNLChiFunction::nC12;
+gammaResponse* junoNLChiFunction::AmC;
 
 junoSpectrum* junoNLChiFunction::junoB12data;
 
@@ -128,34 +132,57 @@ junoNLChiFunction::junoNLChiFunction() {
         //m_nData++;
         //m_nGam++;
 
-        //Cs137 = new gammaResponse("Cs137", 1000, 0, 10000);
-        //source_name[m_nData] = "Cs137";
-        //gammaData_array[m_nData] = Cs137;
-        //m_nData++;
-        //m_nGam++;
-
-        //Mn54 = new gammaResponse("Mn54", 1000, 0, 10000);
-        //source_name[m_nData] = "Mn54";
-        //gammaData_array[m_nData] = Mn54;
-        //m_nData++;
-        //m_nGam++;
-
-        //K40 = new gammaResponse("K40", 1000, 0, 10000);
-        //source_name[m_nData] = "K40";
-        //gammaData_array[m_nData] = K40;
-        //m_nData++;
-        //m_nGam++;
-
-
-        O16 = new gammaResponse("O16", 100, 9200, 9700);
-        source_name[m_nData] = "O16";
-        gammaData_array[m_nData] = O16;
+        Cs137 = new gammaResponse("Cs137", 1000, 0, 10000);
+        source_name[m_nData] = "Cs137";
+        gammaData_array[m_nData] = Cs137;
         m_nData++;
         m_nGam++;
-        
-        nFe56 = new gammaResponse("nFe56", 200, 11000, 12000);
-        source_name[m_nData] = "nFe56";
-        gammaData_array[m_nData] = nFe56;
+
+        Mn54 = new gammaResponse("Mn54", 1000, 0, 10000);
+        source_name[m_nData] = "Mn54";
+        gammaData_array[m_nData] = Mn54;
+        m_nData++;
+        m_nGam++;
+
+        Ge68 = new gammaResponse("Ge68", 1000, 0, 10000);
+        source_name[m_nData] = "Ge68";
+        gammaData_array[m_nData] = Ge68;
+        m_nData++;
+        m_nGam++;
+
+        K40 = new gammaResponse("K40", 1000, 0, 10000);
+        source_name[m_nData] = "K40";
+        gammaData_array[m_nData] = K40;
+        m_nData++;
+        m_nGam++;
+
+        nH = new gammaResponse("nH", 1000, 0, 10000);
+        source_name[m_nData] = "nH";
+        gammaData_array[m_nData] = nH;
+        m_nData++;
+        m_nGam++;
+
+        Co60 = new gammaResponse("Co60", 1000, 0, 10000);
+        source_name[m_nData] = "Co60";
+        gammaData_array[m_nData] = Co60;
+        m_nData++;
+        m_nGam++;
+
+        AmBe = new gammaResponse("AmBe", 1000, 0, 10000);
+        source_name[m_nData] = "AmBe";
+        gammaData_array[m_nData] = AmBe;
+        m_nData++;
+        m_nGam++;
+
+        nC12 = new gammaResponse("nC12", 1000, 0, 10000);
+        source_name[m_nData] = "nC12";
+        gammaData_array[m_nData] = nC12;
+        m_nData++;
+        m_nGam++;
+
+        AmC = new gammaResponse("AmC", 1000, 0, 10000);
+        source_name[m_nData] = "AmC";
+        gammaData_array[m_nData] = AmC;
         m_nData++;
         m_nGam++;
 
@@ -276,7 +303,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
             junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0., 0., ierrflag);              iPar++;
             junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.1e-3, 7.5e-3, ierrflag);     iPar++;
             junoNLMinuit->mnparm(iPar, "kC", 1.0, 0.001, 0., 0., ierrflag);               iPar++;
-            junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 0, 0, ierrflag); iPar++;
+            junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 0, 0, ierrflag); iPar++;
             junoNLMinuit->mnparm(iPar, "nuGamma", 0.01, 0.0001, 0., 1, ierrflag);         iPar++;
         }
 
@@ -291,7 +318,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     if (junoParameters::scintillatorParameterization == kSimulationCalc) {
         junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.8, 1.1, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 3300.371/2.223, 1, 1400, 2700, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 1400, 2700, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
     }
 
@@ -324,8 +351,9 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     m_DoFit = true;
 
-    O16->SaveHist();
-    nFe56->SaveHist();
+    //Cs137->SaveHist();
+    //O16->SaveHist();
+    //nFe56->SaveHist();
     if (m_doB12Fit)
         m_nData += junoB12data->getNData();
 
@@ -356,57 +384,48 @@ void junoNLChiFunction::GammaPlot()
 {
     //cout << " >>> Draw Gamma NL Fitting Results <<< " << endl;
 
-    //if (not m_DoFit) {
-    //    cout << "Fitting has not been finished ...";
-    //    return;
-    //}
+    if (not m_DoFit) {
+        cout << "Fitting has not been finished ...";
+        return;
+    }
 
-    //std::cout << " >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< " << std::endl;
+    std::cout << " >>>>>>>>>>>> GammaNL Outputs <<<<<<<<<<<< " << std::endl;
 
-    //TGraphErrors* gNonlData = new TGraphErrors();
-    //TGraphErrors* gNonlCalc = new TGraphErrors();
-    //gNonlData->SetName("gNonlData");
-    //gNonlCalc->SetName("gNonlCalc");
+    TGraphErrors* gNonlData = new TGraphErrors();
+    TGraphErrors* gNonlCalc = new TGraphErrors();
+    gNonlData->SetName("gNonlData");
+    gNonlCalc->SetName("gNonlCalc");
 
-    //double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
-    //SetParameters(fit_pars);
-    //int index = 0;
-    //for(int iData=0; iData<m_nGam; iData++) {
-    //    std::string source = source_name[iData];
-    //    gammaData* tmpGammaData = gammaData_array[iData];
-    //    tmpGammaData->calcGammaResponse();
-    //    double tmp_E       = tmpGammaData->GetEtrue();
-    //    double tmp_pred    = tmpGammaData->GetNonlPred();
-    //    double tmp_pred1   = tmpGammaData->GetNonlPred1();
-    //    double tmp_data    = tmpGammaData->GetNonlData();
-    //    double tmp_dataErr = tmpGammaData->GetNonlDataErr(); 
-    //    double tmp_pedata  = tmpGammaData->GetPEData();
-    //    double tmp_pecalc  = tmpGammaData->GetPECalc();
-    //    double tmp_cerpecalc = tmpGammaData->GetCerPECalc();
-    //    double tmp_sctpecalc = tmpGammaData->GetSctPECalc();
-    //    double tmp_sctpedata = tmpGammaData->GetSctPEData();
-    //    double tmp_cerpedate = tmpGammaData->GetCerPEData();
-    //    cout << source_name[iData] << " " << tmp_E << " " << tmp_pedata << " " << tmp_pecalc << " " << tmp_sctpecalc << " " << tmp_cerpecalc << " "
-    //         << tmp_data << " " << tmp_pred << " " << tmp_pred1 << endl;
-    //    gNonlData->SetPoint(index, tmp_E, tmp_data);
-    //    gNonlData->SetPointError(index, 0, tmp_dataErr);
-    //    gNonlCalc->SetPoint(index, tmp_E, tmp_pred1);
+    double fit_pars[4] = {m_bestFit[0], m_bestFit[1], m_bestFit[2], m_bestFit[3]};
+    SetParameters(fit_pars);
+    int index = 0;
+    for(int iData=0; iData<m_nGam; iData++) {
+        std::string source = source_name[iData];
+        gammaResponse* tmpGammaResponse = gammaData_array[iData];
+        tmpGammaResponse->calcGamResponse();
+        double tmp_E       = tmpGammaResponse->GetEtrue();
+        double tmp_pred    = tmpGammaResponse->GetNonlCalc();
+        double tmp_data    = tmpGammaResponse->GetNonlData();
+        double tmp_dataErr = tmpGammaResponse->GetNonlErr(); 
+        gNonlData->SetPoint(index, tmp_E, tmp_data);
+        gNonlData->SetPointError(index, 0, tmp_dataErr);
+        gNonlCalc->SetPoint(index, tmp_E, tmp_pred);
 
-    //    //tmpGammaData->SaveHist();
+        //tmpGammaData->SaveHist();
 
-    //    index++;
-    //}
+        index++;
+    }
 
-    //gNonlData->SetMarkerStyle(20);
-    //gNonlData->SetMarkerColor(kBlue+1);
-    //gNonlData->SetLineColor(kBlue+1);
-    //gNonlData->SetLineWidth(2);
-    //gNonlData->SetMarkerSize(1.0);
-    //gNonlCalc->SetMarkerStyle(21);
-    //gNonlCalc->SetMarkerColor(kRed+1);
-    //gNonlCalc->SetMarkerSize(1.0);
-    //gNonlCalc->SetLineColor(kRed+1);
-    //gNonlCalc->SetLineWidth(2);
+    gNonlData->SetMarkerStyle(20);
+    gNonlData->SetMarkerColor(kBlue+1);
+    gNonlData->SetLineColor(kBlue+1);
+    gNonlData->SetLineWidth(2);
+    gNonlData->SetMarkerSize(1.0);
+    gNonlCalc->SetMarkerStyle(21);
+    gNonlCalc->SetMarkerColor(kRed+1);
+    gNonlCalc->SetMarkerSize(1.0);
+    gNonlCalc->SetLineColor(kRed+1);
+    gNonlCalc->SetLineWidth(2);
 
     //cout << "\n";
     //cout << " >>> Nominal Outputs <<< " << endl;

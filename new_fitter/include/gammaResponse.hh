@@ -31,6 +31,7 @@ class gammaResponse
         double GetPEData()                    {return m_totpeData;}
         double GetNonlData()                  {return m_nonlData;}
         double GetNonlCalc()                  {return m_nonlCalc;}
+        double GetNonlErr()                   {return m_nonlDataErr;}
         double GetResData()                   {return m_resData;}
         double GetResCalc()                   {return m_resCalc;}
 

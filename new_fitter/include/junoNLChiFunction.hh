@@ -67,8 +67,12 @@ class junoNLChiFunction
         static gammaResponse* Cs137;
         static gammaResponse* Mn54;
         static gammaResponse* K40;
-        static gammaResponse* O16;
-        static gammaResponse* nFe56;
+        static gammaResponse* Ge68;
+        static gammaResponse* Co60;
+        static gammaResponse* nH;
+        static gammaResponse* AmBe;
+        static gammaResponse* nC12;
+        static gammaResponse* AmC;
 
         static bool m_doGamFit;
         static bool m_doB12Fit;
