@@ -36,7 +36,8 @@ def getPE(E):
     totpe = (1-bias)*( sctPE[lowbin] + cerPE[lowbin] ) + bias* (cerPE[higbin] + sctPE[higbin] )
     sctpe = (1-bias)*( sctPE[lowbin]  ) + bias* ( sctPE[higbin] )
     cerpe = (1-bias)*(  cerPE[lowbin] ) + bias* (cerPE[higbin]  )
-    return cerpe, sctpe, totpe
+    #return cerpe, sctpe, totpe
+    return totpe
 
 
 def getResol(E):
@@ -70,7 +71,7 @@ def fakeGam():
 
     sim = []
     for i in range(10):
-        filename = "/junofs/users/miaoyu/energy_model/production/electron/user-"+str(i)+".root"
+        filename = "/junofs/users/miaoyu/energy_model/J20v1r0-Pre2/production/electron/user-"+str(i)+".root"
         arr = up.open(filename)["evt"]["totalPE"].array()
         sim.extend(arr)
 
@@ -135,12 +136,13 @@ def loadPrmBeta_old(filename):
 
 def Cs137_source():
     secBetaArr = loadPrmBeta("../data/gamma/Cs137-nooptical.txt")
-    data_arr = up.open("/junofs/users/miaoyu/energy_model/production/gamma/Cs137/user-sim-7000.root")["evt"]["totalPE"].array()
+    data_arr = up.open("/junofs/users/miaoyu/energy_model/production/J20v2r0-Pre2/gamma/Cs137/user-sim-7000.root")["evt"]["totalPE"].array()
     calc_arr = []
     prmE_arr = []
     for i in range(500):
         tmpE = 0
         NPE, NPE_sigma = 0, 0
+        print(secBetaArr[i])
         for j in secBetaArr[i]:
             tmpE += j
             NPE += getPE(j)
@@ -184,18 +186,18 @@ def Draw():
 
 
 def main():
-    #Cs137_source()
+    Cs137_source()
     #fakeGam()
     #Draw()
-    E1 = loadPrmBeta("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/data/gamma/Cs137-nooptical.txt")
-    E2 = loadPrmBeta_old("/junofs/users/miaoyu/energy_model/energyModel_Fit/Miao/data/naked_gamma/Cs137_all.txt")
-    E3 = loadPrmBeta("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/data/gamma/Cs137_newversion.txt")
+    #E1 = loadPrmBeta("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/data/gamma/Cs137-nooptical.txt")
+    #E2 = loadPrmBeta_old("/junofs/users/miaoyu/energy_model/energyModel_Fit/Miao/data/naked_gamma/Cs137_all.txt")
+    #E3 = loadPrmBeta("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/data/gamma/Cs137_newversion.txt")
 
-    plt.hist(E1, bins=100, histtype="step", label="J20")
-    #plt.hist(E2, bins=100, histtype="step", label="J19")
-    plt.hist(E3, bins=100, histtype="step", label="J20 new")
-    plt.legend()
-    plt.show()
+    #plt.hist(E1, bins=100, histtype="step", label="J20")
+    ##plt.hist(E2, bins=100, histtype="step", label="J19")
+    #plt.hist(E3, bins=100, histtype="step", label="J20 new")
+    #plt.legend()
+    #plt.show()
 
 if __name__ == "__main__":
     main()

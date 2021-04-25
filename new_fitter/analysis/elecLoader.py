@@ -1,4 +1,5 @@
 import numpy as np
+import time
 
 def loadPEFile(filename):
     Earr, PEarr = [], []
@@ -24,12 +25,15 @@ def loadResFile(filename):
     resol = np.array(resol)
     return Earr, resol
 
+st = time.time()
 sctE, sctPE = loadPEFile("../data/electron/sctPE1.txt")
 print(">>>>>>>>>> Load scintillation PE file <<<<<<<<<<")
 cerE, cerPE = loadPEFile("../data/electron/cerPE1.txt") 
 print(">>>>>>>>>> Load cerenkov PE file <<<<<<<<<<")
 resolE, resol = loadResFile("../data/electron/elecResol1.txt")
 print(">>>>>>>>>> Load resolution PE file <<<<<<<<<<")
+et = time.time()
+print("elecLoader time: %.3f s" %(et-st))
 
 from ROOT import TGraph
 g1 = TGraph()
