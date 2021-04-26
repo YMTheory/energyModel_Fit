@@ -74,4 +74,6 @@ class electronResponse
 
 };
 
+extern double gElecResolFunc(double* x, double* p);
+
 #endif

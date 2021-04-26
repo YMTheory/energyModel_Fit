@@ -22,8 +22,21 @@ double electronResponse::m_p3 = 5.55e-4;
 
 TGraphErrors* electronResponse::gMinElecNonl;
 TGraphErrors* electronResponse::gElecResol;
-TF1* electronResponse::fElecResol = new TF1("fElecNonl", "[0]+[1]*x + [2]*x*x", 0, 8);
 
+double gElecResolFunc(double* x, double* p) {
+    double E = x[0];
+    double p0 = p[0];
+    double p1 = p[1];
+    double p2 = p[2];
+
+    double sigma2 = p0 + p1*E + p2*E*E;
+    if (sigma2<0)
+        return 0;
+    else 
+        return TMath::Sqrt(sigma2);
+}
+
+TF1* electronResponse::fElecResol = new TF1("fElecNonl", gElecResolFunc, 0, 8, 3);
 
 double electronResponse::getElecNonl(double Etrue)
 {
