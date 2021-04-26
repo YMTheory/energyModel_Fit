@@ -22,6 +22,7 @@ double electronResponse::m_p3 = 5.55e-4;
 
 TGraphErrors* electronResponse::gMinElecNonl;
 TGraphErrors* electronResponse::gElecResol;
+TF1* electronResponse::fElecResol = new TF1("fElecNonl", "[0]+[1]*x + [2]*x*x", 0, 8);
 
 
 double electronResponse::getElecNonl(double Etrue)

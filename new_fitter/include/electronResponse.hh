@@ -44,6 +44,10 @@ class electronResponse
         static double m_p2;
         static double m_p3;
 
+        static double m_ra;
+        static double m_rb;
+        static double m_rc;
+
     public:
         static double getp0()       {return m_p0;}
         static void setp0(double p0){m_p0 = p0;}
@@ -54,12 +58,19 @@ class electronResponse
         static double getp3()       {return m_p3;}
         static void setp3(double p3){m_p3 = p3;}
         static bool getLoadResol()  {return m_loadResol;}
+        static double getra()       {return m_ra;}
+        static void setra(double ra){m_ra = ra;}
+        static double getrb()       {return m_rb;}
+        static void setrb(double rb){m_rb = rb;}
+        static double getrc()       {return m_rc;}
+        static void setrc(double rc){m_rc = rc;}
 
         static void SetParameters();
         static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}
 
         static TGraphErrors* gMinElecNonl;
         static TGraphErrors* gElecResol;
+        static TF1* fElecResol;
 
 };
 
