@@ -99,6 +99,7 @@ void gammaResponse::LoadPrmBeta()
 void gammaResponse::preCalculation()
 {
     //if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
+    electronResponse::SetParameters();
 
     for (int index=0; index<m_nSamples; index++) {
         double tmp_pe = 0;
@@ -250,7 +251,7 @@ double gammaResponse::GetChi2()
         }
     }
         
-    //cout << m_name << " " << chi2 << endl;
+    cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }
 

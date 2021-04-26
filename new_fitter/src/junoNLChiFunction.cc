@@ -294,6 +294,8 @@ void junoNLChiFunction::SetParameters(double *par)
         electronResponse::setra(par[13]);
         electronResponse::setrb(par[14]);
         electronResponse::setrc(par[15]);
+
+        electronResponse::SetParameters();
     }
 }
 
@@ -342,9 +344,9 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -10, 10, ierrflag ); iPar++;
-        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1200, 1400, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 200, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -5, 5, ierrflag ); iPar++;
+        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 140, 180, ierrflag); iPar++;
         
     }
 

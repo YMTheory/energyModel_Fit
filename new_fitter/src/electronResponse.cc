@@ -19,9 +19,9 @@ double electronResponse::m_p0 = 1.025;
 double electronResponse::m_p1 = 0.1122;
 double electronResponse::m_p2 = 1.394;
 double electronResponse::m_p3 = 5.55e-4;
-double electronResponse::m_ra = 0;
-double electronResponse::m_rb = 1314;
-double electronResponse::m_rc = 160;
+double electronResponse::m_ra = -2.17203e+00;
+double electronResponse::m_rb = 1.31498e+03;
+double electronResponse::m_rc = 1.60508e+02;
 
 TGraphErrors* electronResponse::gMinElecNonl;
 TGraphErrors* electronResponse::gElecResol;
@@ -108,10 +108,14 @@ void electronResponse::FuncConstruct()
 
 void electronResponse::SetParameters()
 {
-    fElecNonl->SetParameter(0, m_p0);
-    fElecNonl->SetParameter(1, m_p1);
-    fElecNonl->SetParameter(2, m_p2);
-    fElecNonl->SetParameter(3, m_p3);
+    //fElecNonl->SetParameter(0, m_p0);
+    //fElecNonl->SetParameter(1, m_p1);
+    //fElecNonl->SetParameter(2, m_p2);
+    //fElecNonl->SetParameter(3, m_p3);
+
+    fElecResol->SetParameter(0, m_ra);
+    fElecResol->SetParameter(1, m_rb);
+    fElecResol->SetParameter(2, m_rc);
 }
 
 
