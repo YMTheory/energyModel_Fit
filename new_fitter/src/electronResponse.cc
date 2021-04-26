@@ -19,6 +19,9 @@ double electronResponse::m_p0 = 1.025;
 double electronResponse::m_p1 = 0.1122;
 double electronResponse::m_p2 = 1.394;
 double electronResponse::m_p3 = 5.55e-4;
+double electronResponse::m_ra = 0;
+double electronResponse::m_rb = 1314;
+double electronResponse::m_rc = 160;
 
 TGraphErrors* electronResponse::gMinElecNonl;
 TGraphErrors* electronResponse::gElecResol;

@@ -98,7 +98,7 @@ void gammaResponse::LoadPrmBeta()
 
 void gammaResponse::preCalculation()
 {
-    if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
+    //if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
 
     for (int index=0; index<m_nSamples; index++) {
         double tmp_pe = 0;
@@ -108,7 +108,8 @@ void gammaResponse::preCalculation()
             double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
             if (tmp_E == 0) break;
             tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
-            tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
+            tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
         }
 
         // positron
@@ -116,7 +117,8 @@ void gammaResponse::preCalculation()
             double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
             if (tmp_E == 0) break;
             tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 2*660.8;
-            tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
+            tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
             tmp_sigma += 2*TMath::Power(27.07, 2);
 
         }
@@ -248,7 +250,7 @@ double gammaResponse::GetChi2()
         }
     }
         
-    cout << m_name << " " << chi2 << endl;
+    //cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }
 

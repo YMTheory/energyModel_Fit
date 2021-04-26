@@ -150,13 +150,13 @@ junoNLChiFunction::junoNLChiFunction() {
         m_nData++;
         m_nGam++;
 
-        K40 = new gammaResponse("K40", 200, 1750, 2250);
+        K40 = new gammaResponse("K40", 100, 1750, 2250);
         source_name[m_nData] = "K40";
         gammaData_array[m_nData] = K40;
         m_nData++;
         m_nGam++;
 
-        nH = new gammaResponse("nH", 200, 2800, 3500);
+        nH = new gammaResponse("nH", 100, 2800, 3500);
         source_name[m_nData] = "nH";
         gammaData_array[m_nData] = nH;
         m_nData++;
@@ -291,6 +291,9 @@ void junoNLChiFunction::SetParameters(double *par)
         AmBe->SetAmp(par[10]);
         nC12->SetAmp(par[11]);
         AmC->SetAmp(par[12]);
+        electronResponse::setra(par[13]);
+        electronResponse::setrb(par[14]);
+        electronResponse::setrc(par[15]);
     }
 }
 
@@ -333,12 +336,15 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "Cs137Amp", 120, 1, 80, 160, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "Mn54Amp", 120, 1, 80, 160, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "Ge68Amp", 120, 1, 80, 160, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "K40Amp", 120, 1, 60, 140, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "nHAmp", 120, 1, 60, 140, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "K40Amp", 180, 1, 140, 220, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "nHAmp", 200, 1, 160, 240, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "Co60Amp", 160, 1, 120, 200, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -10, 10, ierrflag ); iPar++;
+        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1200, 1400, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 200, ierrflag); iPar++;
         
     }
 
