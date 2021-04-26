@@ -191,7 +191,8 @@ double electronQuench::ScintillatorPE(double eTrue) {
 
     //double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
     //double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
-    double scintPE = gNPE_elec->Eval(eTrue, 0, "S");
+    //double scintPE = gNPE_elec->Eval(eTrue, 0, "S");
+    double scintPE = gNPE_elec->Eval(eTrue);
     return m_kA * scintPE;
 }
 

@@ -103,7 +103,8 @@ double electronCerenkov::getCerPE(double E)
     //    cout << E <<  " >>> Energy Beyond Range !! <<< " << endl; return -1;
     //}
 
-    return m_kC*gNPE_elec->Eval(E, 0, "S");
+    //return m_kC*gNPE_elec->Eval(E, 0, "S");
+    return m_kC*gNPE_elec->Eval(E);
 }
 
 

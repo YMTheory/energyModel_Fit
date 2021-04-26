@@ -4,6 +4,7 @@
 #include <string>
 #include <TH1D.h>
 #include <TH2D.h>
+#include <TF1.h>
 
 using namespace std;
 
@@ -17,6 +18,8 @@ class gammaResponse
         void LoadData();
         void LoadPrmBeta();
         
+        void preCalculation();
+        void Prediction();
         double SampleGamEnergy(int index);
         void calcGamResponse();
 
@@ -35,6 +38,8 @@ class gammaResponse
         double GetResData()                   {return m_resData;}
         double GetResCalc()                   {return m_resCalc;}
 
+        double GetAmp()                       {return m_amp;}
+        void SetAmp(double amp)               {m_amp = amp;}
 
     private:
         string m_name;
@@ -43,6 +48,8 @@ class gammaResponse
         double m_peMax;
         double m_Etrue;
         double m_totpeData;
+        double m_totpeCalc;
+        double m_totpeSigmaCalc;
         double m_nonlData;
         double m_nonlDataErr;
         double m_nonlCalc;
@@ -54,6 +61,8 @@ class gammaResponse
         bool m_loadData;
         bool m_loadPrm;
 
+        double m_amp; // TF1 gaussian amplitude
+
         const int m_nEvents  = 5000;
         const int m_nSamples = 5000;
         TH2D* hPrmElec;
@@ -61,6 +70,10 @@ class gammaResponse
 
         TH1D* hCalc;
         TH1D* hData;
+        TF1*  func;
+
+        double m_pemean[5000];
+        double m_pesigma[5000];
 
     private:
         bool m_doSpecFit;

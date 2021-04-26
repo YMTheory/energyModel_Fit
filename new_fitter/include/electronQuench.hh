@@ -74,14 +74,16 @@ class electronQuench
         static std::vector<double> m_Etrue;
         static std::vector<double> m_StopPow;
 
-        static double m_simEtrue[370];
-        static double m_simScintPE[370];
+        static double m_simEtrue[900];
+        static double m_simScintPE[900];
 
         static double ScintillatorShape    (double eTrue);
         static double SimulationNLShape    (double eTrue);
         static double IntegralNLShape      (double eTrue);
         static double EmpiricalNLShape     (double eTrue);
         static double SimulationNLCalcShape(double eTrue);
+
+        static TGraph* gNPE_elec;
 };
 
 #endif

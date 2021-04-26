@@ -2,6 +2,7 @@
 #define _ELECTRONCERENKOV_H
 
 #include <vector>
+#include <TGraph.h>
 
 using namespace std;
 
@@ -34,9 +35,11 @@ class electronCerenkov
         static std::vector<double> m_Etrue;
         static std::vector<double> m_Cerenkov;
 
-        static const int m_nData = 321;
+        static const int m_nData = 900;
         static double m_E[m_nData];
         static double m_nonl[m_nData];
+
+        static TGraph* gNPE_elec;
 };
 
 #endif

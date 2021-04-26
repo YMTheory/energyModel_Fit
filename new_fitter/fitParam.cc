@@ -33,7 +33,7 @@ int main()
     junoNLChiFunction* fitter = new junoNLChiFunction();
     fitter->LoadData();
     fitter->GetChiSquare();
-    //fitter->Plot();
+    fitter->Plot();
     //
 
     //electronResponse::FitPlot();
@@ -56,49 +56,24 @@ int main()
     //cs137->calcGammaResponse();
     //cout << cs137->GetChi2();
     
-    //gammaResponse* cs137 = new gammaResponse("Cs137", 2000, 0, 14000);
-    //cs137->LoadData();
-    //cs137->calcGamResponse();
-    //gammaResponse* Mn54 = new gammaResponse("Mn54", 2000, 0, 14000);
-    //Mn54->LoadData();
-    //Mn54->calcGamResponse();
-    //gammaResponse* K40 = new gammaResponse("K40", 2000, 0, 14000);
-    //K40->LoadData();
-    //K40->calcGamResponse();
-    //gammaResponse* nH = new gammaResponse("nH", 2000, 0, 14000);
-    //nH->LoadData();
-    //nH->calcGamResponse();
-    //gammaResponse* Tl208 = new gammaResponse("Tl208", 2000, 0, 14000);
-    //Tl208->LoadData();
-    //Tl208->calcGamResponse();
-    //gammaResponse* nC12 = new gammaResponse("nC12", 2000, 0, 14000);
-    //nC12->LoadData();
-    //nC12->calcGamResponse();
-    //gammaResponse* O16 = new gammaResponse("O16", 2000, 0, 14000);
-    //O16->LoadData();
-    //O16->calcGamResponse();
-    //gammaResponse* nFe56 = new gammaResponse("nFe56", 2000, 0, 14000);
-    //nFe56->LoadData();
-    //nFe56->calcGamResponse();
-    //cout << "nominal chi2 = " << nFe56->GetChi2() << endl;
+    //gammaResponse* gamResArr[9];
+    //gammaResponse* Cs137 = new gammaResponse("Cs137", 200, 600, 1000);  gamResArr[0] = Cs137;
+    //gammaResponse* Mn54 = new gammaResponse("Mn54", 200, 900, 1300);    gamResArr[1] = Mn54;
+    //gammaResponse* Ge68 = new gammaResponse("Ge68", 200, 1100, 1500);   gamResArr[2] = Ge68;
+    //gammaResponse* K40 = new gammaResponse("K40", 200, 1750, 2250);     gamResArr[3] = K40;
+    //gammaResponse* nH = new gammaResponse("nH", 200, 2800, 3500);       gamResArr[4] = nH;
+    //gammaResponse* Co60 = new gammaResponse("Co60", 100, 3200, 3700);   gamResArr[5] = Co60;
+    //gammaResponse* AmBe = new gammaResponse("AmBe", 100, 6000, 6800);   gamResArr[6] = AmBe;
+    //gammaResponse* nC12 = new gammaResponse("nC12", 100, 6700, 7600);   gamResArr[7] = nC12;
+    //gammaResponse* AmC = new gammaResponse("AmC", 100, 8400, 9400);     gamResArr[8] = AmC;
+    //for (int i=0; i<9; i++) {
+    //    gamResArr[i]->LoadData();
+    //    gamResArr[i]->Prediction();
+    //    cout << gamResArr[i]->GetName() << " " << gamResArr[i]->GetNonlData() << " " << gamResArr[i]->GetNonlCalc() << " " 
+    //         << gamResArr[i]->GetResData()  << " " << gamResArr[i]->GetResCalc() << endl;
+    //}
 
-    //cout << cs137->GetName() << " " << cs137->GetNonlData() << " " << cs137->GetNonlCalc() << endl;
-    //cout << Mn54->GetName() << " " << Mn54->GetNonlData() << " " << Mn54->GetNonlCalc() << endl;
-    //cout << K40->GetName() << " " << K40->GetNonlData() << " " << K40->GetNonlCalc() << endl;
-    //cout << nH->GetName() << " " << nH->GetNonlData() << " " << nH->GetNonlCalc() << endl;
-    //cout << Tl208->GetName() << " " << Tl208->GetNonlData() << " " << Tl208->GetNonlCalc() << endl;
-    //cout << nC12->GetName() << " " << nC12->GetNonlData() << " " << nC12->GetNonlCalc() << endl;
-    //cout << O16->GetName() << " " << O16->GetNonlData() << " " << O16->GetNonlCalc() << endl;
-    //cout << nFe56->GetName() << " " << nFe56->GetNonlData() << " " << nFe56->GetNonlCalc() << endl;
 
-    //cs137->SaveHist();
-    //Mn54->SaveHist();
-    //K40->SaveHist();
-    //nH->SaveHist();
-    //Tl208->SaveHist();
-    //nC12->SaveHist();
-    //O16->SaveHist();
-    //nFe56->SaveHist();
 
     return 1.0;
 }
