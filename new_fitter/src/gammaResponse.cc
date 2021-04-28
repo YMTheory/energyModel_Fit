@@ -67,7 +67,7 @@ void gammaResponse::LoadData()
     }
     in.close();
 
-    if (m_doSpecFit) {
+    if (m_doSpecFit and (m_name != "gamma4440" and m_name!="gamma3215" ) ) {
         TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
         if(!infile) cout << "No such gamma spectrum file!" << endl;
         int m_totpe;

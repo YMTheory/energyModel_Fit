@@ -1,7 +1,7 @@
 #ifndef _junoB12_h
 #define _junoB12_h
 
-#include "gammaData.hh"
+#include "gammaResponse.hh"
 #include <TH1.h>
 
 class junoB12
@@ -41,7 +41,7 @@ class junoB12
         double m_eVisGam[3][2];
 
     private:
-        gammaData* gamma4440;
-        gammaData* gamma3215;
+        gammaResponse* gamma4440;
+        gammaResponse* gamma3215;
 };
 #endif

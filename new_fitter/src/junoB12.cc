@@ -1,6 +1,6 @@
 #include "junoB12.hh"
 #include "electronResponse.hh"
-#include "gammaData.hh"
+#include "gammaResponse.hh"
 
 #include <iostream>
 
@@ -23,10 +23,11 @@ junoB12::~junoB12()
 
 void junoB12::Initialize()
 {
-    gamma4440 = new gammaData("4440keV", 900, 5000, 6000);
-    gamma3215 = new gammaData("3215keV", 900, 4000, 5000);
+    gamma4440 = new gammaResponse("gamma4440", 100, 6000, 7000);
+    gamma3215 = new gammaResponse("gamma3215", 100, 4000, 5000);
     gamma4440->LoadData();
     gamma3215->LoadData();
+
 
     m_loadData = false;
     m_loadTheo = false;
@@ -53,13 +54,13 @@ void junoB12::Initialize()
 
 void junoB12::LoadDataSpec()
 {
-    double scale = 3300.371/2.223;
+    double scale = 3134.078/2.223;
     TH1D* sigH = new TH1D("B12_data", "", 100, 0, 15);
 
-    TFile* ff = new TFile("./data/spectrum/data/B12_data.root", "read");
+    TFile* ff = new TFile("./data/spectrum/data/B12_data_G4_J19.root", "read");
     if(!ff) cout << "No such B12 data file " <<  endl;
     TTree* tt = (TTree*)ff->Get("B12");
-    double m_totpe;
+    int m_totpe;
     tt->SetBranchAddress("totpe", &m_totpe);
     for(int i=0; i<tt->GetEntries(); i++) {
         tt->GetEntry(i);
@@ -84,7 +85,7 @@ void junoB12::LoadDataSpec()
 
 void junoB12::LoadTheoSpec()
 {
-    cout <<"Etrue = " << gamma4440->GetEtrue() << endl;
+    //cout <<"Etrue = " << gamma4440->GetEtrue() << endl;
 
     TFile* ff = new TFile("./data/spectrum/theo/B12_sim.root");
     if (!ff) cout << "No such B12 theo file !" << endl;
@@ -133,16 +134,16 @@ void junoB12::ApplyScintillatorNL()
     int newBinLow, newBinHig;
     double bias;
 
-    gamma4440->calcGammaResponse();
-    gamma3215->calcGammaResponse();
+    gamma4440->Prediction();
+    gamma3215->Prediction();
 
     // gamma
     m_eVisGam[0][0] = 0;
     m_eVisGam[0][1] = 0;
-    m_eVisGam[1][0] = m_eTruGam[1][0] * gamma4440->GetNonlPred1();
+    m_eVisGam[1][0] = m_eTruGam[1][0] * gamma4440->GetNonlCalc();
     m_eVisGam[1][1] = 0;
-    m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlPred1();
-    m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlPred1();
+    m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlCalc();
+    m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlCalc();
     cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
     cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
 

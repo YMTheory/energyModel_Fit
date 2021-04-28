@@ -194,9 +194,9 @@ junoNLChiFunction::junoNLChiFunction() {
     cout << "Nonlinearity formula form " << m_nonlMode << endl;
 
     if (m_doB12Fit) {
-        junoB12data = new junoSpectrum(1500, 100, 3, 2,
-                             0, 15, 1, 14, m_nonlMode, "B12");
-        //b12data = new junoB12();
+        //junoB12data = new junoSpectrum(1500, 100, 3, 2,
+        //                     0, 15, 1, 14, m_nonlMode, "B12");
+        b12data = new junoB12();
     }
 
     electronResponse::FuncConstruct();
@@ -216,8 +216,8 @@ junoNLChiFunction::~junoNLChiFunction() {
         delete nFe56Data;
     }
     if(m_doB12Fit)
-        delete junoB12data;
-        //delete b12data;
+        //delete junoB12data;
+        delete b12data;
 }
 
 void junoNLChiFunction::LoadData()
@@ -228,8 +228,8 @@ void junoNLChiFunction::LoadData()
         }
     }
     if (m_doB12Fit) {
-        junoB12data->LoadData();
-        //b12data->Initialize();
+        //junoB12data->LoadData();
+        b12data->Initialize();
     }
 }
 
@@ -243,8 +243,8 @@ double junoNLChiFunction::GetChi2( double maxChi2 )
         }
     }
     if(m_doB12Fit)
-        chi2 += junoB12data->GetChi2();
-        //chi2 += b12data->GetChi2();    
+        //chi2 += junoB12data->GetChi2();
+        chi2 += b12data->GetChi2();    
 
     cout << "Current total chi2 = " << chi2 << endl;
     return chi2;
@@ -281,9 +281,9 @@ void junoNLChiFunction::SetParameters(double *par)
         electronCerenkov::setkC             (par[1]);
         electronQuench::setEnergyScale      (par[2]);
         electronCerenkov::setEnergyScale    (par[2]);
-        junoParameters::m_nuGamma = par[3];
-        Cs137->SetAmp(par[4]);
-        Mn54->SetAmp(par[5]);
+        junoParameters::m_nuGamma           = par[3];
+        Cs137->SetAmp                       (par[4]);
+        Mn54->SetAmp                        (par[5]);
         Ge68->SetAmp(par[6]);
         K40->SetAmp(par[7]);
         nH->SetAmp(par[8]);
@@ -344,9 +344,9 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -5, 5, ierrflag ); iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag ); iPar++;
         junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 140, 180, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag); iPar++;
         
     }
 
@@ -389,7 +389,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     nC12->SaveHist();
     AmC->SaveHist();
     if (m_doB12Fit)
-        m_nData += junoB12data->getNData();
+        //m_nData += junoB12data->getNData();
 
     cout << " ====================== " << endl;
     cout << "    minChi2: " << min << " with nData = " << m_nData << " and nPar = " << m_nParameter << endl;
@@ -409,8 +409,8 @@ void junoNLChiFunction::Plot()
         GammaPlot();
     }
     if(m_doB12Fit)
-        junoB12data->Plot();
-        //b12data->Plot();
+        //junoB12data->Plot();
+        b12data->Plot();
 }
 
 
