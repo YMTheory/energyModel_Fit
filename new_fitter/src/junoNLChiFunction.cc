@@ -37,7 +37,7 @@ gammaResponse* junoNLChiFunction::AmC;
 
 junoSpectrum* junoNLChiFunction::junoB12data;
 
-junoB12* junoNLChiFunction::b12data;
+junoB12_simplified* junoNLChiFunction::b12data;
 
 double junoNLChiFunction::m_chi2    = 0.;
 double junoNLChiFunction::m_chi2Min = 100000;
@@ -196,7 +196,7 @@ junoNLChiFunction::junoNLChiFunction() {
     if (m_doB12Fit) {
         //junoB12data = new junoSpectrum(1500, 100, 3, 2,
         //                     0, 15, 1, 14, m_nonlMode, "B12");
-        b12data = new junoB12();
+        b12data = new junoB12_simplified(100, 4500, 17500);
     }
 
     electronResponse::FuncConstruct();
@@ -246,7 +246,6 @@ double junoNLChiFunction::GetChi2( double maxChi2 )
         //chi2 += junoB12data->GetChi2();
         chi2 += b12data->GetChi2();    
 
-    cout << "Current total chi2 = " << chi2 << endl;
     return chi2;
 }
 
@@ -276,7 +275,7 @@ void junoNLChiFunction::SetParameters(double *par)
         }
     }
 
-    if (junoParameters::scintillatorParameterization == kSimulationCalc) {
+    if (junoParameters::scintillatorParameterization == kSimulationCalc and m_doGamFit) {
         electronQuench::setkA               (par[0]);
         electronCerenkov::setkC             (par[1]);
         electronQuench::setEnergyScale      (par[2]);
@@ -294,6 +293,18 @@ void junoNLChiFunction::SetParameters(double *par)
         electronResponse::setra(par[13]);
         electronResponse::setrb(par[14]);
         electronResponse::setrc(par[15]);
+
+        electronResponse::SetParameters();
+    }
+    if (junoParameters::scintillatorParameterization == kSimulationCalc and !m_doGamFit) {
+        electronQuench::setkA               (par[0]);
+        electronCerenkov::setkC             (par[1]);
+        electronQuench::setEnergyScale      (par[2]);
+        electronCerenkov::setEnergyScale    (par[2]);
+        junoParameters::m_nuGamma           = par[3];
+        electronResponse::setra(par[4]);
+        electronResponse::setrb(par[5]);
+        electronResponse::setrc(par[6]);
 
         electronResponse::SetParameters();
     }
@@ -330,7 +341,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         }
     }
 
-    if (junoParameters::scintillatorParameterization == kSimulationCalc) {
+    if (junoParameters::scintillatorParameterization == kSimulationCalc and m_doGamFit) {
         junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 1.5, ierrflag); iPar++;
         junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 1000, 2700, ierrflag); iPar++;
@@ -349,6 +360,22 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag); iPar++;
         
     }
+
+    if (junoParameters::scintillatorParameterization == kSimulationCalc and !m_doGamFit) {
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.8, 1.2, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, -1., 1.2, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 1000, 2700, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag ); iPar++;
+        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag); iPar++;
+            
+        junoNLMinuit->FixParameter(4);
+        junoNLMinuit->FixParameter(5);
+        junoNLMinuit->FixParameter(6);
+        
+    }
+
 
     //junoNLMinuit->FixParameter(0);
     //junoNLMinuit->FixParameter(1);
@@ -379,19 +406,21 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     m_DoFit = true;
 
-    Cs137->SaveHist();
-    Mn54->SaveHist();
-    Ge68->SaveHist();
-    K40->SaveHist();
-    nH->SaveHist();
-    Co60->SaveHist();
-    AmBe->SaveHist();
-    nC12->SaveHist();
-    AmC->SaveHist();
+    if (m_doGamFit) {
+        Cs137->SaveHist();
+        Mn54->SaveHist();
+        Ge68->SaveHist();
+        K40->SaveHist();
+        nH->SaveHist();
+        Co60->SaveHist();
+        AmBe->SaveHist();
+        nC12->SaveHist();
+        AmC->SaveHist();
+    }
     if (m_doB12Fit)
         //m_nData += junoB12data->getNData();
 
-    cout << " ====================== " << endl;
+        cout << " ====================== " << endl;
     cout << "    minChi2: " << min << " with nData = " << m_nData << " and nPar = " << m_nParameter << endl;
     cout << " ====================== " << endl;
     delete junoNLMinuit;
