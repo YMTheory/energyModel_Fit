@@ -1,5 +1,7 @@
 #include "junoB12.hh"
 #include "electronResponse.hh"
+#include "electronQuench.hh"
+#include "electronCerenkov.hh"
 #include "gammaResponse.hh"
 
 #include <iostream>
@@ -58,7 +60,7 @@ void junoB12::LoadDataSpec()
     TH1D* sigH = new TH1D("B12_data", "", 100, 0, 15);
 
     TFile* ff = new TFile("./data/spectrum/data/B12_data_G4_J19.root", "read");
-    if(!ff) cout << "No such B12 data file " <<  endl;
+    //if(!ff) cout << "No such B12 data file " <<  endl;
     TTree* tt = (TTree*)ff->Get("B12");
     int m_totpe;
     tt->SetBranchAddress("totpe", &m_totpe);
@@ -144,13 +146,14 @@ void junoB12::ApplyScintillatorNL()
     m_eVisGam[1][1] = 0;
     m_eVisGam[2][0] = m_eTruGam[2][0] * gamma4440->GetNonlCalc();
     m_eVisGam[2][1] = m_eTruGam[2][1] * gamma3215->GetNonlCalc();
-    cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
-    cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
+    //cout << ">>>>>>>>> Gamma Evis <<<<<<<<< " << endl;
+    //cout << m_eVisGam[1][0] << " " << m_eVisGam[2][0] <<" " << m_eVisGam[2][1] << endl;
 
     // beta
     for (int i=0; i<1500; i++) {
         double eTru = m_binCenter[i];
-        double eVis = eTru * electronResponse::getElecNonl(eTru);
+        //double eVis = eTru * electronResponse::getElecNonl(eTru);
+        double eVis = (electronQuench::ScintillatorPE(eTru) + electronCerenkov::getCerPE(eTru))/electronQuench::getEnergyScale(); 
         for (int j=0; j<2; j++) {
             eVis += m_eVisGam[j][0] + m_eVisGam[j][1];
 
@@ -181,7 +184,7 @@ void junoB12::Normalize()
 			m_eTheo[i] += m_eVis[i*rebin+j];
         } 
             
-		if(i*binWidthData>0 && i*binWidthData<15)
+		if(i*binWidthData>3 && i*binWidthData<12)   // fitting range [3MeV, 12MeV]
 		{
 			nTheo += m_eTheo[i];
 			nData += m_eData[i];
@@ -211,8 +214,8 @@ double junoB12::GetChi2()
     int rebin = 1500 / 100;
     double binWidthData = m_binWidth * rebin;
     int m_nData = 0;
-    for(int i=0; i < 100; i++) {
-        if(i*binWidthData<0 or binWidthData*i>15) continue;
+    for(int i=30; i < 90; i++) {
+        if(i*binWidthData<3 or binWidthData*i>12) continue;
         if( m_eDataErr[i]!=0 ) {
             chi2 += pow( (m_eData[i] - m_eTheo[i])/m_eDataErr[i], 2); 
             m_nData++;

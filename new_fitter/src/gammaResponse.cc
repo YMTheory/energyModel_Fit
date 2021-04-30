@@ -19,12 +19,13 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     m_peMin = peMin;
     m_peMax = peMax;
 
-    cout << m_name << " " << m_nBins << " bins between [" << m_peMin << ", " << m_peMax <<"]" <<endl;
+    cout << " >>> " << m_name << " " << m_nBins << " bins between [" << m_peMin << ", " << m_peMax <<"]" <<endl;
     hCalc = new TH1D((m_name+"_calc").c_str(), "", m_nBins, m_peMin, m_peMax); 
     hData = new TH1D((m_name+"_data").c_str(), "", m_nBins, m_peMin, m_peMax); 
     func  = new TF1("func", "[0] * TMath::Exp(-(x-[1])*(x-[1])/2/[2]/[2])", m_peMin, m_peMax);
 
     // init
+    m_amp = 180;
     m_loadData  = false;
     m_loadPrm   = false;
     m_doSpecFit = true;
@@ -41,7 +42,7 @@ gammaResponse::~gammaResponse()
 
 void gammaResponse::LoadData()
 {
-    cout << " >>> Loading Naked Gamma " << m_name << " Data <<< " << endl;
+    cout << " >>> Loading Bared Gamma " << m_name << " Data <<< " << endl;
 
     ifstream in; in.open(junoParameters::gammaLSNL_File);
     if(!in) cout << "Error: No file "<< junoParameters::gammaLSNL_File << std::endl;
@@ -85,7 +86,7 @@ void gammaResponse::LoadData()
 
 void gammaResponse::LoadPrmBeta()
 {
-    cout << " >>> Load Primary Electron in Single Event <<< " << endl;
+    cout << " >>> Load Primary Electron in Single Event for " << m_name << " <<< " << endl;
     string filename = "./data/gamma/" + m_name + "_J19.root";
     TFile* file = new TFile(filename.c_str(), "read");
     if (!file) cout << " No such input file: " << filename << endl;
@@ -229,7 +230,7 @@ double gammaResponse::GetChi2()
 
     //calcGamResponse();
     Prediction();
-
+    
     func->SetParameters(m_amp, m_totpeCalc, m_totpeSigmaCalc);
 
     if (not m_doSpecFit) 

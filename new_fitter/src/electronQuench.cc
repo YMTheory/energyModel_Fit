@@ -109,8 +109,8 @@ void electronQuench::LoadScintPE() {
     while(getline(in, line)) {
         istringstream ss(line);
         ss >> tmpE >> tmpPE;
-        m_simEtrue[index] = tmpE;
-        m_simScintPE[index] = tmpPE;
+        //m_simEtrue[index] = tmpE;
+        //m_simScintPE[index] = tmpPE;
         gNPE_elec->SetPoint(index, tmpE, tmpPE);
         index++;
     }
@@ -121,7 +121,7 @@ void electronQuench::LoadScintPE() {
 
 
 void electronQuench::LoadNLData ()  {
-    cout << " >>> Loading Quenching NL Data <<< " << endl;
+    cout << " >>> Loading Quenching NL Data " << junoParameters::quenchNL_File << " <<< " << endl;
     TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
     if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
     for(int kbIdx=51; kbIdx<76; kbIdx++)  {
@@ -171,29 +171,11 @@ double electronQuench::ScintillatorNL    (double eTrue)  {
 double electronQuench::ScintillatorPE(double eTrue) {
     if (!m_loadScintPE) LoadScintPE();
 
-    //double deltaE = 0.05; 
-    //int lowbin  ;
-    //int highbin ; 
-    ////if (eTrue < 0.05) {
-    ////    lowbin = eTrue / 0.001;
-    ////    highbin = lowbin + 1;
-    ////}
-    ////else if (eTrue >= 0.05) {
-    ////    lowbin = 50 + eTrue / deltaE;
-    ////    highbin = lowbin + 1;
-    ////}
-    //lowbin  = eTrue / deltaE;
-    //highbin = lowbin + 1;
-    //if ( highbin > 320 ) {
-    //    cout << " >> Energy Beyond Range !!! <<< " << endl;
-    //    return -1;
-    //}   
-
-    //double bias = 1 - (eTrue - m_simEtrue[lowbin]) / deltaE;
-    //double scintPE = bias * m_simScintPE[lowbin] + (1 - bias) * m_simScintPE[highbin];
-    //double scintPE = gNPE_elec->Eval(eTrue, 0, "S");
     double scintPE = gNPE_elec->Eval(eTrue);
     return m_kA * scintPE;
+
+    double nonl = SimulationNLShape(eTrue);
+    return m_kA * nonl * eTrue * m_scale;
 }
 
 double electronQuench::ScintillatorShape (double eTrue)  {

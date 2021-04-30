@@ -32,8 +32,13 @@ class junoB12_simplified
 
         int m_nBin;
         int m_nBinData;
-        double m_fitMinE;
-        double m_fitMaxE;
+        double m_fitMinPE;
+        double m_fitMaxPE;
+        double m_eMin;
+        double m_eMax;
+        double m_peMin;
+        double m_peMax;
+
 
         double m_binWidth;
         double m_peBinWidth;

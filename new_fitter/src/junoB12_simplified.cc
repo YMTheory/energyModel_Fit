@@ -10,12 +10,16 @@
 
 using namespace std;
 
-junoB12_simplified::junoB12_simplified(int nBinsData, double fitMinE, double fitMaxE)
+junoB12_simplified::junoB12_simplified(int nBinsData, double fitMinPE, double fitMaxPE)
 {
     m_nBin = 1000;
     m_nBinData = nBinsData;
-    m_fitMinE = fitMinE;
-    m_fitMaxE = fitMaxE;
+    m_fitMinPE = fitMinPE;
+    m_fitMaxPE = fitMaxPE;
+    m_eMin = 0;
+    m_eMax = 15;
+    m_peMin = 0;
+    m_peMax = 20000;
 
     m_loadData = false;
     m_loadTheo = false;
@@ -25,17 +29,17 @@ junoB12_simplified::junoB12_simplified(int nBinsData, double fitMinE, double fit
 
 junoB12_simplified::~junoB12_simplified()
 {
-    delete gaus;
+    //delete gaus;
 }
 
 
 void junoB12_simplified::Initialize()
 {
-    m_binWidth = ( 15 - 0.) / m_nBin;
-    m_peBinWidth = (20000 - 0) / m_nBin;
+    m_binWidth = (m_eMax - m_eMin) / m_nBin;
+    m_peBinWidth = (m_peMax - m_peMin) / m_nBin;
     for (int i=0; i<m_nBin; i++) {
-        m_binCenter[i] = m_binWidth/2. + m_binWidth * i;
-        m_peBinCenter[i] = m_peBinWidth /2. + m_peBinWidth*i;
+        m_binCenter[i] = m_binWidth/2. + m_binWidth * i;        // energy region
+        m_peBinCenter[i] = m_peBinWidth /2. + m_peBinWidth*i;   // p.e. region
     }
 
     LoadDataSpec();
@@ -48,7 +52,7 @@ void junoB12_simplified::Initialize()
 void junoB12_simplified::LoadDataSpec()
 {  // load in totpe definition
 
-    TH1D* sigH = new TH1D("B12_data", "", m_nBinData, 0, 20000);
+    TH1D* sigH = new TH1D("B12_data", "", m_nBinData, m_peMin, m_peMax);
 
     TFile* ff = new TFile("./data/spectrum/data/B12_data_G4_J19.root", "read");
     //if(!ff) cout << "No such B12 data file " <<  endl;
@@ -79,7 +83,8 @@ void junoB12_simplified::LoadDataSpec()
 
 void junoB12_simplified::LoadTheoSpec()
 {
-    TH1D* simH = new TH1D("B12_edep", "", m_nBin, 0, 15);
+    // load in energy region
+    TH1D* simH = new TH1D("B12_edep", "", m_nBin, m_eMin, m_eMax);
 
     TFile* ff = new TFile("./data/spectrum/theo/B12_edep_G4_J19.root");
     if (!ff) cout << "No such B12 theo file !" << endl;
@@ -122,11 +127,11 @@ void junoB12_simplified::ApplyScintillatorNL()
     for (int i=0; i<m_nBin; i++)  {
         double eTru = m_binCenter[i];
         double tmp_pe = electronQuench::ScintillatorPE(eTru) + electronCerenkov::getCerPE(eTru);
-        //cout << i << " " << eTru << " " << tmp_pe << " " << electronQuench::ScintillatorPE(eTru) << " " << electronCerenkov::getCerPE(eTru) <<  endl;
         
         // consider resolution:
         double tmp_sigma = electronResponse::fElecResol->Eval(eTru);
-        gaus->SetParameters(tmp_pe, tmp_sigma);
+        gaus->SetParameter(0, tmp_pe);
+        gaus->SetParameter(1, tmp_sigma);
         int minBin = int((tmp_pe-4.5*tmp_sigma)/m_peBinWidth);
         int maxBin = int((tmp_pe+4.5*tmp_sigma)/m_peBinWidth);
         if (minBin < 0) minBin = 0;
@@ -166,7 +171,7 @@ void junoB12_simplified::Normalize()
         for (int j = 0; j < rebin; j++){
 			m_eTheo[i] += m_eVis[i*rebin+j];
         } 
-		if(i*binWidthData>m_fitMinE && i*binWidthData<m_fitMaxE)   // fitting range [3MeV, 12MeV]
+		if(i*binWidthData>m_fitMinPE && i*binWidthData<m_fitMaxPE)   // fitting range [3MeV, 12MeV]
 		{
 			nTheo += m_eTheo[i];
 			nData += m_eData[i];
@@ -198,7 +203,7 @@ double junoB12_simplified::GetChi2()
 	double binWidthData = m_peBinWidth * rebin;
     int m_nData = 0;
     for(int i=0; i < m_nBinData; i++) {
-        if(i*binWidthData<m_fitMinE or binWidthData*i>m_fitMaxE) continue;
+        if(i*binWidthData<m_fitMinPE or binWidthData*i>m_fitMaxPE) continue;
         if( m_eDataErr[i]!=0 ) {
             chi2 += pow( (m_eData[i] - m_eTheo[i])/m_eDataErr[i], 2); 
             m_nData++;
@@ -212,9 +217,9 @@ double junoB12_simplified::GetChi2()
 
 void junoB12_simplified::Plot()
 {
-    TH1D* hData = new TH1D("hData", "", m_nBinData, 0, 20000);
-    TH1D* hTheo = new TH1D("hTheo", "", m_nBinData, 0, 20000);
-    TH1D* hRela = new TH1D("hRela", "", m_nBinData, 0, 20000);
+    TH1D* hData = new TH1D("hData", "", m_nBinData, m_peMin, m_peMax);
+    TH1D* hTheo = new TH1D("hTheo", "", m_nBinData, m_peMin, m_peMax);
+    TH1D* hRela = new TH1D("hRela", "", m_nBinData, m_peMin, m_peMax);
 
     hData->SetStats(0);
     hData->SetLineColor(kBlue+1);
