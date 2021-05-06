@@ -25,7 +25,7 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     func  = new TF1("func", "[0] * TMath::Exp(-(x-[1])*(x-[1])/2/[2]/[2])", m_peMin, m_peMax);
 
     // init
-    m_amp = 180;
+    m_amp = 250;
     m_loadData  = false;
     m_loadPrm   = false;
     m_doSpecFit = true;
@@ -187,9 +187,6 @@ double gammaResponse::SampleGamEnergy(int index)
         tmp_sigma = TMath::Sqrt(tmp_sigma);
     
         double sample_pe = gRandom->Gaus(tmp_pe, tmp_sigma);
-        //if (sample_pe < 8000) { // for small p.e. events check...
-        //    cout << index << " " << tmp_pe << " " << tmp_sigma <<   endl;
-        //}
         return sample_pe;
     }
 }
@@ -247,7 +244,7 @@ double gammaResponse::GetChi2()
                 //cout << "spectrum fitting " << m_bins << " " << m_data << " " << m_calc << " " << m_err<< endl;
 
                 chi2 += TMath::Power((m_calc - m_data)/m_err, 2);
-                //cout << hData->GetBinCenter(i) << " " << hCalc->GetBinCenter(i) << " " << m_calc << " " << m_data << " " << m_err << " " << chi2 << endl;
+                //cout << hData->GetBinCenter(i) << " " << hCalc->GetBinCenter(i) << " " << m_calc << " " << m_data << " " << m_err << " " << (m_calc- m_data)*(m_calc-m_data)/m_err/m_err<< " "<<chi2 << endl;
             }
         }
     }

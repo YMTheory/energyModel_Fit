@@ -35,6 +35,10 @@ class junoParameters
         static bool fitGammaSources;
 
 
+        static double m_electronScale;
+        static double m_gammaScale;
+
+
         // pull term management :
         static double m_nuGamma;
 
@@ -69,7 +73,6 @@ class junoParameters
         static double c10FitMinE;
         static double c10FitMaxE;
 
-        static double m_gammaScale;
 
         static string m_nonlMode;
         static string m_calcOption;

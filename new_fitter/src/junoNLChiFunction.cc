@@ -278,6 +278,7 @@ void junoNLChiFunction::SetParameters(double *par)
     //}
 
     if (junoParameters::scintillatorParameterization == kSimulation and m_doGamFit) {
+
         electronQuench::setkA               (par[0]);
         electronQuench::setBirk1            (par[1]);
         electronCerenkov::setkC             (par[2]);
@@ -286,16 +287,16 @@ void junoNLChiFunction::SetParameters(double *par)
         junoParameters::m_nuGamma           = par[4];
         Cs137->SetAmp                       (par[5]);
         Mn54->SetAmp                        (par[6]);
-        Ge68->SetAmp(par[7]);
-        K40->SetAmp(par[8]);
-        nH->SetAmp(par[9]);
-        Co60->SetAmp(par[10]);
-        AmBe->SetAmp(par[11]);
-        nC12->SetAmp(par[12]);
-        AmC->SetAmp(par[13]);
-        electronResponse::setra(par[13]);
-        electronResponse::setrb(par[15]);
-        electronResponse::setrc(par[16]);
+        Ge68->SetAmp                        (par[7]);
+        K40->SetAmp                         (par[8]);
+        nH->SetAmp                          (par[9]);
+        Co60->SetAmp                        (par[10]);
+        AmBe->SetAmp                        (par[11]);
+        nC12->SetAmp                        (par[12]);
+        AmC->SetAmp                         (par[13]);
+        electronResponse::setra             (par[14]);
+        electronResponse::setrb             (par[15]);
+        electronResponse::setrc             (par[16]);
 
         electronResponse::SetParameters();
     }
@@ -306,9 +307,9 @@ void junoNLChiFunction::SetParameters(double *par)
         electronQuench::setEnergyScale      (par[3]);
         electronCerenkov::setEnergyScale    (par[3]);
         junoParameters::m_nuGamma           = par[4];
-        electronResponse::setra(par[4]);
-        electronResponse::setrb(par[5]);
-        electronResponse::setrc(par[6]);
+        electronResponse::setra(par[5]);
+        electronResponse::setrb(par[6]);
+        electronResponse::setrc(par[7]);
 
         electronResponse::SetParameters();
     }
@@ -346,34 +347,36 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     //}
 
     if (junoParameters::scintillatorParameterization == kSimulation and m_doGamFit) {
-        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5e-3 , 7.5e-3, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 1.5, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 1000, 2700, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
-        junoNLMinuit->mnparm(iPar, "Cs137Amp", 250, 1, 200, 300, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "Mn54Amp", 240, 1, 200, 300, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "Ge68Amp", 220, 1, 180, 260, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "K40Amp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "nHAmp", 200, 1, 160, 240, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "Co60Amp", 160, 1, 120, 200, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag ); iPar++;
-        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag); iPar++;
-        
+
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5e-3 , 7.5e-3, ierrflag);            iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 1.5, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 1410, 1, 1300, 1500, ierrflag);           iPar++;
+        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);                iPar++;
+        junoNLMinuit->mnparm(iPar, "Cs137Amp", 250, 1, 200, 300, ierrflag);                 iPar++;
+        junoNLMinuit->mnparm(iPar, "Mn54Amp", 240, 1, 200, 300, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "Ge68Amp", 220, 1, 180, 260, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "K40Amp", 180, 1, 140, 220, ierrflag);                   iPar++;
+        junoNLMinuit->mnparm(iPar, "nHAmp", 200, 1, 160, 240, ierrflag);                    iPar++;
+        junoNLMinuit->mnparm(iPar, "Co60Amp", 160, 1, 120, 200, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag);                   iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag );                      iPar++;
+        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1850, ierrflag);                    iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag);                       iPar++;
+
     }
 
     if (junoParameters::scintillatorParameterization == kSimulation and !m_doGamFit) {
-        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.8, 2.2, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, -3, 3.2, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "energyScale", 3134.078/2.223, 1, 1000, 2700, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);         iPar++;
-        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag ); iPar++;
-        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag); iPar++;
-        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 920, ierrflag); iPar++;
+        junoNLMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-4, 5.5e-3 , 7.2e-3, ierrflag);            iPar++;
+        junoNLMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.0, 1.5, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "energyScale", 1430, 1, 1000, 2000, ierrflag);           iPar++;
+        junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);                iPar++;
+        junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag );                      iPar++;
+        junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1450, ierrflag);                    iPar++;
+        junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag);                       iPar++;
             
         //junoNLMinuit->FixParameter(4);
         //junoNLMinuit->FixParameter(5);
@@ -385,7 +388,7 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
     //junoNLMinuit->FixParameter(0);
     //junoNLMinuit->FixParameter(1);
     //junoNLMinuit->FixParameter(2);
-    junoNLMinuit->FixParameter(3);
+    junoNLMinuit->FixParameter(4);
 
     // Minimization strategy
     junoNLMinuit->SetErrorDef(1);
@@ -411,17 +414,6 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 
     m_DoFit = true;
 
-    if (m_doGamFit) {
-        Cs137->SaveHist();
-        Mn54->SaveHist();
-        Ge68->SaveHist();
-        K40->SaveHist();
-        nH->SaveHist();
-        Co60->SaveHist();
-        AmBe->SaveHist();
-        nC12->SaveHist();
-        AmC->SaveHist();
-    }
     if (m_doB12Fit)
         //m_nData += junoB12data->getNData();
 
@@ -437,10 +429,16 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
 void junoNLChiFunction::Plot()
 {
     //electronResponse::Plot();
-    if(m_doGamFit)
-    {
-        GammaPEPlot();
-        GammaPlot();
+    if (m_doGamFit) {
+        Cs137->SaveHist();
+        Mn54->SaveHist();
+        Ge68->SaveHist();
+        K40->SaveHist();
+        nH->SaveHist();
+        Co60->SaveHist();
+        AmBe->SaveHist();
+        nC12->SaveHist();
+        AmC->SaveHist();
     }
     if(m_doB12Fit)
         //junoB12data->Plot();

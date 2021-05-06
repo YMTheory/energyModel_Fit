@@ -12,9 +12,9 @@
 
 using namespace std;
 
-double electronCerenkov::m_kC = 1; //1.01533e+00;
+double electronCerenkov::m_kC = 1;
 //double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
-double electronCerenkov::m_energyScale = 3134.078/2.223;
+double electronCerenkov::m_energyScale = 1409.84; //3134.078/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
 
 vector<double> electronCerenkov::m_Etrue;

@@ -12,7 +12,7 @@
 using namespace std;
 
 double electronQuench::m_kA = 1;
-double electronQuench::m_birk1     = 6.5e-3; //5.72857e-03;
+double electronQuench::m_birk1     = 0.0065;
 double electronQuench::m_kBResid  = 0;
 double electronQuench::p0 = 1.02561e+00;
 double electronQuench::p1 = 1.12245e-01;
@@ -38,7 +38,7 @@ double electronQuench::m_nonl[1000] = {0.};
 
 double electronQuench::m_simEtrue[900];
 double electronQuench::m_simScintPE[900];
-double electronQuench::m_scale = 3134.078/2.223;
+double electronQuench::m_scale = 1410;
 
 TGraph* electronQuench::gNPE_elec = new TGraph();
 
@@ -171,8 +171,10 @@ double electronQuench::ScintillatorNL    (double eTrue)  {
 double electronQuench::ScintillatorPE(double eTrue) {
     if (!m_loadScintPE) LoadScintPE();
 
-    double scintPE = gNPE_elec->Eval(eTrue);
-    return m_kA * scintPE;
+    //double nonl = SimulationNLShape(eTrue);
+    //double scintPE = gNPE_elec->Eval(eTrue);
+
+    //return m_kA * scintPE;
 
     double nonl = SimulationNLShape(eTrue);
     return m_kA * nonl * eTrue * m_scale;
