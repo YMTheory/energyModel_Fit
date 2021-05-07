@@ -24,6 +24,8 @@ class electronCerenkov
 
         static double getCerPE(double E);
 
+        static double getAnaCerPE(double E);
+
         static void Plot();
 
     private:
@@ -40,6 +42,22 @@ class electronCerenkov
         static double m_nonl[m_nData];
 
         static TGraph* gNPE_elec;
+
+        static double m_A1;
+        static double m_A2;
+        static double m_A3;
+        static double m_A4;
+        static double m_E0;
+
+    public:
+        double getA1()            {return m_A1;}
+        double getA2()            {return m_A2;}
+        double getA3()            {return m_A3;}
+        double getA4()            {return m_A4;}
+        void setA1(double A1)     {m_A1 = A1;}
+        void setA2(double A2)     {m_A2 = A2;}
+        void setA3(double A3)     {m_A3 = A3;}
+        void setA4(double A4)     {m_A4 = A4;}
 };
 
 #endif

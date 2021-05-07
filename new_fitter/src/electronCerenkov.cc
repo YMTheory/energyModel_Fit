@@ -16,6 +16,11 @@ double electronCerenkov::m_kC = 1;
 //double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
 double electronCerenkov::m_energyScale = 1409.84; //3134.078/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
+double electronCerenkov::m_A1 = 0;
+double electronCerenkov::m_A2 = 0;
+double electronCerenkov::m_A3 = 0;
+double electronCerenkov::m_A4 = 0;
+double electronCerenkov::m_E0 = 0.2;
 
 vector<double> electronCerenkov::m_Etrue;
 vector<double> electronCerenkov::m_Cerenkov;
@@ -126,6 +131,12 @@ void electronCerenkov::Plot()
     file->Close();
 }
 
+double electronCerenkov::getAnaCerPE(double E)
+{
+    double x = TMath::Log(1+E/m_E0);
+    return (m_A1*x + m_A2*x*x + m_A3*x*x*x) * (1/E + m_A4) * E   ;
+
+}
 
 
 
