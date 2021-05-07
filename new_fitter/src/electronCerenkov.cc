@@ -17,9 +17,9 @@ double electronCerenkov::m_kC = 1;
 double electronCerenkov::m_energyScale = 1409.84; //3134.078/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
 double electronCerenkov::m_A1 = 0;
-double electronCerenkov::m_A2 = 0;
-double electronCerenkov::m_A3 = 0;
-double electronCerenkov::m_A4 = 0;
+double electronCerenkov::m_A2 = -7.90041506;
+double electronCerenkov::m_A3 = 13.84029077;
+double electronCerenkov::m_A4 = 0.03641905;
 double electronCerenkov::m_E0 = 0.2;
 
 vector<double> electronCerenkov::m_Etrue;
