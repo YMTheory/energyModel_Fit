@@ -13,6 +13,11 @@ enum ScintillatorParameterization {
     kSimulationCalc
 };
 
+enum CerenkovParameterization {
+    kSimulationCer,
+    kAnalyticalCer
+};
+
 class junoParameters
 {
     public:
@@ -43,6 +48,7 @@ class junoParameters
         static double m_nuGamma;
 
         static ScintillatorParameterization scintillatorParameterization;
+        static CerenkovParameterization cerenkovParameterization;
 
         static std::string specTheoMode;
 
