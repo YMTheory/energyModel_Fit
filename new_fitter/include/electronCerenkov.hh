@@ -25,6 +25,7 @@ class electronCerenkov
         static double getCerPE(double E);
 
         static double getAnaCerPE(double E);
+        static double getSimCerPE(double E);
 
         static void Plot();
 

@@ -87,7 +87,7 @@ double electronCerenkov::getCerenkovPE(double E)
 }
 
 
-double electronCerenkov::getCerPE(double E)
+double electronCerenkov::getSimCerPE(double E)
 {
     if(!m_LoadCerenkov)   LoadCerenkov();
 
@@ -139,6 +139,11 @@ double electronCerenkov::getAnaCerPE(double E)
 }
 
 
-
+double electronCerenkov::getCerPE(double E) {
+    if (junoParameters::cerenkovParameterization == kSimulationCer)
+        return getSimCerPE(E);
+    else if (junoParameters::cerenkovParameterization == kAnalyticalCer)
+        return getAnaCerPE(E);
+}
 
 
