@@ -134,16 +134,18 @@ void electronCerenkov::Plot()
 double electronCerenkov::getAnaCerPE(double E)
 {
     double x = TMath::Log(1+E/m_E0);
-    return (m_A1*x + m_A2*x*x + m_A3*x*x*x) * (1/E + m_A4) * E   ;
+    double npe = (m_A1*x + m_A2*x*x + m_A3*x*x*x) * (1/E + m_A4) * E   ;
+    return npe;
 
 }
 
 
 double electronCerenkov::getCerPE(double E) {
-    if (junoParameters::cerenkovParameterization == kSimulationCer)
+    if (junoParameters::cerenkovMode == "kSimulationCer" )
         return getSimCerPE(E);
-    else if (junoParameters::cerenkovParameterization == kAnalyticalCer)
+    else if (junoParameters::cerenkovMode == "kAnalyticalCer" ) {
         return getAnaCerPE(E);
+    }
 }
 
 

@@ -19,6 +19,13 @@ double electronQuench::p1 = 1.12245e-01;
 double electronQuench::p2 = 1.39421e+00;
 double electronQuench::p3 = 5.55117e-04;
 
+double electronQuench::m_A1 = 0.8;
+double electronQuench::m_A2 = 0.3;
+double electronQuench::m_A3 = 0.15;
+double electronQuench::m_A4 = -5e-3;
+double electronQuench::m_A5 = 0.4;
+double electronQuench::m_A6 = 0.15;
+
 double electronQuench::m_quenching_energy[m_nKb][m_nSamples] = {0};
 double* electronQuench::m_quenching_energy_low = &m_quenching_energy[0][0];
 double* electronQuench::m_quenching_energy_high = &m_quenching_energy[0][0];
@@ -176,7 +183,7 @@ double electronQuench::ScintillatorPE(double eTrue) {
 
     //return m_kA * scintPE;
 
-    double nonl = SimulationNLShape(eTrue);
+    double nonl = ScintillatorNL(eTrue);
     return m_kA * nonl * eTrue * m_scale;
 }
 
@@ -189,6 +196,8 @@ double electronQuench::ScintillatorShape (double eTrue)  {
         return EmpiricalNLShape (eTrue);
     } else if (junoParameters::scintillatorParameterization == kSimulationCalc ) {
         return SimulationNLCalcShape (eTrue);
+    } else if (junoParameters::scintillatorParameterization == kAnalytical ) {
+        return AnalyticalNLShape(eTrue);
     }
 }
 
@@ -235,6 +244,16 @@ double electronQuench::SimulationNLCalcShape(double eTrue)
 
     return m_kA * nonl;
 }
+
+double electronQuench::AnalyticalNLShape(double eTrue)
+{
+    double x = TMath::Log(eTrue);
+    double n = m_A1 + m_A2 * x + m_A3 * x*x + m_A4 * x*x*x;
+    double d = 1 + m_A5*x + m_A6*x*x + m_A4 * x*x*x;
+
+    return n/d;
+}
+
 
 void electronQuench::Plot() {
     cout << " >>> Plot Quenching Curve <<< " << endl;

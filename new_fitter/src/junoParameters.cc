@@ -2,10 +2,12 @@
 
 typedef junoParameters JUNOP;
 typedef ScintillatorParameterization SP;
-typedef CerenkovParameterization CP;
 
-SP JUNOP::scintillatorParameterization = kIntegral;  /*kEmpirical;*/ /*kIntegral;*/ /*kSimulationCalc*/
-CP JUNOP::cerenkovParameterization = kSimulationCer;
+SP JUNOP::scintillatorParameterization = kAnalytical;  /*kEmpirical;*/ /*kIntegral;*/ /*kSimulationCalc*/
+
+//std::string JUNOP::cerenkovMode       = "kSimulationCer";   // "kAnalyticalCer"
+std::string JUNOP::cerenkovMode       =  "kAnalyticalCer";
+
 
 std::string JUNOP::stopPow_File       = "data/electron/StopPow1.txt";
 std::string JUNOP::quenchNL_File      = "data/electron/Quench5.root";

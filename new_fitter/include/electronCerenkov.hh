@@ -51,14 +51,14 @@ class electronCerenkov
         static double m_E0;
 
     public:
-        double getA1()            {return m_A1;}
-        double getA2()            {return m_A2;}
-        double getA3()            {return m_A3;}
-        double getA4()            {return m_A4;}
-        void setA1(double A1)     {m_A1 = A1;}
-        void setA2(double A2)     {m_A2 = A2;}
-        void setA3(double A3)     {m_A3 = A3;}
-        void setA4(double A4)     {m_A4 = A4;}
+        static double getA1()            {return m_A1;}
+        static double getA2()            {return m_A2;}
+        static double getA3()            {return m_A3;}
+        static double getA4()            {return m_A4;}
+        static void setA1(double A1)     {m_A1 = A1;}
+        static void setA2(double A2)     {m_A2 = A2;}
+        static void setA3(double A3)     {m_A3 = A3;}
+        static void setA4(double A4)     {m_A4 = A4;}
 };
 
 #endif

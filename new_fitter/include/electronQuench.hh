@@ -26,6 +26,13 @@ class electronQuench
         static double getkA()                          {return m_kA;}
         static void setEnergyScale(double scale)       { m_scale = scale; }
         static double getEnergyScale()                 {return m_scale;}
+        
+        static void setA1(double A1)                   {m_A1 = A1;}
+        static void setA2(double A2)                   {m_A2 = A2;}
+        static void setA3(double A3)                   {m_A3 = A3;}
+        static void setA4(double A4)                   {m_A4 = A4;}
+        static void setA5(double A5)                   {m_A5 = A5;}
+        static void setA6(double A6)                   {m_A6 = A6;}
 
         static void LoadStopPowData();
         static double Integral_BirkLaw(double E);
@@ -54,6 +61,12 @@ class electronQuench
         static double p1 ;
         static double p2 ;
         static double p3 ;
+        static double m_A1;
+        static double m_A2;
+        static double m_A3;
+        static double m_A4;
+        static double m_A5;
+        static double m_A6;
 
         static double m_scale;
 
@@ -82,6 +95,7 @@ class electronQuench
         static double IntegralNLShape      (double eTrue);
         static double EmpiricalNLShape     (double eTrue);
         static double SimulationNLCalcShape(double eTrue);
+        static double AnalyticalNLShape    (double eTrue);
 
         static TGraph* gNPE_elec;
 };

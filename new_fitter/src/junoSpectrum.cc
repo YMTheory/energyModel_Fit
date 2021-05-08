@@ -255,7 +255,7 @@ void junoSpectrum::ApplyScintillatorNL()
     double bias;
 	double eVisGam[m_nBranch];
 
-    cout << "Current fitting params " << electronQuench::getkA() << " " << electronCerenkov::getkC() <<" " << electronQuench::getEnergyScale()<<endl;
+    //cout << "Current fitting params " << electronQuench::getkA() << " " << electronCerenkov::getkC() <<" " << electronQuench::getEnergyScale()<<endl;
 
     for(int branchIdx=0; branchIdx<m_nBranch; branchIdx++) {
         // Nonlinearity on gamma
