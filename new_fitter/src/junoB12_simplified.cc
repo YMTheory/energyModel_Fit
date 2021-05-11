@@ -2,6 +2,7 @@
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
 #include "electronResponse.hh"
+#include "junoParameters.hh"
 
 #include <TFile.h>
 #include <TTree.h>
@@ -129,13 +130,23 @@ void junoB12_simplified::ApplyScintillatorNL()
         double tmp_pe = electronQuench::ScintillatorPE(eTru) + electronCerenkov::getCerPE(eTru);
         
         // consider resolution:
-        double tmp_sigma = electronResponse::fElecResol->Eval(eTru);
+        //double tmp_sigma = electronResponse::fElecResol->Eval(eTru);
+        double tmp_sigma;
+        if (junoParameters::pesigmaMode == "kTotal" ) {
+            //tmp_sigma = TMath::Power(electronResponse::fElecResol->Eval(eTru), 2);
+            tmp_sigma = electronResponse::fElecResol->Eval(eTru);
+        } else if (junoParameters::pesigmaMode == "kSeparate") {
+            double sctpe = electronQuench::ScintillatorPE(eTru);
+            double cerpe = electronCerenkov::getCerPE(eTru);
+            double p = (sctpe) / (sctpe + cerpe);
+            tmp_sigma = TMath::Sqrt (( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p)));
+        }
         gaus->SetParameter(0, tmp_pe);
         gaus->SetParameter(1, tmp_sigma);
         int minBin = int((tmp_pe-4.5*tmp_sigma)/m_peBinWidth);
         int maxBin = int((tmp_pe+4.5*tmp_sigma)/m_peBinWidth);
         if (minBin < 0) minBin = 0;
-        if(maxBin < m_nBin) maxBin = m_nBin;
+        if(maxBin > m_nBin) maxBin = m_nBin;
 
         for (int j=minBin; j<maxBin; j++) {
             double tmp_center = m_peBinWidth /2 + m_peBinWidth * j;

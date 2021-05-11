@@ -23,6 +23,11 @@ double electronResponse::m_ra = -2.17203e+00;
 double electronResponse::m_rb = 1.31498e+03;
 double electronResponse::m_rc = 1.60508e+02;
 
+double electronResponse::m_c0 = -158.41;
+double electronResponse::m_c1 = 4.333;
+double electronResponse::m_c2 = 0.00181;
+double electronResponse::m_s0 = 1.;
+
 TGraphErrors* electronResponse::gMinElecNonl;
 TGraphErrors* electronResponse::gElecResol;
 
@@ -39,7 +44,36 @@ double gElecResolFunc(double* x, double* p) {
         return TMath::Sqrt(sigma2);
 }
 
+
+double gCerPESigma(double* x, double* p) {
+    double E = x[0];
+    double p0 = p[0];
+    double p1 = p[1];
+    double p2 = p[2];
+
+    double sigma2 = p0 + p1*E + p2*E*E;
+    if (sigma2<0)
+        return 0;
+    else 
+        return sigma2;
+}
+
+double gSctPESigma(double* x, double* p) {
+    double E = x[0];
+    double p0 = p[0];
+
+    double sigma2 = p0*E ;
+    if (sigma2<0)
+        return 0;
+    else 
+        return sigma2;
+}
+
+
+
 TF1* electronResponse::fElecResol = new TF1("fElecNonl", gElecResolFunc, 0, 8, 3);
+TF1* electronResponse::fCerPESigma = new TF1("fCerPESigma", gCerPESigma, 0, 1600, 3);
+TF1* electronResponse::fSctPESigma = new TF1("fSctPESigma", gSctPESigma, 0, 1600, 1);
 
 double electronResponse::getElecNonl(double Etrue)
 {
@@ -103,7 +137,7 @@ void electronResponse::FuncConstruct()
 {
     fElecNonl = new TF1("fElecNonl", "([0]+[3]*x)/(1+[1]*TMath::Exp(-[2]*x))", 0.01, 8);
     SetParameters();
-    cout << "Empirical ElecNonl Function has been constructed..." << endl;
+    cout << "Empirical Electron Response Function has been constructed..." << endl;
 }
 
 void electronResponse::SetParameters()
@@ -116,6 +150,12 @@ void electronResponse::SetParameters()
     fElecResol->SetParameter(0, m_ra);
     fElecResol->SetParameter(1, m_rb);
     fElecResol->SetParameter(2, m_rc);
+
+    fCerPESigma->SetParameter(0, m_c0);
+    fCerPESigma->SetParameter(1, m_c1);
+    fCerPESigma->SetParameter(2, m_c2);
+
+    fSctPESigma->SetParameter(0, m_s0);
 }
 
 
@@ -210,6 +250,12 @@ void electronResponse::loadElecResol()
 
     m_loadResol = true;
 }
+
+
+
+
+
+
 
 
 

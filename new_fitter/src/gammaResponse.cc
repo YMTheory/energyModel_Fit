@@ -110,7 +110,17 @@ void gammaResponse::preCalculation()
             double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
             if (tmp_E == 0) break;
             tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
-            tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            if (junoParameters::pesigmaMode == "kTotal" ) {
+                tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+                //cout << tmp_E << " " << tmp_pe << " " << electronResponse::fElecResol->Eval(tmp_E) << endl;
+            } else if (junoParameters::pesigmaMode == "kSeparate") {
+                double sctpe = electronQuench::ScintillatorPE(tmp_E);
+                double cerpe = electronCerenkov::getCerPE(tmp_E);
+                double p = (sctpe) / (sctpe + cerpe);
+                tmp_sigma += ( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p));
+                //cout << tmp_E << " " << electronResponse::fElecResol->Eval(tmp_E) << " " << sctpe << " " << cerpe << " " << TMath::Sqrt(( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p))) <<endl;
+            }
+
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
         }
 
@@ -119,7 +129,15 @@ void gammaResponse::preCalculation()
             double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
             if (tmp_E == 0) break;
             tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 2*660.8;
-            tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            //tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            if (junoParameters::pesigmaMode == "kTotal" )
+                tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
+            else if (junoParameters::pesigmaMode == "kSeparate") {
+                double sctpe = electronQuench::ScintillatorPE(tmp_E);
+                double cerpe = electronCerenkov::getCerPE(tmp_E);
+                double p = (sctpe) / (sctpe + cerpe);
+                tmp_sigma += ( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p));
+            }
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
             tmp_sigma += 2*TMath::Power(27.07, 2);
 

@@ -79,6 +79,7 @@ class junoParameters
         static string m_calcOption;
 
         static std::string cerenkovMode;
+        static std::string pesigmaMode;
 
 };
 
