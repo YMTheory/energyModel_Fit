@@ -297,8 +297,12 @@ void junoNLChiFunction::SetParameters(double *par)
         electronResponse::setra             (par[14]);
         electronResponse::setrb             (par[15]);
         electronResponse::setrc             (par[16]);
+        //electronResponse::setq0             (par[14]);
+        //electronResponse::setq1             (par[15]);
+        //electronResponse::setq2             (par[16]);
 
         electronResponse::SetParameters();
+
     }
     if (junoParameters::scintillatorParameterization == kSimulation and junoParameters::cerenkovMode == "kSimulationCer" and junoParameters::pesigmaMode=="kTotal" and !m_doGamFit) {
         electronQuench::setkA               (par[0]);
@@ -433,16 +437,35 @@ double junoNLChiFunction::GetChiSquare(double maxChi2)
         junoNLMinuit->mnparm(iPar, "nuGamma", 0.0, 0.0001, 0., 1, ierrflag);                iPar++;
         junoNLMinuit->mnparm(iPar, "Cs137Amp", 250, 1, 200, 300, ierrflag);                 iPar++;
         junoNLMinuit->mnparm(iPar, "Mn54Amp", 240, 1, 200, 300, ierrflag);                  iPar++;
-        junoNLMinuit->mnparm(iPar, "Ge68Amp", 220, 1, 180, 260, ierrflag);                  iPar++;
-        junoNLMinuit->mnparm(iPar, "K40Amp", 180, 1, 140, 220, ierrflag);                   iPar++;
-        junoNLMinuit->mnparm(iPar, "nHAmp", 200, 1, 160, 240, ierrflag);                    iPar++;
-        junoNLMinuit->mnparm(iPar, "Co60Amp", 160, 1, 120, 200, ierrflag);                  iPar++;
-        junoNLMinuit->mnparm(iPar, "AmBeAmp", 180, 1, 140, 220, ierrflag);                  iPar++;
-        junoNLMinuit->mnparm(iPar, "nC12Amp", 180, 1, 140, 220, ierrflag);                  iPar++;
-        junoNLMinuit->mnparm(iPar, "AmCAmp", 180, 1, 140, 220, ierrflag);                   iPar++;
+        junoNLMinuit->mnparm(iPar, "Ge68Amp", 212, 1, 180, 260, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "K40Amp", 186, 1, 140, 220, ierrflag);                   iPar++;
+        junoNLMinuit->mnparm(iPar, "nHAmp", 196, 1, 160, 240, ierrflag);                    iPar++;
+        junoNLMinuit->mnparm(iPar, "Co60Amp", 144, 1, 120, 200, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "AmBeAmp", 149, 1, 140, 220, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "nC12Amp", 206, 1, 140, 220, ierrflag);                  iPar++;
+        junoNLMinuit->mnparm(iPar, "AmCAmp", 158, 1, 140, 220, ierrflag);                   iPar++;
         junoNLMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag );                      iPar++;
         junoNLMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1850, ierrflag);                    iPar++;
         junoNLMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag);                       iPar++;
+        //junoNLMinuit->mnparm(iPar, "q0", 22.333, 0.01, -100, 100, ierrflag);                iPar++;
+        //junoNLMinuit->mnparm(iPar, "q1", 0.983, 0.001, 0, 5, ierrflag);                     iPar++;
+        //junoNLMinuit->mnparm(iPar, "q2", 6e-5, 1e-6, 1e-5, 1e-4, ierrflag);                 iPar++;
+
+        //junoNLMinuit->FixParameter(0);
+        //junoNLMinuit->FixParameter(0);
+        //junoNLMinuit->FixParameter(1);
+        //junoNLMinuit->FixParameter(2);
+        //junoNLMinuit->FixParameter(3);
+        junoNLMinuit->FixParameter(4);
+        //junoNLMinuit->FixParameter(5);
+        //junoNLMinuit->FixParameter(6);
+        //junoNLMinuit->FixParameter(7);
+        //junoNLMinuit->FixParameter(8);
+        //junoNLMinuit->FixParameter(9);
+        //junoNLMinuit->FixParameter(10);
+        //junoNLMinuit->FixParameter(11);
+        //junoNLMinuit->FixParameter(12);
+        //junoNLMinuit->FixParameter(13);
 
     }
 

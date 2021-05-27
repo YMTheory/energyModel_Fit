@@ -109,11 +109,16 @@ void gammaResponse::preCalculation()
         for (int iSec=0; iSec<100; iSec++) {
             double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
             if (tmp_E == 0) break;
-            tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
+            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
+            tmp_pe += single_npe;
             if (junoParameters::pesigmaMode == "kTotal" ) {
                 tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
-                //cout << tmp_E << " " << tmp_pe << " " << electronResponse::fElecResol->Eval(tmp_E) << endl;
+                //cout << tmp_E << " " << single_npe << " " << electronResponse::fElecResol->Eval(tmp_E) << " " << electronResponse::fNPESigma->Eval(single_npe) << endl;
+            } else if (junoParameters::pesigmaMode == "kNPE") {
+                tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+
             } else if (junoParameters::pesigmaMode == "kSeparate") {
+
                 double sctpe = electronQuench::ScintillatorPE(tmp_E);
                 double cerpe = electronCerenkov::getCerPE(tmp_E);
                 double p = (sctpe) / (sctpe + cerpe);
@@ -128,17 +133,22 @@ void gammaResponse::preCalculation()
         for(int iSec=0; iSec<100; iSec++) {
             double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
             if (tmp_E == 0) break;
-            tmp_pe += electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 2*660.8;
+            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
+            tmp_pe += single_npe;
             //tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
-            if (junoParameters::pesigmaMode == "kTotal" )
+            if (junoParameters::pesigmaMode == "kTotal" )  {
                 tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
-            else if (junoParameters::pesigmaMode == "kSeparate") {
+            } else if (junoParameters::pesigmaMode == "kNPE") {
+                tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+
+            } else if (junoParameters::pesigmaMode == "kSeparate") {
                 double sctpe = electronQuench::ScintillatorPE(tmp_E);
                 double cerpe = electronCerenkov::getCerPE(tmp_E);
                 double p = (sctpe) / (sctpe + cerpe);
                 tmp_sigma += ( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p));
             }
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
+            tmp_pe += 2*660.8;
             tmp_sigma += 2*TMath::Power(27.07, 2);
 
         }
@@ -267,7 +277,7 @@ double gammaResponse::GetChi2()
         }
     }
         
-    cout << m_name << " " << chi2 << endl;
+    //cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }
 

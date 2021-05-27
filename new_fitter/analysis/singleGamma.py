@@ -24,6 +24,7 @@ class singleGamma(object):
         self.prmBetaArr = []
         self.prmAntiBetaArr = []
         self.loadPrmBetaFlag = False
+        self.chi2 = 0
 
     def getName(self):
         print("Current gamma is " + self.name)
@@ -151,3 +152,11 @@ class singleGamma(object):
         plt.savefig(self.name + "cpr.pdf")
         #plt.clf()
         #plt.show()
+
+
+    def GetChi2(self):
+        ModelPrediction()
+        self.chi2 = 0
+        self.chi2 += (self.npe - self.npe_sim)**2 / self.npeerr_sim**2
+
+        return self.chi2

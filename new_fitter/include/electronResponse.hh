@@ -44,6 +44,10 @@ class electronResponse
         static double m_p2;
         static double m_p3;
 
+        static double m_q0;
+        static double m_q1;
+        static double m_q2;
+
         static double m_c0;
         static double m_c1;
         static double m_c2;
@@ -63,6 +67,14 @@ class electronResponse
         static double getp3()       {return m_p3;}
         static void setp3(double p3){m_p3 = p3;}
         static bool getLoadResol()  {return m_loadResol;}
+
+        static double getq0()       {return m_q0;}
+        static void setq0(double q0){m_q0 = q0;}
+        static double getq1()       {return m_q1;}
+        static void setq1(double q1){m_q1 = q1;}
+        static double getq2()       {return m_q2;}
+        static void setq2(double q2){m_q2 = q2;}
+
         static double getra()       {return m_ra;}
         static void setra(double ra){m_ra = ra;}
         static double getrb()       {return m_rb;}
@@ -87,11 +99,13 @@ class electronResponse
         static TF1* fElecResol;
         static TF1* fCerPESigma;
         static TF1* fSctPESigma;
+        static TF1* fNPESigma;
 
 };
 
 extern double gElecResolFunc(double* x, double* p);
 extern double gCerPESigma(double *x, double *p);
 extern double gSctPESigma(double *x, double *p);
+extern double gNPESigmaFunc(double* x, double* p);
 
 #endif

@@ -23,10 +23,22 @@ p03 = -1.09984e1
 p13 = 1.48408e3
 p23 = 1.21907e2
 
+p04 = -1.07798e1
+p14 = 1481.59
+p24 = 121.246
+
+
+p05 = -1.10053e1
+p15 = 1484.17
+p25 = 121.885
+
+
+
 
 # no correlation in fitter...
 
 Etrue = np.arange(0.1, 10, 0.1)
+dnum = len(Etrue)
 
 def resFunc(x, a, b, c):
     s2 = a + b*x + c*x**2
@@ -100,7 +112,7 @@ def sample_corelation():
     
     num_sample = 50000
 
-    cov = loadCov("../covar2.txt")
+    cov = loadCov("../rescov_gam+B12_kSimulationSct_kSimulationCer_kTotal.txt")
     print(cov)
     
     x = norm.rvs(size=(3, num_sample))
@@ -131,29 +143,46 @@ def main():
         plt.plot(Etrue, m_nonl1, "-", color="lightskyblue", alpha=0.01)
         plt.plot(Etrue, m_nonl2, "-", color="pink", alpha=0.01)
     """
+    ymin, ymax = [], []
+    for i in range(dnum):
+        ymin.append(1000000)
+        ymax.append(-100)
     
     sigma = sample_corelation()
 
-    for i in range(50000):
-        p0 = p03 + sigma[0, i]
-        p1 = p13 + sigma[1, i]
-        p2 = p23 + sigma[2, i]
+    for i in range(10000):
+        p0 = p05 + sigma[0, i]
+        p1 = p15 + sigma[1, i]
+        p2 = p25 + sigma[2, i]
 
         m_res = []
         for i in Etrue:
             m_res.append(resFunc(i, p0, p1, p2) )
 
-        plt.plot(Etrue, m_res, "-", color="lightskyblue",  alpha=1)
+        #plt.plot(Etrue, m_res, "-", color="lightskyblue",  alpha=1)
 
-    plt.plot(Etrue, nominal(), "-", color="coral", label="nominal")
-    #plt.plot(Etrue, bestfit(p01, p11, p21), "--", color="blueviolet", label="best fit: only gamma")
+        for n in range(dnum):
+            if m_res[n] < ymin[n]:
+                ymin[n] = m_res[n]
+            if m_res[n] > ymax[n]:
+                ymax[n] = m_res[n]
+    
+    ymin = np.array(ymin)
+    ymax = np.array(ymax)
+
+    print(ymin[9]**2, ymin[19]**2, ymin[29]**2, ymin[49]**2, ymin[79]**2)
+    print(ymax[9]**2, ymax[19]**2, ymax[29]**2, ymax[49]**2, ymax[79]**2)
+
+    plt.fill_between(Etrue, ymin, ymax, color="lightskyblue", label=r"$1 \sigma$ zone")
+    plt.plot(Etrue, nominal(), "-", color="darkviolet", label="nominal")
+    plt.plot(Etrue, bestfit(p05, p15, p25), "--", color="coral", label="best fit:  gamma+B12")
     #plt.plot(Etrue, bestfit(p02, p12, p22), "--", color="deeppink", label="best fit: gamma+B12")
-    plt.plot(Etrue, bestfit(p03, p13, p23), "--", color="deeppink", label="best fit: gamma+B12")
+    #plt.plot(Etrue, bestfit(p04, p13, p23), "--", color="deeppink", label="best fit: gamma+B12")
 
     plt.grid(True)
     plt.legend()
     plt.xlabel(r"$E_{true}$/MeV")
-    plt.ylabel("p.e. resolution")
+    plt.ylabel(r"$\sigma_{NPE}$")
     plt.title("Electron P.E. Sigma")
     #plt.savefig("resCurve_fit.pdf")
     plt.show()

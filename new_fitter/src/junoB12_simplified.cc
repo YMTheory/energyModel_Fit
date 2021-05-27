@@ -135,6 +135,8 @@ void junoB12_simplified::ApplyScintillatorNL()
         if (junoParameters::pesigmaMode == "kTotal" ) {
             //tmp_sigma = TMath::Power(electronResponse::fElecResol->Eval(eTru), 2);
             tmp_sigma = electronResponse::fElecResol->Eval(eTru);
+        } else if (junoParameters::pesigmaMode == "kNPE" ) {
+            tmp_sigma = electronResponse::fNPESigma->Eval(tmp_pe);             // consider sigma-NPE relationship
         } else if (junoParameters::pesigmaMode == "kSeparate") {
             double sctpe = electronQuench::ScintillatorPE(eTru);
             double cerpe = electronCerenkov::getCerPE(eTru);
@@ -220,7 +222,7 @@ double junoB12_simplified::GetChi2()
             m_nData++;
         }
     }
-    cout << "simplified B12 chi2: " << chi2 << " with nData : " << m_nData << endl;
+    //cout << "simplified B12 chi2: " << chi2 << " with nData : " << m_nData << endl;
 	//if(nDoF>0) chi2 /= double(m_nData - nDoF);
 	return chi2;
 }

@@ -5,12 +5,13 @@ typedef ScintillatorParameterization SP;
 
 SP JUNOP::scintillatorParameterization = kSimulation;  /*kEmpirical;*/ /*kIntegral;*/ /*kSimulationCalc*/
 
-std::string JUNOP::cerenkovMode       = "kAnalyticalCer" ; //"kAnalyticalCer";
-std::string JUNOP::pesigmaMode        = "kSeparate"; //"kSeparate" ; // "kTotal" 
+std::string JUNOP::cerenkovMode       = "kSimulationCer" ; //"kAnalyticalCer";
+std::string JUNOP::pesigmaMode        = "kNPE"; //"kSeparate" ; // "kTotal" // "kNPE";
+ 
 
-
-std::string JUNOP::stopPow_File       = "data/electron/StopPow1.txt";
+std::string JUNOP::stopPow_File       = "data/electron/ESTAR_GdLS.txt";
 std::string JUNOP::quenchNL_File      = "data/electron/Quench5.root";
+//std::string JUNOP::quenchNL_File      = "data/electron/Quench_NumInt.root";
 std::string JUNOP::scintFile          = "data/electron/sctPE1.txt";
 //std::string JUNOP::cerenkovNL_File    = "data/electron/Cer.dat";
 std::string JUNOP::quenchNL_outFile   = "output/electron/QuenchNL.root";

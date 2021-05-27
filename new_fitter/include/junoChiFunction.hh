@@ -1,7 +1,6 @@
 #ifndef junoChiFunction_h
 #define junoChiFunction_h
 
-#include "junoSpectrum.hh"
 #include "gammaResponse.hh"
 #include "junoB12_simplified.hh"
 
@@ -17,8 +16,8 @@ class junoChiFunction
         double GetChiSquare           ( double maxChi2 = 100000 );
         static void SetParameters     ( double *par );
         static double GetChi2         ( double maxChi2 = 100000 );  
-    
         static void Plot              ();
+
 
     private:
         static void ChisqFCN(Int_t &npar, Double_t *grad, Double_t &fval, Double_t *par, Int_t flag);
@@ -34,30 +33,14 @@ class junoChiFunction
         static double m_bestFitError[20];
         static bool m_DoFit;
         
-
-    private:
-
         static junoB12_simplified* b12data;
 
+        static gammaResponse* gamma_array[9];
+        static string gamma_name[9];
+    
         static int m_nData;
-        static int m_nGam;
-        static std::string source_name[20];
-
-        static std::vector<gammaResponse*> gammaResponse_vector;
-        static gammaResponse* Cs137;
-        static gammaResponse* Mn54;
-        static gammaResponse* K40;
-        static gammaResponse* Ge68;
-        static gammaResponse* Co60;
-        static gammaResponse* nH;
-        static gammaResponse* AmBe;
-        static gammaResponse* nC12;
-        static gammaResponse* AmC;
-
         static bool m_doGamFit;
         static bool m_doB12Fit;
-
-    
 };
 
 #endif

@@ -19,6 +19,11 @@ double electronResponse::m_p0 = 1.025;
 double electronResponse::m_p1 = 0.1122;
 double electronResponse::m_p2 = 1.394;
 double electronResponse::m_p3 = 5.55e-4;
+
+double electronResponse::m_q0 = 22.333;
+double electronResponse::m_q1 = 0.982622;
+double electronResponse::m_q2 = 6.12389e-05;
+
 double electronResponse::m_ra = -2.17203e+00;
 double electronResponse::m_rb = 1.31498e+03;
 double electronResponse::m_rc = 1.60508e+02;
@@ -44,6 +49,18 @@ double gElecResolFunc(double* x, double* p) {
         return TMath::Sqrt(sigma2);
 }
 
+double gNPESigmaFunc(double* x, double* p){
+    double pe = x[0];
+    double p0 = p[0];
+    double p1 = p[1];
+    double p2 = p[2];
+
+    double sigma2 = p0 + p1*pe + p2*pe*pe;
+    if (sigma2<0)
+        return 0;
+    else 
+        return TMath::Sqrt(sigma2);
+}
 
 double gCerPESigma(double* x, double* p) {
     double E = x[0];
@@ -71,9 +88,10 @@ double gSctPESigma(double* x, double* p) {
 
 
 
-TF1* electronResponse::fElecResol = new TF1("fElecNonl", gElecResolFunc, 0, 8, 3);
+TF1* electronResponse::fElecResol = new TF1("fElecNonl", gElecResolFunc, 0, 16, 3);
 TF1* electronResponse::fCerPESigma = new TF1("fCerPESigma", gCerPESigma, 0, 1600, 3);
 TF1* electronResponse::fSctPESigma = new TF1("fSctPESigma", gSctPESigma, 0, 1600, 1);
+TF1* electronResponse::fNPESigma = new TF1("fNPESigma", gNPESigmaFunc, 0, 26000, 3);
 
 double electronResponse::getElecNonl(double Etrue)
 {
@@ -156,6 +174,11 @@ void electronResponse::SetParameters()
     fCerPESigma->SetParameter(2, m_c2);
 
     fSctPESigma->SetParameter(0, m_s0);
+
+
+    fNPESigma->SetParameter(0, m_q0);
+    fNPESigma->SetParameter(1, m_q1);
+    fNPESigma->SetParameter(2, m_q2);
 }
 
 
