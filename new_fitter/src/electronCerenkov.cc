@@ -22,6 +22,17 @@ double electronCerenkov::m_A3 = 15.5519;   //13.84029077;
 double electronCerenkov::m_A4 = 0.0267155; //0.03641905;
 double electronCerenkov::m_E0 = 0.2;
 
+//double electronCerenkov::m_p0 = -0.410;
+//double electronCerenkov::m_p1 =  0.42;
+//double electronCerenkov::m_p2 = -0.0165;
+//double electronCerenkov::m_p3 = 3.133;
+//double electronCerenkov::m_p4 = 0.0225;
+double electronCerenkov::m_p0 = 4.1;      
+double electronCerenkov::m_p1 = 3.5;    
+double electronCerenkov::m_p2 = 0.09;      
+double electronCerenkov::m_p3 = 403;    
+double electronCerenkov::m_p4 = -1.96;      
+
 vector<double> electronCerenkov::m_Etrue;
 vector<double> electronCerenkov::m_Cerenkov;
 
@@ -140,11 +151,29 @@ double electronCerenkov::getAnaCerPE(double E)
 }
 
 
+
+
+double electronCerenkov::getNewAnaCerPE(double E)
+{
+    if (E < 0.2)
+        return 0;
+    else{
+        E = E - 0.2;   // 0.2 MeV threshold
+        double NC = (m_p3*E*E) / (m_p4+m_p0*E+m_p1*TMath::Exp(-m_p2*E));
+        return NC;
+    }
+}
+
+
+
+
 double electronCerenkov::getCerPE(double E) {
     if (junoParameters::cerenkovMode == "kSimulationCer" )
         return getSimCerPE(E);
     else if (junoParameters::cerenkovMode == "kAnalyticalCer" ) {
         return getAnaCerPE(E);
+    } else if (junoParameters::cerenkovMode == "kAnalyticalNewCer") {
+        return getNewAnaCerPE(E);
     }
 }
 

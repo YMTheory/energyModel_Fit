@@ -12,6 +12,7 @@
 #include <TRandom.h>
 #include <TF1.h>
 #include <TTree.h>
+#include <TStopwatch.h>
 
 gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax) {
     m_name = name;
@@ -19,7 +20,7 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     m_peMin = peMin;
     m_peMax = peMax;
 
-    cout << " >>> " << m_name << " " << m_nBins << " bins between [" << m_peMin << ", " << m_peMax <<"]" <<endl;
+    //cout << " >>> " << m_name << " " << m_nBins << " bins between [" << m_peMin << ", " << m_peMax <<"]" <<endl;
     hCalc = new TH1D((m_name+"_calc").c_str(), "", m_nBins, m_peMin, m_peMax); 
     hData = new TH1D((m_name+"_data").c_str(), "", m_nBins, m_peMin, m_peMax); 
     func  = new TF1("func", "[0] * TMath::Exp(-(x-[1])*(x-[1])/2/[2]/[2])", m_peMin, m_peMax);
@@ -69,16 +70,20 @@ void gammaResponse::LoadData()
     in.close();
 
     if (m_doSpecFit and (m_name != "gamma4440" and m_name!="gamma3215" ) ) {
-        TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
+        //TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
+        TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe_new.root").c_str(), "read");
         if(!infile) cout << "No such gamma spectrum file!" << endl;
         int m_totpe;
         TTree* tt = (TTree*)infile->Get("evt");
-        tt->SetBranchAddress("totalPE", &m_totpe);
+        //tt->SetBranchAddress("totalPE", &m_totpe);
+        tt->SetBranchAddress("totpe", &m_totpe);
         for(int i=0; i<tt->GetEntries(); i++) {
             tt->GetEntry(i);
             hData->Fill(m_totpe);
         }
     }
+
+    cout << " ****************** Data Size: " << hData->GetEntries() << endl;
 
 
     LoadPrmBeta();
@@ -86,7 +91,7 @@ void gammaResponse::LoadData()
 
 void gammaResponse::LoadPrmBeta()
 {
-    cout << " >>> Load Primary Electron in Single Event for " << m_name << " <<< " << endl;
+    //cout << " >>> Load Primary Electron in Single Event for " << m_name << " <<< " << endl;
     string filename = "./data/gamma/" + m_name + "_J19.root";
     TFile* file = new TFile(filename.c_str(), "read");
     if (!file) cout << " No such input file: " << filename << endl;
@@ -99,6 +104,8 @@ void gammaResponse::LoadPrmBeta()
 
 void gammaResponse::preCalculation()
 {
+    //TStopwatch timer;
+    //timer.Start();
     //if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
     electronResponse::SetParameters();
 
@@ -115,15 +122,16 @@ void gammaResponse::preCalculation()
                 tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
                 //cout << tmp_E << " " << single_npe << " " << electronResponse::fElecResol->Eval(tmp_E) << " " << electronResponse::fNPESigma->Eval(single_npe) << endl;
             } else if (junoParameters::pesigmaMode == "kNPE") {
-                tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                //tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                tmp_sigma += TMath::Power(electronResponse::fEvisSigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
 
             } else if (junoParameters::pesigmaMode == "kSeparate") {
 
                 double sctpe = electronQuench::ScintillatorPE(tmp_E);
                 double cerpe = electronCerenkov::getCerPE(tmp_E);
-                double p = (sctpe) / (sctpe + cerpe);
-                tmp_sigma += ( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p));
-                //cout << tmp_E << " " << electronResponse::fElecResol->Eval(tmp_E) << " " << sctpe << " " << cerpe << " " << TMath::Sqrt(( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p))) <<endl;
+                tmp_sigma += sctpe + electronResponse::fCerPESigma->Eval(cerpe) + 2 * electronResponse::fNtotCov->Eval(sctpe+cerpe);
+            }  else if (junoParameters::pesigmaMode == "kNew") {
+                tmp_sigma += TMath::Power(electronResponse::fEvisNew->Eval(single_npe), 2);             // consider sigma-NPE relationship
             }
 
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
@@ -139,13 +147,17 @@ void gammaResponse::preCalculation()
             if (junoParameters::pesigmaMode == "kTotal" )  {
                 tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
             } else if (junoParameters::pesigmaMode == "kNPE") {
-                tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                //tmp_sigma += TMath::Power(electronResponse::fNPESigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                tmp_sigma += TMath::Power(electronResponse::fEvisSigma->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                //tmp_sigma += TMath::Power(electronResponse::fEvisNew->Eval(single_npe), 2);             // consider sigma-NPE relationship
 
             } else if (junoParameters::pesigmaMode == "kSeparate") {
                 double sctpe = electronQuench::ScintillatorPE(tmp_E);
                 double cerpe = electronCerenkov::getCerPE(tmp_E);
-                double p = (sctpe) / (sctpe + cerpe);
-                tmp_sigma += ( electronResponse::fSctPESigma->Eval(sctpe) + electronResponse::fCerPESigma->Eval(cerpe) ) / (1 - 2*p*(1-p));
+                tmp_sigma += sctpe + electronResponse::fCerPESigma->Eval(cerpe) + 2 * electronResponse::fNtotCov->Eval(sctpe+cerpe);
+            }  else if (junoParameters::pesigmaMode == "kNew") {
+                //tmp_sigma += TMath::Power(electronResponse::fEvisNew1->Eval(single_npe), 2);             // consider sigma-NPE relationship
+                tmp_sigma += TMath::Power(electronResponse::fEvisNew->Eval(single_npe), 2);             // consider sigma-NPE relationship
             }
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
             tmp_pe += 2*660.8;
@@ -160,6 +172,9 @@ void gammaResponse::preCalculation()
 
     }
 
+    //timer.Stop();
+
+    //cout << "Total time collapsed during preCalculation : " << timer.RealTime() << " , " << timer.CpuTime() << endl;
 }
 
 
@@ -183,7 +198,6 @@ void gammaResponse::Prediction()
 
     m_nonlCalc = tot_mean / electronQuench::getEnergyScale() / m_Etrue;
     m_resCalc  = tot_sigma / tot_mean;
-
 }
 
 
@@ -247,6 +261,46 @@ void gammaResponse::calcGamResponse()
     m_resCalc = pe_sigma / pe_mean;
 
 }
+
+
+
+void gammaResponse::preCalculation_onlyNonl()
+{
+    double Y = 3134.078 / 2.223;
+    double sumpe = 0;
+    for (int index=0; index<m_nSamples; index++) {
+        double tmp_pe = 0;
+
+        // electron
+        for (int iSec=0; iSec<100; iSec++) {
+            double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
+            if (tmp_E == 0) break;
+            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
+            tmp_pe += single_npe;
+        }
+
+        // positron
+        for(int iSec=0; iSec<100; iSec++) {
+            double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
+            if (tmp_E == 0) break;
+            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 660.8 * 2 ; 
+            tmp_pe += single_npe;
+        }
+        sumpe += tmp_pe;
+    }
+
+    m_totpeCalc = sumpe / m_nSamples;
+    m_nonlCalc = m_totpeCalc / Y / m_Etrue;
+}
+
+
+double gammaResponse::GetChi2_onlyNonl()
+{
+    double chi2 = TMath::Power((m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
+    return chi2;
+}
+
+
 
 
 double gammaResponse::GetChi2()

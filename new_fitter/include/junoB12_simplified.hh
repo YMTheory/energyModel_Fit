@@ -18,8 +18,7 @@ class junoB12_simplified
         void LoadDataSpec();
         void LoadTheoSpec();
 
-        void ApplyScintillatorNL();
-        void ApplyResolutionNL();
+        void ApplyResponse();
 
         void Normalize();
         double GetChi2();
@@ -40,15 +39,15 @@ class junoB12_simplified
         double m_peMax;
 
 
-        double m_binWidth;
+        double m_eBinWidth;
         double m_peBinWidth;
-        double m_binCenter[1500];
+        double m_eBinCenter[1500];
         double m_peBinCenter[1500];
-        double m_eData[100];
-        double m_eDataErr[100];
+        double m_peData[200];
+        double m_peDataErr[200];
         double m_eTru[1500];
         double m_eVis[1500];
-        double m_eTheo[100];
+        double m_peTheo[200];
 
     private:
         TF1* gaus;

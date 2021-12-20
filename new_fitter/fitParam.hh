@@ -8,14 +8,14 @@
 #include "electronQuench.hh"
 #include "electronCerenkov.hh"
 #include "electronResponse.hh"
-#include "electronFitter.hh"
-#include "gammaData.hh"
-#include "gammaFitter.hh"
-#include "junoB12.hh"
+//#include "electronSpectrum.hh"
+//#include "electronSpectrumFitter.hh"
+//#include "electronFitter.hh"
+#include "junoB12_simplified.hh"
 #include "gammaResponse.hh"
-#include "junoSpectrum.hh"
-#include "spectrumFitter.hh"
-#include "junoNLChiFunction.hh"
+
+#include "michelElectron.hh"
+#include "junoChiFunction.hh"
 
 using namespace std;
 

@@ -28,12 +28,30 @@ double electronResponse::m_ra = -2.17203e+00;
 double electronResponse::m_rb = 1.31498e+03;
 double electronResponse::m_rc = 1.60508e+02;
 
-double electronResponse::m_c0 = -158.41;
-double electronResponse::m_c1 = 4.333;
-double electronResponse::m_c2 = 0.00181;
+double electronResponse::m_c0 = 0 ; //-158.41;
+double electronResponse::m_c1 = 1.77; //4.333;
+double electronResponse::m_c2 = 5.77e-2; //0.00181;
 double electronResponse::m_s0 = 1.;
+double electronResponse::m_d0 = 0; //0;
+double electronResponse::m_d1 = 0.20708522; //4.15105e-02;
+double electronResponse::m_d2 = 0.00237574; //6.44493e-06;
+
+double electronResponse::m_ma = 0.968;
+double electronResponse::m_mb = 8.08e-3;
+double electronResponse::m_mc = 0;
+
+double electronResponse::m_na = 9.00687e-01;
+double electronResponse::m_nb = 1.15790e-01;
+double electronResponse::m_nc = 1.42189e+00;
+
+double electronResponse::m_na1 = 6.13396e-01;
+double electronResponse::m_nc1 = 1.15458e+00;
+
+double electronResponse::m_n1 = 0.0035;
+double electronResponse::m_n2 = 0.0057;
 
 TGraphErrors* electronResponse::gMinElecNonl;
+TGraphErrors* electronResponse::gMinElecNPE;
 TGraphErrors* electronResponse::gElecResol;
 
 double gElecResolFunc(double* x, double* p) {
@@ -62,11 +80,27 @@ double gNPESigmaFunc(double* x, double* p){
         return TMath::Sqrt(sigma2);
 }
 
+
+double gEvisSigma(double* x, double* p) {
+    double pe = x[0];
+    double ma = p[0];
+    double mb = p[1];
+    double mc = p[2];
+
+
+    double sigma2 = mc*mc + ma*ma*pe + mb*mb*pe*pe;
+    if (sigma2<0)
+        return 0;
+    else 
+        return TMath::Sqrt(sigma2);
+}
+
+
 double gCerPESigma(double* x, double* p) {
     double E = x[0];
-    double p0 = p[0];
-    double p1 = p[1];
-    double p2 = p[2];
+    double p0 = p[0]*p[0];
+    double p1 = p[1]*p[1];
+    double p2 = p[2]*p[2];
 
     double sigma2 = p0 + p1*E + p2*E*E;
     if (sigma2<0)
@@ -86,12 +120,54 @@ double gSctPESigma(double* x, double* p) {
         return sigma2;
 }
 
+double gNtotCov(double* x, double* p) {
+    double N = x[0];
+    double p0 = p[0]*p[0];
+    double p1 = p[1]*p[1];
+    double p2 = p[2]*p[2];
 
+    double sigma2 = p0 + p1*N + p2*N*N;
+    if (sigma2<0)
+        return 0;
+    else 
+        return sigma2;
+}
+
+double gEvisCorr(double* x, double *p) {
+    double E = x[0];
+    double p0 = p[0];
+    double p1 = p[1];
+    return p0*E+p1;
+
+}
+
+double gEvisNew(double* x, double* p) {
+    double E  = x[0];
+    double p0 = p[0]*p[0];
+    double p1 = p[1]*p[1];
+    double n  = p[2];
+
+    return TMath::Sqrt(p0*E + p1*TMath::Power(E, n));
+}
+
+
+double gEvisNew1(double* x, double* p) {
+    double E  = x[0];
+    double p0 = p[0]*p[0];
+    double n  = p[1];
+
+    return TMath::Sqrt( p0*TMath::Power(E, n));
+}
 
 TF1* electronResponse::fElecResol = new TF1("fElecNonl", gElecResolFunc, 0, 16, 3);
 TF1* electronResponse::fCerPESigma = new TF1("fCerPESigma", gCerPESigma, 0, 1600, 3);
 TF1* electronResponse::fSctPESigma = new TF1("fSctPESigma", gSctPESigma, 0, 1600, 1);
 TF1* electronResponse::fNPESigma = new TF1("fNPESigma", gNPESigmaFunc, 0, 26000, 3);
+TF1* electronResponse::fEvisSigma = new TF1("fEvisSigma", gEvisSigma, 0, 100000, 3);
+TF1* electronResponse::fNtotCov = new TF1("fNtotCov", gNtotCov, 0, 26000, 3);
+TF1* electronResponse::fEvisCorr = new TF1("fEvisCorr", gEvisCorr, 0, 16, 2);
+TF1* electronResponse::fEvisNew  = new TF1("fEvisNew", gEvisNew, 0, 100000, 3);
+TF1* electronResponse::fEvisNew1  = new TF1("fEvisNew1", gEvisNew1, 0, 100000, 2);
 
 double electronResponse::getElecNonl(double Etrue)
 {
@@ -129,6 +205,7 @@ void electronResponse::loadSimElecNonl()
 void electronResponse::loadMinSimElecNonl()
 {
     gMinElecNonl = new TGraphErrors();
+    gMinElecNPE  = new TGraphErrors();
     ifstream in;
     in.open("./data/electron/electron_response.txt");
     if (!in) std::cout << " >>> No electron response file!!! <<< " << std::endl;
@@ -140,6 +217,8 @@ void electronResponse::loadMinSimElecNonl()
         ss >> Etrue >> totpe >> totpe_err >> sigma >> sigma_err;
         gMinElecNonl->SetPoint(index, Etrue, totpe/Etrue/m_scale);
         gMinElecNonl->SetPointError(index, 0, 0.001);
+        gMinElecNPE->SetPoint(index, Etrue, totpe);
+        gMinElecNPE->SetPointError(index, 0, totpe_err);
         index++;
     }
 
@@ -179,6 +258,24 @@ void electronResponse::SetParameters()
     fNPESigma->SetParameter(0, m_q0);
     fNPESigma->SetParameter(1, m_q1);
     fNPESigma->SetParameter(2, m_q2);
+
+    fEvisSigma->SetParameter(0, m_ma);
+    fEvisSigma->SetParameter(1, m_mb);
+    fEvisSigma->SetParameter(2, m_mc);
+
+    fNtotCov->SetParameter(0, m_d0); 
+    fNtotCov->SetParameter(1, m_d1); 
+    fNtotCov->SetParameter(2, m_d2); 
+
+    fEvisNew->SetParameter(0, m_na);
+    fEvisNew->SetParameter(1, m_nb);
+    fEvisNew->SetParameter(2, m_nc);
+
+
+    fEvisNew1->SetParameter(0, m_na1);
+    fEvisNew1->SetParameter(1, m_nc1);
+
+
 }
 
 
@@ -266,7 +363,7 @@ void electronResponse::loadElecResol()
     while(getline(in, line)) {
         istringstream ss(line);
         ss >> tmp_E >> tmp_mu >> tmp_muerr >> tmp_sigma >> tmp_sigmaerr >> tmp_resol >> tmp_resolerr;
-        gElecResol->SetPoint(index, tmp_E, tmp_sigma);
+        gElecResol->SetPoint(index, tmp_mu, tmp_sigma);
         index++;
     }
     in.close();
@@ -278,6 +375,24 @@ void electronResponse::loadElecResol()
 
 
 
+void electronResponse::SaveElecNonl(double* par)
+{
+    int iPar = 0;
+    electronQuench::setEnergyScale(par[iPar]);                  iPar++;
+    electronQuench::setBirk1(par[iPar]);                        iPar++;
+    electronCerenkov::setkC(par[iPar]);                         iPar++;
+    
+    TFile* ff = new TFile("elec_nonl_onlyGam.root", "recreate");
+    TGraph* gg = new TGraph();
+    gg->SetName("nonl");
+    for (int i=0; i<1490; i++) {
+        double E = 0.01*(i+1);
+        double npe = electronQuench::ScintillatorPE(E) + electronCerenkov::getCerPE(E);
+        gg->SetPoint(i, E, npe);
+    }
+    gg->Write();
+    ff->Close();
+}
 
 
 

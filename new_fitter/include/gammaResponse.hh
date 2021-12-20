@@ -23,6 +23,9 @@ class gammaResponse
         double SampleGamEnergy(int index);
         void calcGamResponse();
 
+        void preCalculation_onlyNonl();
+        double GetChi2_onlyNonl();
+
         double GetChi2();
 
         void SaveHist();

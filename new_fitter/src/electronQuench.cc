@@ -128,29 +128,60 @@ void electronQuench::LoadScintPE() {
 
 
 void electronQuench::LoadNLData ()  {
-    cout << " >>> Loading Quenching NL Data " << junoParameters::quenchNL_File << " <<< " << endl;
-    TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
-    if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
-    for(int kbIdx=51; kbIdx<76; kbIdx++)  {
-        //cout << kbIdx << endl;
-        stringstream ss; ss << kbIdx;
-        TString name1 = "kB"+ss.str();
 
-        //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
-        TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
-        if(!quench1G) { cout << "No Such A Histogram " << name1 << " in Quench.root File" << endl; return;  }
-        //double* quench1 = quench1G->GetY();
+    cout << "Loading Quenching Curves with mode " << junoParameters::scintillatorParameterization << endl;
 
-        for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)
-        {
-			//m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
-            m_quenching_energy[kbIdx][sampleIdx] = quench1G->GetBinCenter(sampleIdx+1);
-            m_quenchingShape1[kbIdx][sampleIdx] = quench1G->GetBinContent(sampleIdx+1);
+    if(junoParameters::scintillatorParameterization == kSimulation) {
+        cout << " >>> Loading Quenching NL Data " << junoParameters::quenchNL_File << " <<< " << endl;
+        TFile* quenchingFile = new TFile(junoParameters::quenchNL_File.c_str(), "read"); 
+        if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
+        for(int kbIdx=51; kbIdx<76; kbIdx++)  {
+            //cout << kbIdx << endl;
+            stringstream ss; ss << kbIdx;
+            TString name1 = "kB"+ss.str();
+
+            //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
+            TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
+            if(!quench1G) { cout << "No Such A Histogram " << name1 << " in Quench.root File" << endl; return;  }
+            //double* quench1 = quench1G->GetY();
+
+            for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)
+            {
+                //m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
+                m_quenching_energy[kbIdx][sampleIdx] = quench1G->GetBinCenter(sampleIdx+1);
+                m_quenchingShape1[kbIdx][sampleIdx] = quench1G->GetBinContent(sampleIdx+1);
+            }
+            delete quench1G;
         }
-        delete quench1G;
+        quenchingFile->Close();
+        delete quenchingFile;
     }
-	quenchingFile->Close();
-    delete quenchingFile;
+
+    if(junoParameters::scintillatorParameterization == kIntegralCalc) {
+        cout << " >>> Loading Quenching NL Data " << junoParameters::quenchNLint_File << " <<< " << endl;
+        TFile* quenchingFile = new TFile(junoParameters::quenchNLint_File.c_str(), "read"); 
+        if(!quenchingFile) { std::cout << " >>> Fail to Open QuenchNL File <<< " << std::endl; }
+        for(int kbIdx=51; kbIdx<76; kbIdx++)  {
+            //cout << kbIdx << endl;
+            stringstream ss; ss << kbIdx;
+            TString name1 = "kB"+ss.str();
+
+            //TGraph* quench1G = (TGraph*)quenchingFile->Get(name1);
+            TH1D* quench1G = (TH1D*)quenchingFile->Get(name1);
+            if(!quench1G) { cout << "No Such A Histogram " << name1 << " in Quench.root File" << endl; return;  }
+            //double* quench1 = quench1G->GetY();
+
+            for(int sampleIdx=0; sampleIdx<m_nSamples; sampleIdx++)
+            {
+                //m_quenchingShape1[kbIdx][sampleIdx] = quench1[sampleIdx];
+                m_quenching_energy[kbIdx][sampleIdx] = quench1G->GetBinCenter(sampleIdx+1);
+                m_quenchingShape1[kbIdx][sampleIdx] = quench1G->GetBinContent(sampleIdx+1);
+            }
+            delete quench1G;
+        }
+        quenchingFile->Close();
+        delete quenchingFile;
+    }
 
     m_loadNLData = true;
 }
@@ -176,7 +207,7 @@ double electronQuench::ScintillatorNL    (double eTrue)  {
 }
 
 double electronQuench::ScintillatorPE(double eTrue) {
-    if (!m_loadScintPE) LoadScintPE();
+    //if (!m_loadScintPE) LoadScintPE();
 
     //double nonl = SimulationNLShape(eTrue);
     //double scintPE = gNPE_elec->Eval(eTrue);
@@ -184,13 +215,13 @@ double electronQuench::ScintillatorPE(double eTrue) {
     //return m_kA * scintPE;
 
     double nonl = ScintillatorNL(eTrue);
-    return m_kA * nonl * eTrue * m_scale;
+    return nonl * eTrue * m_scale;
 }
 
 double electronQuench::ScintillatorShape (double eTrue)  {
     if (junoParameters::scintillatorParameterization == kIntegral) {
         return IntegralNLShape (eTrue);
-    } else if (junoParameters::scintillatorParameterization == kSimulation ) { 
+    } else if (junoParameters::scintillatorParameterization == kSimulation or junoParameters::scintillatorParameterization == kIntegralCalc ) { 
         return SimulationNLShape (eTrue);
     } else if (junoParameters::scintillatorParameterization == kEmpirical) {
         return EmpiricalNLShape (eTrue);
@@ -204,16 +235,38 @@ double electronQuench::ScintillatorShape (double eTrue)  {
 double electronQuench::SimulationNLShape (double eTrue)  {
     if( !m_loadNLData ) LoadNLData();
     Update();
-    if (m_birk1 ==0 ) return 1.0;
-    int idx = 0;
-    if(eTrue<=0.1) { idx = int(eTrue/0.001); }
-    else { idx = int((eTrue-0.1)/0.01)+100; }
     
-    double quenchNL_low = m_quenchingShape1_lowKb[idx-1] + (m_quenchingShape1_lowKb[idx]-m_quenchingShape1_lowKb[idx-1])*(eTrue-m_quenching_energy_low[idx-1])/ (m_quenching_energy_low[idx]-m_quenching_energy_low[idx-1]);
-    double quenchNL_high = m_quenchingShape1_higKb[idx-1] + (m_quenchingShape1_higKb[idx]-m_quenchingShape1_higKb[idx-1])*(eTrue-m_quenching_energy_high[idx-1])/ (m_quenching_energy_high[idx]-m_quenching_energy_high[idx-1]);
+    // add for michel e-: assumption here is that very little change at high energy range for NL
+    if (eTrue >= 15)
+        eTrue = 15;
 
-    //double quenchNL = m_kA * m_quenchingShape1_lowKb[idx];
-    double quenchNL  =  m_kA * ( m_kBResid * quenchNL_low + (1-m_kBResid) * quenchNL_high );
+    double quenchNL;
+    if (m_birk1 ==0 ) return 1.0;
+
+    if (junoParameters::scintillatorParameterization == kSimulation) {
+        int idx = 0;
+        if(eTrue<=0.1) { idx = int(eTrue/0.001); }
+        else { idx = int((eTrue-0.1)/0.01)+100; }
+
+        double quenchNL_low = m_quenchingShape1_lowKb[idx-1] + (m_quenchingShape1_lowKb[idx]-m_quenchingShape1_lowKb[idx-1])*(eTrue-m_quenching_energy_low[idx-1])/ (m_quenching_energy_low[idx]-m_quenching_energy_low[idx-1]);
+        double quenchNL_high = m_quenchingShape1_higKb[idx-1] + (m_quenchingShape1_higKb[idx]-m_quenchingShape1_higKb[idx-1])*(eTrue-m_quenching_energy_high[idx-1])/ (m_quenching_energy_high[idx]-m_quenching_energy_high[idx-1]);
+
+        //double quenchNL = m_kA * m_quenchingShape1_lowKb[idx];
+        quenchNL  =  m_kA * ( m_kBResid * quenchNL_low + (1-m_kBResid) * quenchNL_high );
+    }
+
+    if (junoParameters::scintillatorParameterization == kIntegralCalc) {
+        int idx = 0;
+        idx = int(eTrue/0.001);
+
+        double quenchNL_low = m_quenchingShape1_lowKb[idx-1] + (m_quenchingShape1_lowKb[idx]-m_quenchingShape1_lowKb[idx-1])*(eTrue-m_quenching_energy_low[idx-1])/ (m_quenching_energy_low[idx]-m_quenching_energy_low[idx-1]);
+        double quenchNL_high = m_quenchingShape1_higKb[idx-1] + (m_quenchingShape1_higKb[idx]-m_quenchingShape1_higKb[idx-1])*(eTrue-m_quenching_energy_high[idx-1])/ (m_quenching_energy_high[idx]-m_quenching_energy_high[idx-1]);
+
+        //double quenchNL = m_kA * m_quenchingShape1_lowKb[idx];
+        quenchNL  =  m_kA * ( m_kBResid * quenchNL_low + (1-m_kBResid) * quenchNL_high );
+    
+    }
+
     return quenchNL;
 }
 

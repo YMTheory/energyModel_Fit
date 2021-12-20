@@ -3,6 +3,7 @@
 
 #include "gammaResponse.hh"
 #include "junoB12_simplified.hh"
+#include "michelElectron.hh"
 
 #include <TMinuit.h>
 
@@ -17,6 +18,10 @@ class junoChiFunction
         static void SetParameters     ( double *par );
         static double GetChi2         ( double maxChi2 = 100000 );  
         static void Plot              ();
+
+        static double GetChi2Michel   ();
+
+        static void Chi2Scanner       ();
 
 
     private:
@@ -35,12 +40,24 @@ class junoChiFunction
         
         static junoB12_simplified* b12data;
 
-        static gammaResponse* gamma_array[9];
-        static string gamma_name[9];
+        static michelElectron* michel;
+
+        static gammaResponse* gamma_array[10];
+        static string gamma_name[10];
+        static double gamma_amp[10];
+        static double init_amp[10];
     
         static int m_nData;
         static bool m_doGamFit;
         static bool m_doB12Fit;
+        static bool m_doMichel;
+
+        static double m_micNPE;
+        static double m_micSPE;
+        static double m_micNPEerr;
+        static double m_micSPEerr;
+        static double m_resp1;
+        static double m_resp2;
 };
 
 #endif

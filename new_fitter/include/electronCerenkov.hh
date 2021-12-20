@@ -26,6 +26,7 @@ class electronCerenkov
 
         static double getAnaCerPE(double E);
         static double getSimCerPE(double E);
+        static double getNewAnaCerPE(double E);
 
         static void Plot();
 
@@ -59,6 +60,28 @@ class electronCerenkov
         static void setA2(double A2)     {m_A2 = A2;}
         static void setA3(double A3)     {m_A3 = A3;}
         static void setA4(double A4)     {m_A4 = A4;}
+
+    private:
+        static double m_p0;
+        static double m_p1;
+        static double m_p2;
+        static double m_p3;
+        static double m_p4;
+
+    public:
+        static double getp0()                   {return m_p0;}
+        static double getp1()                   {return m_p1;}
+        static double getp2()                   {return m_p2;}
+        static double getp3()                   {return m_p3;}
+        static double getp4()                   {return m_p4;}
+        static void setp0(double p0)            {m_p0 = p0;}
+        static void setp1(double p1)            {m_p1 = p1;}
+        static void setp2(double p2)            {m_p2 = p2;}
+        static void setp3(double p3)            {m_p3 = p3;}
+        static void setp4(double p4)            {m_p4 = p4;}
+
+
+
 };
 
 #endif

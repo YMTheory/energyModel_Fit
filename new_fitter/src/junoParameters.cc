@@ -3,20 +3,23 @@
 typedef junoParameters JUNOP;
 typedef ScintillatorParameterization SP;
 
-SP JUNOP::scintillatorParameterization = kSimulation;  /*kEmpirical;*/ /*kIntegral;*/ /*kSimulationCalc*/
 
-std::string JUNOP::cerenkovMode       = "kSimulationCer" ; //"kAnalyticalCer";
-std::string JUNOP::pesigmaMode        = "kNPE"; //"kSeparate" ; // "kTotal" // "kNPE";
+bool JUNOP::doResFit                  = true;
+
+SP JUNOP::scintillatorParameterization = kSimulation; /*kSimulation;*/  /*kEmpirical;*/ /*kIntegralCalc;*/ /*kSimulationCalc*/
+
+std::string JUNOP::cerenkovMode       =  "kAnalyticalNewCer"; //"kSimulationCer" ; //"kAnalyticalCer";   // "kAnalyticalNewCer"
+std::string JUNOP::pesigmaMode        = "kNew"; //"kSeparate" ; // "kTotal" // "kNPE"  "kNew";
  
 
 std::string JUNOP::stopPow_File       = "data/electron/ESTAR_GdLS.txt";
 std::string JUNOP::quenchNL_File      = "data/electron/Quench5.root";
-//std::string JUNOP::quenchNL_File      = "data/electron/Quench_NumInt.root";
-std::string JUNOP::scintFile          = "data/electron/sctPE1.txt";
+std::string JUNOP::quenchNLint_File   = "data/electron/Quench_NumInt.root";
+std::string JUNOP::scintFile          = "data/electron/sctPE2.txt";
 //std::string JUNOP::cerenkovNL_File    = "data/electron/Cer.dat";
 std::string JUNOP::quenchNL_outFile   = "output/electron/QuenchNL.root";
 std::string JUNOP::cerenkov_outFile   = "output/electron/CerenkovNL.root";
-std::string JUNOP::cerenkovNL_File    = "data/electron/cerPE1.txt";
+std::string JUNOP::cerenkovNL_File    = "data/electron/cerPE2.txt";
 std::string JUNOP::electronLSNL_File  = "data/electron/electron_total.txt";
 std::string JUNOP::electronOut_File   = "output/electron/electronFit.root";
 std::string JUNOP::electronResol_File = "data/electron/elecResol1.txt";
@@ -25,6 +28,7 @@ std::string JUNOP::electronResol_File = "data/electron/elecResol1.txt";
 // Options in Fitter ...
 bool JUNOP::fitGammaSources           = true;
 bool JUNOP::fitB12                    = true;
+bool JUNOP::fitMichelSpec             = true;
 std::string JUNOP::m_calcOption       = "twolayer";
 std::string JUNOP::m_nonlMode         = "histogram";
 

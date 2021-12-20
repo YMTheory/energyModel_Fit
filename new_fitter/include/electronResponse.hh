@@ -23,6 +23,8 @@ class electronResponse
 
         static void FuncConstruct();
 
+        static void SaveElecNonl(double* par);
+
     private:
         static const int m_nSimData = 809;
         static double m_SimEtrue[m_nSimData];
@@ -52,10 +54,27 @@ class electronResponse
         static double m_c1;
         static double m_c2;
         static double m_s0;
+        static double m_d0;
+        static double m_d1;
+        static double m_d2;
 
         static double m_ra;
         static double m_rb;
         static double m_rc;
+
+        static double m_ma;
+        static double m_mb;
+        static double m_mc;
+
+        static double m_na;
+        static double m_nb;
+        static double m_nc;
+        static double m_na1;
+        static double m_nc1;
+
+        static double m_n1;
+        static double m_n2;
+
 
     public:
         static double getp0()       {return m_p0;}
@@ -82,6 +101,24 @@ class electronResponse
         static double getrc()       {return m_rc;}
         static void setrc(double rc){m_rc = rc;}
 
+        static double getma()       {return m_ma;}
+        static void setma(double ma){m_ma = ma;}
+        static double getmb()       {return m_mb;}
+        static void setmb(double mb){m_mb = mb;}
+        static double getmc()       {return m_mc;}
+        static void setmc(double mc){m_mc = mc;}
+
+        static double getna()       {return m_na;}
+        static void setna(double na){m_na = na;}
+        static double getnb()       {return m_nb;}
+        static void setnb(double nb){m_nb = nb;}
+        static double getnc()       {return m_nc;}
+        static void setnc(double nc){m_nc = nc;}
+        static double getna1()       {return m_na1;}
+        static void setna1(double na1){m_na1 = na1;}
+        static double getnc1()       {return m_nc1;}
+        static void setnc1(double nc1){m_nc1 = nc1;}
+
         static double getc0()       {return m_c0;}
         static void setc0(double c0){m_c0 = c0;}
         static double getc1()       {return m_c1;}
@@ -90,22 +127,42 @@ class electronResponse
         static void setc2(double c2){m_c2 = c2;}
         static double gets0()       {return m_s0;}
         static void sets0(double s0){m_s0 = s0;}
+        static double getd0()       {return m_d0;}
+        static void setd0(double d0){m_d0 = d0;}
+        static double getd1()       {return m_d1;}
+        static void setd1(double d1){m_d1 = d1;}
+        static double getd2()       {return m_d2;}
+        static void setd2(double d2){m_d2 = d2;}
+        static double getn1()       {return m_n1;}
+        static void setn1(double n1){m_n1 = n1;}
+        static double getn2()       {return m_n2;}
+        static void setn2(double n2){m_n2 = n2;}
 
         static void SetParameters();
         static double calcElecNonl(double E)   {return fElecNonl->Eval(E);}
 
         static TGraphErrors* gMinElecNonl;
+        static TGraphErrors* gMinElecNPE;
         static TGraphErrors* gElecResol;
         static TF1* fElecResol;
         static TF1* fCerPESigma;
         static TF1* fSctPESigma;
         static TF1* fNPESigma;
+        static TF1* fEvisSigma;
+        static TF1* fNtotCov;
+        static TF1* fEvisCorr;
+        static TF1* fEvisNew;
+        static TF1* fEvisNew1;
 
 };
 
 extern double gElecResolFunc(double* x, double* p);
 extern double gCerPESigma(double *x, double *p);
 extern double gSctPESigma(double *x, double *p);
+extern double gNtotCov(double* x, double* p);
 extern double gNPESigmaFunc(double* x, double* p);
+extern double gEvisCorr(double* x, double* p);
+extern double gEvisNew(double* x, double* p);
+extern double gEvisNew1(double* x, double* p);
 
 #endif

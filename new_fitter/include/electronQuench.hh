@@ -39,6 +39,7 @@ class electronQuench
 
         static void LoadNLData();
         static void LoadScintPE();
+        static void LoadIntegralGraph();
         static void Update();
 
         static double ScintillatorNL (double eTrue);
@@ -51,10 +52,10 @@ class electronQuench
     private:
         static double m_birk1;
         static constexpr double m_birkHigh = 75e-4;
-        static constexpr double m_birkLow  = 55e-4;
+        static constexpr double m_birkLow  = 51e-4;
         static double m_kA;
 		static const unsigned int m_nKb          = 100;
-		static const unsigned int m_nSamples     = 2000;
+		static const unsigned int m_nSamples     = 15000;
 		static constexpr double m_samplingResol  = 0.01;   // bining: 50keV/bin
 		static double  m_kBResid;
         static double p0 ;
@@ -98,6 +99,7 @@ class electronQuench
         static double AnalyticalNLShape    (double eTrue);
 
         static TGraph* gNPE_elec;
+
 };
 
 #endif

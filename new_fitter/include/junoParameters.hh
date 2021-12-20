@@ -11,14 +11,18 @@ enum ScintillatorParameterization {
     kSimulation,
     kEmpirical,
     kSimulationCalc,
-    kAnalytical
+    kAnalytical,
+    kIntegralCalc
 };
 
 class junoParameters
 {
     public:
+        static bool doResFit;
+
         static std::string stopPow_File;
         static std::string quenchNL_File;
+        static std::string quenchNLint_File;
         static std::string scintFile;
         static std::string cerenkovNL_File;
         static std::string electronLSNL_File;
@@ -54,6 +58,8 @@ class junoParameters
         static double b12FitMinE;
         static double b12FitMaxE;
         static double b12VertexCut;
+
+        static bool fitMichelSpec;
 
         // energy resolution input/output file ...
         static std::string B12_File;
