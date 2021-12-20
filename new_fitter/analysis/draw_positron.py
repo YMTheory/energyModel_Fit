@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import ROOT
 import elecLoader as el
+from matplotlib import gridspec
 
 def loadTotalPE(name):
     print("Loading source " + name )
@@ -39,6 +40,7 @@ def gaussFit(arr, low, high):
 
 
 kA, kB, kC, es, ra, rb, rc = 0.99879, 6.34823e-3, 0.984026, 1409.61, -11.0053, 1484.17, 121.885
+A, kB, kC, p1, p2 = 1408.45, 6.29e-3, 0.991, 0.979, 6.13e-5
 
 gau_mu, gam_sigma = 1321.197, 38.484
 
@@ -58,6 +60,7 @@ def main():
 
     gam_mu, gam_sigma = 1321.197, 38.484
 
+    evis = []
     nonl_sim, nonlerr_sim, nonl_calc, nonlerr_calc, nonlmaxerr_calc = [], [], [], [[], []], []
     res_sim, reserr_sim, res_calc, reserr_calc, resmaxerr_calc     = [], [], [], [[], []], []
     nonldiff, nonldiff_err = [], []
@@ -80,6 +83,8 @@ def main():
     for i in range(5):
     #for i in range(len(path)):
 
+        # root data loading
+        ############################################################
         filename = path[i] + "user.root"
         totpe = loadTotalPE(filename)
 
@@ -91,11 +96,14 @@ def main():
         reserr_sim.append(np.sqrt(sigma_err**2/npe**2 + npe_err**2*sigma**2/npe**4))
         #plt.hist(totpe, bins=100, density=True, label=str(KE[i])+" MeV")
 
-        sctpe_elec = kA*el.getQPE(KE[i], kB, es)
+        # model prediction
+        ############################################################
+        sctpe_elec = el.getQPE(KE[i], kB, A)
         cerpe_elec = kC * el.getCerNPE(KE[i])
-        pesigma_elec = PESigma(KE[i], ra, rb, rc)
+        pesigma_elec = PESigma(sctpe_elec+cerpe_elec, 0, p1, p2)
 
         ntotpe = sctpe_elec + cerpe_elec + gam_mu
+        evis.append(ntotpe/es)
         totsigma = np.sqrt(pesigma_elec**2 + gam_sigma**2)
         nonl_calc.append(ntotpe/(KE[i]+1.022)/global_es)
         res_calc.append(totsigma/ntotpe)
@@ -109,7 +117,8 @@ def main():
 
 
         nonldiff.append((nonl_calc[-1] - nonl_sim[-1])/nonl_sim[-1])
-        nonldiff_err.append( np.sqrt(nonlerr_sim[-1]**2 * nonl_calc[-1]**2 / nonl_sim[-1]**4 + nonlmaxerr_calc[-1]**2/nonl_sim[-1]**2 ) )
+        nonldiff_err.append( np.sqrt(nonlerr_sim[-1]**2 * nonl_calc[-1]**2 / nonl_sim[-1]**4) )
+        #nonldiff_err.append( np.sqrt(nonlerr_sim[-1]**2 * nonl_calc[-1]**2 / nonl_sim[-1]**4 + nonlmaxerr_calc[-1]**2/nonl_sim[-1]**2 ) )
 
         reserr_calc[0].append( res_calc[-1] - resmin_calc[i]/ntotpe )
         reserr_calc[1].append( resmax_calc[i]/ntotpe - res_calc[-1] )
@@ -119,7 +128,8 @@ def main():
             resmaxerr_calc.append(reserr_calc[0][-1])
 
         resdiff.append((res_calc[-1] - res_sim[-1])/res_sim[-1])
-        resdiff_err.append( np.sqrt(reserr_sim[-1]**2 * res_calc[-1]**2 / res_sim[-1]**4 + resmaxerr_calc[-1]**2/res_sim[-1]**2 ) )
+        resdiff_err.append( np.sqrt(reserr_sim[-1]**2 * res_calc[-1]**2 / res_sim[-1]**4  ))
+        #resdiff_err.append( np.sqrt(reserr_sim[-1]**2 * res_calc[-1]**2 / res_sim[-1]**4 + resmaxerr_calc[-1]**2/res_sim[-1]**2 ) )
 
         #plotx = np.arange(totpe-10*totsigma, totpe+10*totsigma, 1)
         #ploty = []
@@ -128,52 +138,43 @@ def main():
 
         #plt.plot(plotx, ploty, "-")
 
-    plt.figure(0, figsize=(6, 4))
-    plt.errorbar(totE, nonl_sim, yerr=nonlerr_sim, fmt="-", color='royalblue', label="Simulation")
-    plt.errorbar(totE, nonl_calc, yerr=nonlerr_calc, fmt="o", ms=5, color='magenta', label="Calculation")
-    plt.grid(True)
-    plt.xlabel("Etrue/MeV")
-    plt.ylabel("Nonlinearity")
-    plt.legend()
-    plt.savefig("Positron_nonl.pdf")
 
-    plt.figure(1, figsize=(6, 3))
-    plt.errorbar(totE, nonldiff, yerr=nonldiff_err, fmt="o", color="peru")
-    plt.xlabel("Etrue/MeV")
-    plt.ylabel("relative bias")
-    plt.fill_between([0, 10], [-0.003, -0.003], [0.003, 0.003], color="royalblue", alpha=0.3)
-    plt.hlines(0, 0, 10, linestyle="--", color="red")
-    plt.tight_layout()
-    plt.ylim(-0.01, 0.01)
-    plt.grid(True)
-    plt.savefig("Positron_nonlBias.pdf")
+    fig = plt.figure(figsize=(12, 6))
+    spec = gridspec.GridSpec(ncols=2, nrows=2,
+                         height_ratios=[1, 2])
 
-    plt.figure(2, figsize=(6, 4))
-    plt.errorbar(totE, res_sim, yerr=reserr_sim, fmt="-", color="royalblue", label="Simulation")
-    plt.errorbar(totE, res_calc, yerr=reserr_calc, fmt="o", ms=5, color='magenta', label="Calculation")
-    plt.grid(True)
-    plt.xlabel("Etrue/MeV")
-    plt.ylabel("NPE Resolution")
-    plt.legend()
-    plt.savefig("Positron_res.pdf")
+    ax0 = fig.add_subplot(spec[0])
+    ax1 = fig.add_subplot(spec[1])
+    ax2 = fig.add_subplot(spec[2])
+    ax3 = fig.add_subplot(spec[3])
 
-    plt.figure(3, figsize=(6, 3))
-    plt.errorbar(totE, resdiff, yerr=resdiff_err, fmt="o", color="peru")
-    plt.xlabel("Etrue/MeV")
-    plt.ylabel("relative bias")
-    plt.fill_between([0, 10], [-0.03, -0.03], [0.03, 0.03], color="royalblue", alpha=0.3)
-    plt.hlines(0, 0, 10, linestyle="--", color="red")
-    plt.tight_layout()
-    plt.ylim(-0.1, 0.1)
-    plt.grid(True)
-    plt.savefig("Positron_resBias.pdf")
+    ax2.plot(totE, nonl_calc, "-", color='royalblue', label="Calculation")
+    ax2.errorbar(totE, nonl_sim, yerr=nonlerr_sim, fmt="o", ms=5, color='magenta', label="Simulation")
+    ax2.grid(True)
+    ax2.set_xlabel(r"$E_{dep}$/MeV", fontsize=15)
+    ax2.set_ylabel(r"$E_{vis}/E_{dep}$", fontsize=15)
 
-    #plt.xlabel("N.P.E")
-    #plt.legend()
-    #plt.title("Positron NPE distribution")
-    #plt.savefig("PositronNPE.pdf")
-    
+    ax0.errorbar(totE, nonldiff, yerr=nonldiff_err, fmt="o", color="peru")
+    ax0.set_ylabel("relative bias", fontsize=15)
+    ax0.fill_between([0, 10], [-0.001, -0.001], [0.001, 0.001], color="royalblue", alpha=0.3)
+    ax0.hlines(0, 0, 10, linestyle="--", color="red")
+    ax0.text(2.5, 0.002, "0.1% uncertainty band", color="darkviolet", fontsize=13)
+    ax0.set_ylim(-0.004, 0.004)
 
+    ax3.plot(evis, res_calc, "-", color="royalblue", label="Best fit")
+    ax3.errorbar(evis, res_sim, yerr=reserr_sim, fmt="o", ms=5, color='magenta', label="Simulation")
+    ax3.grid(True)
+    ax3.set_xlabel(r"$E_{vis}$/MeV", fontsize=15)
+    ax3.set_ylabel(r"$\sigma/N_{tot}$", fontsize=15)
+
+    ax1.errorbar(evis, resdiff, yerr=resdiff_err, fmt="o", color="peru")
+    ax1.set_ylabel("relative bias", fontsize=15)
+    ax1.fill_between([0, 10], [-0.04, -0.04], [0.04, 0.04], color="royalblue", alpha=0.3)
+    ax1.hlines(0, 0, 10, linestyle="--", color="red")
+    ax1.text(2.5, 0.05, "4.0% uncertainty band", color="darkviolet", fontsize=13)
+    ax1.set_ylim(-0.1, 0.1)
+
+    plt.savefig("posiModel.pdf")
     plt.show()
 
 

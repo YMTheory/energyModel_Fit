@@ -2,12 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-Ndim = 6
+Ndim = 5
 
 coeff_matrix = np.ones((Ndim, Ndim))
 
 row, column = 0, 0
-with open("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/gam+B12_kSimulationQuench_kSimulationCer_kNPE_correlation.txt") as f:
+with open("/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/gam+B12_kSimulation_kSimulationCer_kNPE_fixedq0_correlation.txt") as f:
     for lines in f.readlines():
         line = lines.strip("\n")
         data = line.split(" ")
@@ -35,23 +35,26 @@ print(coeff_matrix)
 #coeff_matrix_bk[1, 1] = coeff_matrix[1, 1]
 
 
-fig, ax = plt.subplots(figsize=(8, 8))
-im = ax.imshow(coeff_matrix, extent=[0, Ndim, 0, Ndim], aspect="auto", cmap="coolwarm")
-cbar = ax.figure.colorbar(im, ax=ax)
+#fig, ax = plt.subplots(figsize=(8, 8))
+#im = ax.imshow(coeff_matrix, extent=[0, Ndim, 0, Ndim], aspect="auto", cmap="coolwarm")
+#cbar = ax.figure.colorbar(im, ax=ax)
+
+import seaborn as sns
+ax = sns.heatmap(coeff_matrix, annot=True, fmt=".3f", cmap="coolwarm")
 
 
-par_name = [r"$A$", r"$k_B$", r"$k_C$", r"$p_0$", r"$p_1$", r"$p_2$"]
+par_name = [r"$A$", r"$k_B$", r"$k_C$", r"$p_1$", r"$p_2$"]
 #par_name = [r"$k_A$", r"$k_B$", r"$k_C$, "r"$A$", r"$p_0$", r"$p_1$", r"$p_2$"]
 revert_par = list(reversed(par_name))
 ax.set_xticks(np.arange(0, Ndim, 1))
 ax.set_yticks(np.arange(0, Ndim, 1))
-ax.set_xticklabels(par_name, fontsize=20)
-ax.set_yticklabels(revert_par, fontsize=20)
+ax.set_xticklabels(par_name, fontsize=15)
+ax.set_yticklabels(par_name, fontsize=15)
 plt.xticks(rotation=45)
 
 #plt.title("Correlation Coefficients")
 
-#plt.savefig("CovMat.pdf")
+plt.savefig("CovMat.pdf")
 
 plt.show()
 

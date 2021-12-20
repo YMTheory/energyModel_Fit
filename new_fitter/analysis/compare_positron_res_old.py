@@ -12,10 +12,9 @@ Etrue = np.arange(0.5, 8, 0.1)
 Etrue_elec = np.arange(0.1, 8, 0.1)
 Etrue_posi = Etrue_elec + 1.022
 #npe = np.arange(400, 10000, 100)
-npe = Etrue * global_es
+npe = Etrue_elec * global_es
 npe_posi = npe + 2*660.8
-dnum = len(Etrue)
-
+dnum = len(Etrue_posi)
 
 
 def resFunc(x, a, b, c):
@@ -84,6 +83,30 @@ def loadCov(filename, num):
     return cov_mat
 
 
+def loadSimTruth():
+    filename = '/junofs/users/miaoyu/energy_model/production/J19v1r0-Pre4/positron/positronNPE.txt'
+    ke, mu, muerr, sigma, sigmaerr = [], [], [], [], []
+    with open(filename) as f:
+        for lines in f.readlines():
+            line = lines.strip("\n")
+            data = line.split(" ")
+
+            ke.append(float(data[0]))
+            mu.append(float(data[1]))
+            muerr.append(float(data[2]))
+            sigma.append(float(data[3]))
+            sigmaerr.append(float(data[4]))
+
+    ke = np.array(ke)
+    mu = np.array(mu)
+    muerr = np.array(muerr)
+    sigma = np.array(sigma)
+    sigmaerr = np.array(sigmaerr)
+    return ke, mu, muerr, sigma, sigmaerr
+
+
+
+
 from scipy.linalg import eigh, cholesky
 from scipy.stats import norm
 
@@ -116,18 +139,17 @@ def cerpe_sim(E, kC):
     return kC * eloader.getCerNPE(E)
 
 
-def sctpe_sim(E, kA, kB, scale):
-    return kA * eloader.getQPE(E, kB, scale)
+def sctpe_sim(E, kB, scale):
+    return eloader.getQPE(E, kB, scale)
 
 
 
 def main():
 
-    sampleSize = 1000
+    sampleSize = 5000
     #sigma = sample_corelation("../gam+B12_kSimulationQuench_kSimulationCer_kNPE_rescov.txt", 3, sampleSize)
-    #sigma1 = sample_corelation("../gam+B12_kSimulation_kSimulationCer_kNPE_fixedq0_trueResolinB12_rescov.txt", 2, sampleSize)
     sigma1 = sample_corelation("../tmp_results/gam+B12_kSimulation_kSimulationCer_kNPE_fixedq0_rescov1.txt", 2, sampleSize)
-    #sigma2 = sample_corelation("../gam+B12_kIntegralCalc_kAnalyticalCer_kNPE_rescov.txt", 3, sampleSize)
+    sigma2 = sample_corelation("../tmp_results/gam+B12_kIntegralCalc_kAnalyticalCer_kNPE_fixedp0_rescov.txt", 2, sampleSize)
 
     kA, kB, scale, kC = 1, 6.32175e-3, 1408.910, 0.986594
     c0, c1, c2, s0 = -119.07, 3.35634, 0.00390735, 1
@@ -136,8 +158,9 @@ def main():
     #q01, q11, q21 = -4.74923, 1.0457, 4.83731e-5
     #q02, q12, q22 = -2.28558, 1.01722, 5.87549e-5
 
-    #q01, q11, q21 = 0, 9.79208e-01, 6.17484e-05
     q01, q11, q21 = 0,  9.79299e-01, 6.12574e-05
+    q02, q12, q22 = 0,  9.80275e-01, 6.68470e-05
+
 
 
     ymin1, ymax1 = [], []
@@ -145,32 +168,19 @@ def main():
     for i in range(dnum):
         ymin1.append(1000000)
         ymax1.append(-100)
-        #ymin2.append(1000000)
-        #ymax2.append(-100)
+        ymin2.append(1000000)
+        ymax2.append(-100)
 
 
     for i in range(sampleSize):
-
-        #m_kA = kA + random.gauss(0, sigma[0, i])
-        #m_kB = kB + random.gauss(0, sigma[1, i])
-        #m_scale = scale + random.gauss(0, sigma[2, i])
-        #m_kC = kC + random.gauss(0, sigma[3, i])
-        #m_c0 = c0 + random.gauss(0, sigma[4, i])
-        #m_c1 = c1 + random.gauss(0, sigma[5, i])
-        #m_c2 = c2 + random.gauss(0, sigma[6, i])
-        #m_s0 = 1
-
-        #m_ra = ra * random.gauss(0, sigma[0, i])
-        #m_rb = rb * random.gauss(0, sigma[1, i])
-        #m_rc = rc * random.gauss(0, sigma[2, i])
 
         a1 = q01 
         b1 = q11 + sigma1[0, i]
         c1 = q21 + sigma1[1, i]
 
-        #a2 = q02 + sigma2[0, i]
-        #b2 = q12 + sigma2[1, i]
-        #c2 = q22 + sigma2[2, i]
+        a2 = q02 
+        b2 = q12 + sigma2[0, i]
+        c2 = q22 + sigma2[1, i]
 
 
         totsigma1 = []
@@ -178,17 +188,9 @@ def main():
 
         for i in npe:
 
-            #sctpe = sctpe_sim(i, m_kA, m_kB, m_scale)
-            #cerpe = cerpe_sim(i, m_kC)
-            #pp = sctpe / (sctpe + cerpe)
-            #cersigma2 = cerFunc(cerpe, m_c0, m_c1, m_c2)**2
-            #sctsigma2 = sctFunc(sctpe, m_s0)**2
-            #totsigma2 = (sctsigma2+cersigma2) / (1-2*pp*(1-pp))
-            #totsigma.append( resFunc(i, m_ra, m_rb, m_rc) )
             totsigma1.append( np.sqrt(resFunc(i, a1, b1, c1)**2 + 2*27.07**2 ) )
-            #totsigma2.append( np.sqrt(resFunc(i, a2, b2, c2)**2 + 2*27.07**2 ) )
+            totsigma2.append( np.sqrt(resFunc(i, a2, b2, c2)**2 + 2*27.07**2 ) )
         
-            #totsigma.append(totsigma)
 
         
         for n in range(dnum):
@@ -197,15 +199,15 @@ def main():
             if totsigma1[n] > ymax1[n]:
                 ymax1[n] = totsigma1[n]
 
-#            if totsigma2[n] < ymin2[n]:
-#                ymin2[n] = totsigma2[n]
-#            if totsigma2[n] > ymax2[n]:
-#                ymax2[n] = totsigma2[n]
+            if totsigma2[n] < ymin2[n]:
+                ymin2[n] = totsigma2[n]
+            if totsigma2[n] > ymax2[n]:
+                ymax2[n] = totsigma2[n]
     
     ymin1 = np.array(ymin1)
     ymax1 = np.array(ymax1)
-    #ymin2 = np.array(ymin2)
-    #ymax2 = np.array(ymax2)
+    ymin2 = np.array(ymin2)
+    ymax2 = np.array(ymax2)
 
     #print(ymin[9]**2, ymin[19]**2, ymin[29]**2, ymin[49]**2, ymin[79]**2)
     #print(ymax[9]**2, ymax[19]**2, ymax[29]**2, ymax[49]**2, ymax[79]**2)
@@ -257,21 +259,26 @@ def main():
     for i in npe:
         best.append( resFunc(i, q01, q11, q21))
         best_posi1.append( np.sqrt(resFunc(i, q01, q11, q21)**2 + 2*27.07**2 ) )
-        #best_posi2.append( np.sqrt(resFunc(i, q02, q12, q22)**2 + 2*27.07**2 ) )
+        best_posi2.append( np.sqrt(resFunc(i, q02, q12, q22)**2 + 2*27.07**2 ) )
 
-        #diff.append( (best_posi1[nn] - best_posi2[nn])/best_posi1[nn] )
-        #err1 = ymax1[nn] - best_posi1[nn]
-        #err2 = ymax2[nn] - best_posi2[nn]
-        #diff_err.append( np.sqrt(err2**2/best_posi1[nn]**2 + err1**2*best_posi2[nn]**2/best_posi1[nn]**4) )
+        diff.append( (best_posi1[nn] - best_posi2[nn])/best_posi1[nn] )
+        err1 = ymax1[nn] - best_posi1[nn]
+        err2 = ymax2[nn] - best_posi2[nn]
+        diff_err.append( np.sqrt(err2**2/best_posi1[nn]**2 + err1**2*best_posi2[nn]**2/best_posi1[nn]**4) )
         
         nn += 1
 
 
     best = np.array(best)
     best_posi1 = np.array(best_posi1)
-    #best_posi2 = np.array(best_posi2)
+    best_posi2 = np.array(best_posi2)
+    diff = np.array(diff)
+    diff_err = np.array(diff_err)
 
-    """
+    print(len(diff))
+    print(len(diff_err))
+    print(len(Etrue_posi))
+
     fig = plt.figure(figsize=(8, 6))
     spec = gridspec.GridSpec(ncols=1, nrows=2,
                          height_ratios=[1, 2])
@@ -279,22 +286,25 @@ def main():
     ax0 = fig.add_subplot(spec[0])
     ax1 = fig.add_subplot(spec[1])
 
-    ax0.errorbar(npe_posi/global_es, diff, yerr=diff_err, fmt="o-", ms=3, color="peru")
+    ax0.fill_between(npe_posi/global_es, diff+diff_err, diff-diff_err, alpha=0.3, color="#E49D22")
+    ax0.plot(npe_posi/global_es, diff, "-", ms=4, color="#E49D22")
     ax0.grid(True)
-    ax0.set_ylabel("relaive difference")
+    ax0.set_ylabel("relaive difference", fontsize=14)
+    ax0.tick_params(axis='both', which='major', labelsize=13)
     ax0.grid(True)
 
     #plt.plot(Etrue, nominal(), "--", color="darkviolet", label="nominal")
     ax1.plot(npe_posi/global_es, best_posi1/npe_posi, "-", color="blue", label="simulation based")
     ax1.fill_between(npe_posi/global_es, ymin1/npe_posi, ymax1/npe_posi, color="lightskyblue")
-    ax1.plot(npe_posi/global_es, best_posi2/npe_posi, "--", color="#FF60F1", label="analytical")
+    ax1.plot(npe_posi/global_es, best_posi2/npe_posi, "--", color="coral", label="analytical")
     ax1.fill_between(npe_posi/global_es, ymin2/npe_posi, ymax2/npe_posi, color="pink", alpha=0.5)
-    ax1.set_xlabel(r"$E_{vis}/MeV$")
-    ax1.set_ylabel(r"$\sigma_{N_{tot}}/N_{tot}$")
-    ax1.legend()
+    ax1.set_xlabel(r"$E_{vis}$/MeV", fontsize=15)
+    ax1.set_ylabel(r"$\sigma/N_{tot}$", fontsize=15)
+    ax1.legend(prop={"size":13})
+    ax1.tick_params(axis='both', which='major', labelsize=13)
     ax1.grid(True)
+
     """
-    global_es = 1
     plt.plot(npe/global_es, best/npe, "-", color="#FF8D70",  label="electron")
     plt.plot(npe_posi/global_es, best_posi1/npe_posi, "-", color="#FF60F1", label="positron")
     plt.fill_between(npe_posi/global_es, ymin1/npe_posi, ymax1/npe_posi, color="lightskyblue", label=r"positron: $1\sigma$ zone")
@@ -305,13 +315,13 @@ def main():
 
     #plt.title("Electron NPE Sigma")
 
-    #plt.xlabel(r"$E_{vis}/MeV$")
-    plt.xlabel(r"$N_{tot}$")
+    plt.xlabel(r"$E_{vis}/MeV$")
     plt.ylabel(r"$\sigma_{N_{tot}}/N_{tot}$")
     plt.legend()
     plt.grid(True)
-    plt.savefig("Compare_resNPE.pdf")
+    """
 
+    plt.savefig("compare_positron_res.pdf")
     plt.show()
 
 

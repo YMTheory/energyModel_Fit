@@ -18,7 +18,14 @@ def main():
 
     count = 0 
     for i in sources:
-        count += countBins("../"+i+"hist.root", i+"_data")
+        count += countBins("../output/NewgamB12_kSimQ_kNewAnaCer_kNew/"+i+"hist.root", i+"_data")
+
+    print(count)
+    #count += countBins("../output/NewgamB12_kSimQ_kNewAnaCer_kNew/michel.root", "hEvisData")
+    #print(count)
+
+    count += countBins("../output/NewgamB12_kSimQ_kNewAnaCer_kNew/spectrum.root", "hData")
+    print(count)
 
     #count += countBins("../spectrum.root", "hData")
 

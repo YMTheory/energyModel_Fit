@@ -64,16 +64,38 @@ def loadStopPow(filename):
     return Etrue, sp
 
 
+import ROOT
+def loadQuenchIntFile(filename):
+    ff = ROOT.TFile(filename, "read")
+    binCenter, graph_arr = [], []
+    for i in range(51, 76, 1):
+        histname = "kB" + str(i)
+        tmphist = ff.Get(histname)
+        tmp_arr = []
+        for j in range(tmphist.GetNbinsX()):
+            if i == 51:
+                binCenter.append(tmphist.GetBinCenter(j+1))
+            tmp_arr.append(tmphist.GetBinContent(j+1))
+
+        graph_arr.append(tmp_arr)
+
+    return binCenter, graph_arr
+
+
+
+
 
 st = time.time()
 
-sctE, sctPE = loadPEFile("../data/electron/sctPE1.txt")
+sctE, sctPE = loadPEFile("../data/electron/sctPE2.txt")
 print(">>>>>>>>>> Load scintillation PE file <<<<<<<<<<")
-cerE, cerPE = loadPEFile("../data/electron/cerPE1.txt") 
+cerE, cerPE = loadPEFile("../data/electron/cerPE3.txt") 
 print(">>>>>>>>>> Load cerenkov PE file <<<<<<<<<<")
 resolE, totpe, resol, resolerr = loadResFile("../data/electron/elecResol1.txt")
 print(">>>>>>>>>> Load resolution PE file <<<<<<<<<<")
 binCenter, graphArr = loadQuench("../data/electron/Quench5.root")
+
+intCenter, intContent = loadQuenchIntFile("../data/electron/Quench_NumInt.root")
 
 etr, sp = loadStopPow("../data/electron/StopPower.txt")
 
@@ -112,16 +134,22 @@ def getSPE(Etrue):
 
 birkLow  = 0.0051
 birkHigh = 0.0075
-def getQPE(Etrue, kB, es):
-    if kB < birkLow:
-        kB = birkLow
-    if kB > birkHigh:
-        kB = birkHigh
+def getQPE(Etrue, kB, es, quenchMode):
+    if kB <= birkLow:
+        kB = birkLow + 1e-4
+    if kB >= birkHigh:
+        kB = birkHigh -1e-4
 
     kBIdx = int(kB*1e4) - 51
     kBResid = kBIdx+52-kB*1e4;
+
     qnl_low  = graphArr[kBIdx]
     qnl_high = graphArr[kBIdx+1]
+
+    if quenchMode == "Int":
+        qnl_low  = intContent[kBIdx]
+        qnl_high = intContent[kBIdx+1]
+
 
 
     if Etrue < 0.1:
@@ -135,6 +163,9 @@ def getQPE(Etrue, kB, es):
     quenchNL = kBResid * quenchNL_low + (1-kBResid) *quenchNL_high
 
     return quenchNL * es * Etrue
+
+
+
 
 
 m_kA = 1
@@ -165,3 +196,127 @@ def getArray():
 
 def getResolArray():
     return resolE, totpe, resol, resolerr
+
+
+
+
+m_a, m_b, m_c = 0.990, 7.78e-3, 0
+es = 3134.078 / 2.223
+def getFitResol(E):
+    return np.sqrt(m_a**2/es/E + m_b**2)
+
+
+def getFitConstResol(E):
+    return np.sqrt(m_b**2)
+
+
+def readFile(filename):
+    Etrue, totpe, sigma, sigmaErr = [], [], [], []
+    with open(filename) as f:
+        for lines in f.readlines():
+            line = lines.strip("\n")
+            data = line.split(" ")
+            Etrue.append(float(data[0]))
+            totpe.append(float(data[1]))
+            sigma.append(float(data[2]))
+            sigmaErr.append(float(data[3]))
+
+    Etrue = np.array(Etrue)
+    totpe = np.array(totpe)
+    sigma = np.array(sigma)
+    sigmaErr = np.array(sigmaErr)
+
+    return Etrue, totpe, sigma, sigmaErr
+
+
+covE1, covPE1, cov1, covErr1 = readFile("../data/electron/elecPECov1.txt")
+sctE1, sctPE1, sctSigma1, sctSigmaErr1 = readFile("../data/electron/elecSctPEResol1.txt")
+cerE1, cerPE1, cerSigma1, cerSigmaErr1 = readFile("../data/electron/elecCerPEResol1.txt")
+
+
+gCov = ROOT.TGraph()
+gSctSigma = ROOT.TGraph()
+gCerSigma = ROOT.TGraph()
+
+kB, Asct, kC = 6.26e-3, 1408, 0.996
+aa, bb, cc = 0.990, 7.78e-3, 0
+c0, c1, c2 = 0, 1.774, 0.0577  #0, 5.318e-5, 9.52e-2
+d0, d1, d2 = 0, 0.207, 2.376e-3
+
+
+def func(x, p0, p1, p2):
+    y = p0**2 + p1**2*x + p2**2*x**2
+    return y
+
+def funcConst(x, p0, p1, p2):
+    y = p2**2*x**2
+    return y
+
+
+for i in range(len(covE1)):
+    gCov.SetPoint(i, covE1[i], cov1[i])
+
+for i in range(len(sctE1)):
+    gSctSigma.SetPoint(i, sctE1[i], sctSigma1[i])
+
+for i in range(len(cerE1)):
+    gCerSigma.SetPoint(i, cerE1[i], cerSigma1[i])
+
+
+
+def getTruthCov(E):
+    return gCov.Eval(E)/es/es
+
+
+
+def getTruthSctSigma(E):
+    return gSctSigma.Eval(E)/es
+
+
+def getTruthCerSigma(E):
+    return gCerSigma.Eval(E)/es
+
+
+
+def getFitCov(E):
+    NPE = getNPE(E)
+    return func(NPE, d0, d1, d2)
+
+
+def getFitCerSigma(E):
+    NPE = getCerNPE(E) * kC
+    return func(NPE, c0, c1, c2)
+
+
+
+def getFitSctSigma(E, kB, Asct, mode):
+    NPE = getQPE(E, kB, Asct, mode)
+    return (NPE)
+
+
+
+
+def getFitNsct(E, kB, Asct, mode):
+    return getQPE(E, kB, Asct, mode)
+
+
+def getFitNcer(E, kC):
+    return kC * getCerNPE(E)
+
+
+def getFitCerSigmaConst(E):
+    NPE = getCerNPE(E) * kC
+    return funcConst(NPE, c0, c1, c2)
+
+
+def getFitCovConst(E):
+    NPE = getNPE(E)
+    return funcConst(NPE, d0, d1, d2)
+
+
+
+
+
+
+
+

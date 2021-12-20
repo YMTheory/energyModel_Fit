@@ -76,64 +76,63 @@ def integral(kB):
     return value
         
 
+import elecLoader as el
 
 def main():
 
-
-    #E_sim, nonl_sim = loadGeant4()
-    #nonl_int = integral(0.0065)
-
-    #plt.plot(E_sim, nonl_sim, "-",  label="Geant4")
-    #plt.plot(Etrue, nonl_int, "--", label="integral")
-
-    #plt.show()
-
-    """
-    ff = ROOT.TFile("Quench_NumInt.root", "recreate")
-    
-
-    kB_arr = np.arange(51, 76, 1)
-    for i in kB_arr:
-        print("kB = ", i)
-        kB = i/10000.
-        value = integral(kB)
-        name = "kB" + str(i)
-        hist = ROOT.TH1D(name, "", len(value), 0, 15)
-        for i in range( len(Etrue) ):
-            hist.SetBinContent(i, value[i])
-        hist.Write()
-    #    graph = ROOT.TGraph()
-    #    graph.SetName(name)
-    #    for i in range( len(Etrue)):
-    #        graph.SetPoint(i, Etrue[i], value[i])
-    #    graph.Write()
-    ff.Close()
-
-
-    """
+    es = 3134.078 / 2.223
     
     fig, ax = plt.subplots()
     value0 = integral(0.0065)
-    ax.plot(Etrue, value0, "-", lw=2, color="royalblue", label=r"ESTAR, $kB=6.5\times10^{-3}$g/cm$^2$/MeV")
+    ax.plot(Etrue, value0, "-", lw=2, color="royalblue", label=r"ESTAR, $kB=6.50\times10^{-3}$g/cm$^2$/MeV")
     #for i, j in zip(Etrue, value0):
     #    print(i, j)
     E2, n2 = loadGeant4("kB65")
-    ax.plot(E2, n2, "--", lw=2, color="royalblue", label=r"Geant4, $kB=6.5\times10^{-3}$g/cm$^2$/MeV")
+    ax.plot(E2, n2, "--", lw=2, color="royalblue", label=r"Geant4, $kB=6.50\times10^{-3}$g/cm$^2$/MeV")
 
     #value2 = integral(0.0063)
     #ax.plot(Etrue, value2, "-", lw=2, color="red", label=r"ESTAR, $kB=6.3\times10^{-3}$g/cm$^2$/MeV")
-    E4, n4 = loadGeant4("kB63")
-    ax.plot(E4, n4, "-.", lw=2, color="red", label=r"Geant4, $kB=6.3\times10^{-3}$g/cm$^2$/MeV")
+    #E4, n4 = loadGeant4("kB63")
+    #ax.plot(E4, n4, "-.", lw=2, color="red", label=r"Geant4, $kB=6.3\times10^{-3}$g/cm$^2$/MeV")
 
     value1 = integral(0.0051)
-    ax.plot(Etrue, value1, "-", lw=2, color="slategray", label=r"ESTAR, $kB=5.5\times10^{-3}$g/cm$^2$/MeV")
+    ax.plot(Etrue, value1, "-", lw=2, color="slategray", label=r"ESTAR, $kB=5.50\times10^{-3}$g/cm$^2$/MeV")
     E3, n3 = loadGeant4("kB51")
-    ax.plot(E3, n3, "--", lw=2, color="slategray", label=r"Geant4, $kB=5.5\times10^{-3}$g/cm$^2$/MeV")
+    ax.plot(E3, n3, "--", lw=2, color="slategray", label=r"Geant4, $kB=5.50\times10^{-3}$g/cm$^2$/MeV")
+
+    As = 1416.1
+    bestFit = 6.67e-3
+    fitError = 0.26e-4
+
+    n4, n4min, n4max = [], [], []
+    for i in Etrue:
+        n4.append(el.getFitNsct(i, bestFit, As, "Sim"))
+        n4min.append(el.getFitNsct(i, bestFit-fitError, As, "Sim"))
+        n4max.append(el.getFitNsct(i, bestFit+fitError, As, "Sim"))
+    
+    #n4 = integral(bestFit)
+    #n4min = integral(bestFit-fitError)
+    #n4max = integral(bestFit+fitError)
+
+    n4 = np.array(n4)
+    n4min = np.array(n4min)
+    n4max = np.array(n4max)
+    delmin = n4 - n4min
+    delmax = n4max - n4
+    n4min = n4 - delmin*50
+    n4max = n4 + delmax*50
+
+    ax.plot(Etrue, n4/As/Etrue, "--", lw=2, color="crimson", label=r"Geant4, $kB=6.67\times10^{-3}$g/cm$^2$/MeV")
+    ax.fill_between(Etrue, n4min/As/Etrue, n4max/As/Etrue, color="crimson", alpha=0.3)
+    #ax.plot(Etrue, n4, "--", lw=2, color="crimson", label=r"ESTAR, $kB=5.45\times10^{-3}$g/cm$^2$/MeV")
+    #ax.fill_between(Etrue, n4min, n4max, color="crimson", alpha=0.3)
+
+
 
     ax.grid(True)
     ax.tick_params(axis='both', which='major', labelsize=14)
-    ax.set_xlabel("Electron $E_{dep}$ [MeV]", fontsize=15)
-    ax.set_ylabel("$E_{sct}$/$E_{dep}$", fontsize=15)
+    ax.set_xlabel("Electron $E^{dep}$ [MeV]", fontsize=15)
+    ax.set_ylabel("$E^{s}$/$E^{dep}$", fontsize=15)
     ax.legend(prop={'size': 13})
     ax.semilogx()
     ax.set_xlim(1e-3, 15)
