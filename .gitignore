@@ -3,3 +3,5 @@ Miao/obj
 new_fitter/outputs/
 new_fitter/data
 *.exe
+*root
+*pdf
