@@ -119,30 +119,48 @@ double junoChiFunction::GetChi2Michel()
     return chi2;
 }
 
+
 double junoChiFunction::GetChi2( double maxChi2)
 {
     double chi2 = 0;
 
-    if (m_doGamFit) {
-        for (int i=0; i<m_nData; i++) {
-            chi2 += gamma_array[i]->GetChi2();
+    if (junoParameters::doResFit) {
+        if (m_doGamFit) {
+            for (int i=0; i<m_nData; i++) {
+                chi2 += gamma_array[i]->GetChi2();
+            }
+            cout << "gamma chi2 " << chi2 << " " ;
         }
-        cout << "gamma chi2 " << chi2 << " " ;
+
+        if (m_doB12Fit) {
+            double tmp = b12data->GetChi2();
+            chi2 += tmp;
+            cout << "B12 chi2 " << tmp << " " ;
+        }
+
+        //chi2 += GetChi2Michel();
+        if (m_doMichel) {
+            double tmp = michel->GetChi2();
+            chi2 += tmp;
+            cout << "michel chi2 " << tmp << " " ;
+        }
     }
 
-    if (m_doB12Fit) {
-        double tmp = b12data->GetChi2();
-        chi2 += tmp;
-        cout << "B12 chi2 " << tmp << " " ;
+    else {
+        if (m_doGamFit) {
+            for (int i=0; i<m_nData; i++) {
+                chi2 += gamma_array[i]->GetChi2_onlyNonl();
+            }
+            cout << "gamma chi2 " << chi2 << " " ;
+        }
+        if (m_doB12Fit) {
+            double tmp = b12data->GetChi2();
+            chi2 += tmp;
+            cout << "B12 chi2 " << tmp << " " ;
+        }
     }
 
-    //chi2 += GetChi2Michel();
-    if (m_doMichel) {
-        double tmp = michel->GetChi2();
-        chi2 += tmp;
-        cout << "michel chi2 " << tmp << " " ;
-    }
-    
+
     cout << "current chi2 = " << chi2 << endl;
 
     return chi2;
@@ -184,46 +202,59 @@ void junoChiFunction::SetParameters(double *par)
         electronCerenkov::setp4(par[iPar]);                         iPar++;
     }
 
-    if (junoParameters::pesigmaMode == "kTotal") {
-        electronResponse::setra(par[iPar]);                         iPar++;
-        electronResponse::setrb(par[iPar]);                         iPar++;
-        electronResponse::setrc(par[iPar]);                         iPar++;
-        electronResponse::SetParameters();
+    if (junoParameters::doResFit) {
+        if (junoParameters::pesigmaMode == "kTotal") {
+            electronResponse::setra(par[iPar]);                         iPar++;
+            electronResponse::setrb(par[iPar]);                         iPar++;
+            electronResponse::setrc(par[iPar]);                         iPar++;
+            electronResponse::SetParameters();
+        }
+
+        if (junoParameters::pesigmaMode == "kNPE") {
+            electronResponse::setma               (par[iPar]);     iPar++;
+            electronResponse::setmb               (par[iPar]);     iPar++;
+            electronResponse::setmc               (par[iPar]);     iPar++;
+            electronResponse::SetParameters();
+
+        }
+
+        if (junoParameters::pesigmaMode == "kNew") {
+            electronResponse::setna               (par[iPar]);     iPar++;
+            electronResponse::setnb               (par[iPar]);     iPar++;
+            electronResponse::setnc               (par[iPar]);     iPar++;
+            //electronResponse::setna1               (par[iPar]);     iPar++;
+            //electronResponse::setnc1               (par[iPar]);     iPar++;
+            electronResponse::SetParameters();
+
+        }
+
+        if (junoParameters::pesigmaMode == "kSeparate") {
+            electronResponse::setc0(par[iPar]) ;                        iPar++;
+            electronResponse::setc1(par[iPar]) ;                        iPar++;
+            electronResponse::setc2(par[iPar]) ;                        iPar++;
+            electronResponse::setd0(par[iPar]) ;                        iPar++;
+            electronResponse::setd1(par[iPar]) ;                        iPar++;
+            electronResponse::setd2(par[iPar]) ;                        iPar++;
+            electronResponse::SetParameters();
+        }
+
+        if (m_doGamFit) {
+            for (int i=0; i<m_nData; i++) {
+                gamma_array[i]->SetAmp(par[iPar]);                      iPar++;
+            }
+        }
     }
 
-    if (junoParameters::pesigmaMode == "kNPE") {
-        electronResponse::setma               (par[iPar]);     iPar++;
-        electronResponse::setmb               (par[iPar]);     iPar++;
-        electronResponse::setmc               (par[iPar]);     iPar++;
-        electronResponse::SetParameters();
-
-    }
-
-    if (junoParameters::pesigmaMode == "kNew") {
+    else {
+        junoParameters::pesigmaMode = "kNew" ;
         electronResponse::setna               (par[iPar]);     iPar++;
         electronResponse::setnb               (par[iPar]);     iPar++;
         electronResponse::setnc               (par[iPar]);     iPar++;
         //electronResponse::setna1               (par[iPar]);     iPar++;
         //electronResponse::setnc1               (par[iPar]);     iPar++;
         electronResponse::SetParameters();
-
     }
 
-    if (junoParameters::pesigmaMode == "kSeparate") {
-        electronResponse::setc0(par[iPar]) ;                        iPar++;
-        electronResponse::setc1(par[iPar]) ;                        iPar++;
-        electronResponse::setc2(par[iPar]) ;                        iPar++;
-        electronResponse::setd0(par[iPar]) ;                        iPar++;
-        electronResponse::setd1(par[iPar]) ;                        iPar++;
-        electronResponse::setd2(par[iPar]) ;                        iPar++;
-        electronResponse::SetParameters();
-    }
-
-    if (m_doGamFit) {
-        for (int i=0; i<m_nData; i++) {
-            gamma_array[i]->SetAmp(par[iPar]);                      iPar++;
-        }
-    }
 
 }
 
@@ -279,50 +310,64 @@ double junoChiFunction::GetChiSquare(double maxChi2)
     
     }
 
-    if (junoParameters::pesigmaMode == "kTotal") {
-        junoMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag );              iPar++;
-        junoMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1850, ierrflag);            iPar++;
-        junoMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag);               iPar++;
-    }
+    if (junoParameters::doResFit) {
 
-    if (junoParameters::pesigmaMode == "kNPE") {
-        junoMinuit->mnparm(iPar, "a", 1.02, 0.001, 0, 10, ierrflag);             iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "b", 7.9e-03, 1e-5, 1e-3, 1e-2, ierrflag);             iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "c", 0, 0.01, -1, 1, ierrflag);         iPar++;
-        junoMinuit->FixParameter(iPar-1);
-
-    }
-
-    if (junoParameters::pesigmaMode == "kNew") {
-        //junoMinuit->mnparm(iPar, "a", 0.90, 1e-4, 0, 10, ierrflag);             iPar++;
-        junoMinuit->mnparm(iPar, "a", 0.939, 1e-4, 0, 10, ierrflag);             iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "b", 0.103, 1e-4, 0, 10, ierrflag);             iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "n", 1.439, 0.01, 1.0, 2.0, ierrflag);          iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-
-    }
-
-    if (junoParameters::pesigmaMode == "kSeparate") {
-        junoMinuit->mnparm(iPar, "c0", 0, 1, -200, 200, ierrflag);         iPar++;
-        junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "c1", 1.77, 1e-4, 0, 50, ierrflag);            iPar++;
-        junoMinuit->mnparm(iPar, "c2", 5.77e-2, 1e-4, 0, 10, ierrflag);      iPar++;
-        junoMinuit->mnparm(iPar, "d0", 0, 0.01, -100, 100, ierrflag);             iPar++;
-        junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "d1", 0.20708522, 1e-4, 0, 10, ierrflag);     iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "d2", 0.00237574, 1e-6, 0, 10, ierrflag);  iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-    }
-
-    if (m_doGamFit) {
-        for(int j=0; j<m_nData; j++) {
-            junoMinuit->mnparm(iPar, gamma_name[j].c_str(), gamma_amp[j], 1, gamma_amp[j]-500, gamma_amp[j]+500, ierrflag); iPar++;
+        if (junoParameters::pesigmaMode == "kTotal") {
+            junoMinuit->mnparm(iPar, "ra", 0, 0.01, -20, 20, ierrflag );              iPar++;
+            junoMinuit->mnparm(iPar, "rb", 1315, 1, 1250, 1850, ierrflag);            iPar++;
+            junoMinuit->mnparm(iPar, "rc", 160, 1, 100, 220, ierrflag);               iPar++;
         }
+
+        if (junoParameters::pesigmaMode == "kNPE") {
+            junoMinuit->mnparm(iPar, "a", 1.02, 0.001, 0, 10, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "b", 7.9e-03, 1e-5, 1e-3, 1e-2, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "c", 0, 0.01, -1, 1, ierrflag);         iPar++;
+            junoMinuit->FixParameter(iPar-1);
+
+        }
+
+        if (junoParameters::pesigmaMode == "kNew") {
+            //junoMinuit->mnparm(iPar, "a", 0.90, 1e-4, 0, 10, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "a", 0.939, 1e-4, 0, 10, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "b", 0.103, 1e-4, 0, 10, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "n", 1.439, 0.01, 1.0, 2.0, ierrflag);          iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+
+        }
+
+        if (junoParameters::pesigmaMode == "kSeparate") {
+            junoMinuit->mnparm(iPar, "c0", 0, 1, -200, 200, ierrflag);         iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "c1", 1.77, 1e-4, 0, 50, ierrflag);            iPar++;
+            junoMinuit->mnparm(iPar, "c2", 5.77e-2, 1e-4, 0, 10, ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "d0", 0, 0.01, -100, 100, ierrflag);             iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "d1", 0.20708522, 1e-4, 0, 10, ierrflag);     iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "d2", 0.00237574, 1e-6, 0, 10, ierrflag);  iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+        }
+
+        if (m_doGamFit) {
+            for(int j=0; j<m_nData; j++) {
+                junoMinuit->mnparm(iPar, gamma_name[j].c_str(), gamma_amp[j], 1, gamma_amp[j]-500, gamma_amp[j]+500, ierrflag); iPar++;
+            }
+        }
+    }
+
+    else {
+            junoParameters::pesigmaMode = "kNew";
+            junoMinuit->mnparm(iPar, "a", 0.940, 1e-4, 0, 10, ierrflag);             iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "b", 0.099, 1e-4, 0, 10, ierrflag);             iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "n", 1.449, 0.01, 1.0, 2.0, ierrflag);          iPar++;
+            junoMinuit->FixParameter(iPar-1);
+    
     }
 
     // Minimization strategy
@@ -377,7 +422,10 @@ void junoChiFunction::Plot()
 
     if (m_doGamFit) {
         for (int i=0; i<m_nData; i++) {
-            gamma_array[i]->SaveHist();
+            if(junoParameters::doResFit)
+                gamma_array[i]->SaveHist();
+            else
+                PlotGamNonl();
         }
     }
 
@@ -393,47 +441,31 @@ void junoChiFunction::Plot()
 
 
 
-void junoChiFunction::Chi2Scanner()
+void junoChiFunction::PlotGamNonl()
 {
-    double bestVal[10] = { 1416.08, 0.00666801, 0.946114, 10.2112, 0.0296747, 65.8209, -9.8879, 0.941709, 0.0963355, 1.45524 };
-    double bestErr[10] = { 0.303509, 2.04314e-05, 0.00459593, 0.00740421, 0.00041199, 0.332653, 0.00734022, 0.00312221, 0.00415382, 0.0101};
+    TGraphErrors* gData = new TGraphErrors();
+    gData->SetName("data");
+    TGraphErrors* gCalc = new TGraphErrors();
+    gCalc->SetName("calc");
+    
+    for (int i=0; i<m_nData; i++) {
+        double Etrue = gamma_array[i]->GetEtrue();
+        double nonlData = gamma_array[i]->GetNonlData();
+        double nonlErrData = gamma_array[i]->GetNonlErr();
+        double nonlCalc = gamma_array[i]->GetNonlCalc();
 
-    int m_Npar = 10;
-    for (int iPar=0; iPar<m_Npar; iPar++) {
-    
-        
-    
-    
+        gData->SetPoint(i, Etrue, nonlData);
+        gData->SetPointError(i, 0, nonlErrData);
+
+        gCalc->SetPoint(i, Etrue, nonlCalc);
     }
 
-
+    TFile* ff = new TFile("GammaNonlinearity.root", "recreate");
+    gData->Write();
+    gCalc->Write();
+    ff->Close();
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

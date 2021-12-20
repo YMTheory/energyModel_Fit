@@ -21,7 +21,7 @@ class junoChiFunction
 
         static double GetChi2Michel   ();
 
-        static void Chi2Scanner       ();
+        static void PlotGamNonl       ();
 
 
     private:

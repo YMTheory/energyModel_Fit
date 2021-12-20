@@ -4,7 +4,7 @@ typedef junoParameters JUNOP;
 typedef ScintillatorParameterization SP;
 
 
-bool JUNOP::doResFit                  = true;
+bool JUNOP::doResFit                  = false;
 
 SP JUNOP::scintillatorParameterization = kSimulation; /*kSimulation;*/  /*kEmpirical;*/ /*kIntegralCalc;*/ /*kSimulationCalc*/
 

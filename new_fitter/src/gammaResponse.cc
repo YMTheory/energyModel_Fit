@@ -296,6 +296,7 @@ void gammaResponse::preCalculation_onlyNonl()
 
 double gammaResponse::GetChi2_onlyNonl()
 {
+    preCalculation_onlyNonl();
     double chi2 = TMath::Power((m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
     return chi2;
 }
