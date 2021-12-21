@@ -158,7 +158,9 @@ double electronCerenkov::getNewAnaCerPE(double E)
     if (E < 0.2)
         return 0;
     else{
-        E = E - 0.2;   // 0.2 MeV threshold
+        //E = E - 0.2;   // 0.2 MeV threshold
+        // E0 should be a free parameter?
+        E = E - m_E0;
         double NC = (m_p3*E*E) / (m_p4+m_p0*E+m_p1*TMath::Exp(-m_p2*E));
         return NC;
     }

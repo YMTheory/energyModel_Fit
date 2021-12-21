@@ -74,11 +74,13 @@ class electronCerenkov
         static double getp2()                   {return m_p2;}
         static double getp3()                   {return m_p3;}
         static double getp4()                   {return m_p4;}
+        static double getE0()                   {return m_E0;}
         static void setp0(double p0)            {m_p0 = p0;}
         static void setp1(double p1)            {m_p1 = p1;}
         static void setp2(double p2)            {m_p2 = p2;}
         static void setp3(double p3)            {m_p3 = p3;}
         static void setp4(double p4)            {m_p4 = p4;}
+        static void setE0(double E0)            {m_E0 = E0;}
 
 
 

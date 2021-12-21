@@ -25,11 +25,11 @@ def func(E, A2, A3, A4):
 
 
 
-def wenNcer(E, p0, p1, p2, p3, p4):
-    if E<=0.2:
+def wenNcer(E, p0, p1, p2, p3, p4, E0):
+    if E<=E0:
         return 0
-    if E>0.2:
-        E = E - 0.2
+    if E>E0:
+        E = E - E0
         return p3*E**2/(p4+p0*E+p1*np.exp(-p2*E))
 
 
@@ -39,7 +39,7 @@ def load(filename):
         for lines in f.readlines():
             line = lines.strip("\n")
             data = line.split(" ")
-            if float(data[0]) < 20 :
+            if float(data[0]) <= 15 :
                 Etrue.append(float(data[0]))
                 cerpe.append(float(data[1]))
 
@@ -133,16 +133,13 @@ def main():
     #Etrue1, cerpe1 = select(Etrue, cerpe) 
 
 
-    #filename5 = "../gam_kIntegral_kNewAnaCer_kNPE_nonlcov.txt"
-    #filename1 = "/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/output/NewgamB12NewMic1whole/NewgamB12NewMicwhole1_nonlcov.txt"
-    #filename1 = "/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/output/Newgam_kSimQ_kNewAnaCer_kNew/Newgam_kSimQ_kNewCerAna_kNew_nonlcov.txt"
-    #filename1 = "/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/output/NewgamB12_kSimQ_kNewAnaCer_kNew/NewgamB12_kSimQ_kNewCerAna_kNew_nonlcov.txt"
-    filename1 = "/junofs/users/miaoyu/energy_model/energyModel_Fit/new_fitter/output/NewgamNewB12_kSimQ_kNewAnaCer_kNew/NewgamNewB12_kSimQ_kNewAnaCer_kNew_nonlcov.txt"
+    filename1 = "/junofs/users/miaoyu/energy_model/fitter/energyModel_Fit/new_fitter/outputs/gamB12_freeE0_kSim_kAna_kNew/gamB12_freeE0_kSim_kAna_kNew_nonlcov.txt"
 
-    par, parerr = loadBestFit(filename1, 7)
+    npar = 8
+    par, parerr = loadBestFit(filename1, npar)
 
     sampleSize = 5000
-    sigma5 = sample_corelation(filename1, 7, sampleSize)
+    sigma5 = sample_corelation(filename1, npar, sampleSize)
 
     ymin5, ymax5 = [], []
     dnum = len(Etrue1)
@@ -159,10 +156,11 @@ def main():
         m_p2 = par[4] + sigma5[4, i]
         m_p3 = par[5] + sigma5[5, i]
         m_p4 = par[6] + sigma5[6, i]
+        m_E0 = par[7] + sigma5[7, i]
 
         for i in Etrue1:
             #pe_arr5.append( func(i, m_A25, m_A35, m_A45) )
-            pe_arr5.append(wenNcer(i, m_p0, m_p1, m_p2, m_p3, m_p4))
+            pe_arr5.append(wenNcer(i, m_p0, m_p1, m_p2, m_p3, m_p4, m_E0))
 
 
         for n in range(dnum):
@@ -178,7 +176,7 @@ def main():
 
     best = []
     for i in Etrue1:
-        best.append(wenNcer(i, par[2], par[3], par[4], par[5], par[6]))
+        best.append(wenNcer(i, par[2], par[3], par[4], par[5], par[6], par[7]))
     best = np.array(best)
 
     for i in range(len(Etrue1)):
@@ -201,7 +199,7 @@ def main():
     plt.fill_between(Etrue1, ymin6/Etrue1/Ac_calc, ymax6/Etrue1/Ac_calc, color="slategray", alpha=0.5)
 
 
-    ax.set_xlabel("Electron $E^{dep}$ [MeV]", fontsize=15)
+    ax.set_xlabel("Electron $E$ [MeV]", fontsize=15)
     ax.set_ylabel(r"Normalized Cherenkov yield ($f_C$)", fontsize=14)
 
     ax.tick_params(axis='both', which='major', labelsize=14)

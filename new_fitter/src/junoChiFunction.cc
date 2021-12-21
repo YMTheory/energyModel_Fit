@@ -200,6 +200,7 @@ void junoChiFunction::SetParameters(double *par)
         electronCerenkov::setp2(par[iPar]);                         iPar++;
         electronCerenkov::setp3(par[iPar]);                         iPar++;
         electronCerenkov::setp4(par[iPar]);                         iPar++;
+        electronCerenkov::setE0(par[iPar]);                         iPar++;
     }
 
     if (junoParameters::doResFit) {
@@ -307,6 +308,7 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         junoMinuit->mnparm(iPar, "p2",  0.020,  0.0001,   0., 10,  ierrflag);       iPar++;
         junoMinuit->mnparm(iPar, "p3",  77.2,   0.001,    0., 800, ierrflag);       iPar++;
         junoMinuit->mnparm(iPar, "p4",  -9.91,  0.001,  -50., 50,  ierrflag);       iPar++;
+        junoMinuit->mnparm(iPar, "E0",  0.200,  0.001,  0., 1,  ierrflag);          iPar++;
     
     }
 
@@ -330,11 +332,11 @@ double junoChiFunction::GetChiSquare(double maxChi2)
 
         if (junoParameters::pesigmaMode == "kNew") {
             junoMinuit->mnparm(iPar, "a", 0.940, 1e-4, 0, 10, ierrflag);             iPar++;
-            junoMinuit->FixParameter(iPar-1);
+            //junoMinuit->FixParameter(iPar-1);
             junoMinuit->mnparm(iPar, "b", 0.099, 1e-4, 0, 10, ierrflag);             iPar++;
-            junoMinuit->FixParameter(iPar-1);
+            //junoMinuit->FixParameter(iPar-1);
             junoMinuit->mnparm(iPar, "n", 1.449, 0.01, 1.0, 2.0, ierrflag);          iPar++;
-            junoMinuit->FixParameter(iPar-1);
+            //junoMinuit->FixParameter(iPar-1);
 
         }
 

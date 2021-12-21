@@ -101,8 +101,8 @@ def main():
     ax.plot(E3, n3, "--", lw=2, color="slategray", label=r"Geant4, $kB=5.50\times10^{-3}$g/cm$^2$/MeV")
 
     As = 1416.1
-    bestFit = 6.67e-3
-    fitError = 0.26e-4
+    bestFit = 5.77e-3
+    fitError = 0.18e-4
 
     n4, n4min, n4max = [], [], []
     for i in Etrue:
@@ -122,7 +122,7 @@ def main():
     n4min = n4 - delmin*50
     n4max = n4 + delmax*50
 
-    ax.plot(Etrue, n4/As/Etrue, "--", lw=2, color="crimson", label=r"Geant4, $kB=6.67\times10^{-3}$g/cm$^2$/MeV")
+    ax.plot(Etrue, n4/As/Etrue, "--", lw=2, color="crimson", label=r"Geant4, $kB=5.77\times10^{-3}$g/cm$^2$/MeV")
     ax.fill_between(Etrue, n4min/As/Etrue, n4max/As/Etrue, color="crimson", alpha=0.3)
     #ax.plot(Etrue, n4, "--", lw=2, color="crimson", label=r"ESTAR, $kB=5.45\times10^{-3}$g/cm$^2$/MeV")
     #ax.fill_between(Etrue, n4min, n4max, color="crimson", alpha=0.3)
@@ -131,8 +131,8 @@ def main():
 
     ax.grid(True)
     ax.tick_params(axis='both', which='major', labelsize=14)
-    ax.set_xlabel("Electron $E^{dep}$ [MeV]", fontsize=15)
-    ax.set_ylabel("$E^{s}$/$E^{dep}$", fontsize=15)
+    ax.set_xlabel("Electron $E$ [MeV]", fontsize=15)
+    ax.set_ylabel("$E_{s}$/$E$", fontsize=15)
     ax.legend(prop={'size': 13})
     ax.semilogx()
     ax.set_xlim(1e-3, 15)
