@@ -4,7 +4,7 @@ typedef junoParameters JUNOP;
 typedef ScintillatorParameterization SP;
 
 
-bool JUNOP::doResFit                  = false;
+bool JUNOP::doResFit                  = true;
 
 SP JUNOP::scintillatorParameterization = kSimulation; /*kSimulation;*/  /*kEmpirical;*/ /*kIntegralCalc;*/ /*kSimulationCalc*/
 
@@ -28,7 +28,7 @@ std::string JUNOP::electronResol_File = "data/electron/elecResol1.txt";
 // Options in Fitter ...
 bool JUNOP::fitGammaSources           = true;
 bool JUNOP::fitB12                    = true;
-bool JUNOP::fitMichelSpec             = true;
+bool JUNOP::fitMichelSpec             = false;
 std::string JUNOP::m_calcOption       = "twolayer";
 std::string JUNOP::m_nonlMode         = "histogram";
 

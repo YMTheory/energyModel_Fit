@@ -5,16 +5,16 @@ int main()
     //SetStyle();
 
     
-    //junoChiFunction* fitter = new junoChiFunction();
-    //fitter->LoadData();
-    //fitter->GetChiSquare();
+    junoChiFunction* fitter = new junoChiFunction();
+    fitter->LoadData();
+    fitter->GetChiSquare();
     /////////fitter->setFixParId(1);
     /////////for (int i=0; i<100; i++) {
     /////////    double kB = ( 6.31677e-03 - 6.44315e-4 ) + 6.44315e-4 / 50 * i;
     /////////    fitter->setFixParValue(kB);
     /////////    fitter->GetChiSquare();
     /////////}
-    //fitter->Plot();
+    fitter->Plot();
 
 
     //junoB12_simplified* b12 = new junoB12_simplified(100, 4000, 18000);
@@ -39,11 +39,11 @@ int main()
     //electronQuench::setEnergyScale(1800);
 
     //gammaResponse* gamResArr[9];
-    gammaResponse* Cs137 = new gammaResponse("Cs137", 100, 600, 1000);  
-    ///gamResArr[0] = Cs137;
-    Cs137->LoadData();
-    Cs137->preCalculation_onlyNonl();
-    std::cout << Cs137->GetName() << " " << Cs137->GetEtrue() << " " << Cs137->GetPEData() << " " << Cs137->GetNonlData() << " " << Cs137->GetChi2_onlyNonl() << endl;
+    //gammaResponse* Cs137 = new gammaResponse("Cs137", 100, 600, 1000);  
+    /////gamResArr[0] = Cs137;
+    //Cs137->LoadData();
+    //Cs137->preCalculation_onlyNonl();
+    //std::cout << Cs137->GetName() << " " << Cs137->GetEtrue() << " " << Cs137->GetPEData() << " " << Cs137->GetNonlData() << " " << Cs137->GetChi2_onlyNonl() << endl;
 
     //////gammaResponse* Mn54 = new gammaResponse("Mn54", 200, 900, 1300);    gamResArr[1] = Mn54;
     //////gammaResponse* Ge68 = new gammaResponse("Ge68", 200, 1100, 1500);   gamResArr[2] = Ge68;

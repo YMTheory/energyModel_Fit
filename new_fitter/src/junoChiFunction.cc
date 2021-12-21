@@ -329,13 +329,12 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         }
 
         if (junoParameters::pesigmaMode == "kNew") {
-            //junoMinuit->mnparm(iPar, "a", 0.90, 1e-4, 0, 10, ierrflag);             iPar++;
-            junoMinuit->mnparm(iPar, "a", 0.939, 1e-4, 0, 10, ierrflag);             iPar++;
-            //junoMinuit->FixParameter(iPar-1);
-            junoMinuit->mnparm(iPar, "b", 0.103, 1e-4, 0, 10, ierrflag);             iPar++;
-            //junoMinuit->FixParameter(iPar-1);
-            junoMinuit->mnparm(iPar, "n", 1.439, 0.01, 1.0, 2.0, ierrflag);          iPar++;
-            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "a", 0.940, 1e-4, 0, 10, ierrflag);             iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "b", 0.099, 1e-4, 0, 10, ierrflag);             iPar++;
+            junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "n", 1.449, 0.01, 1.0, 2.0, ierrflag);          iPar++;
+            junoMinuit->FixParameter(iPar-1);
 
         }
 
