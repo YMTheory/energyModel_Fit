@@ -36,13 +36,16 @@ double electronResponse::m_d0 = 0; //0;
 double electronResponse::m_d1 = 0.20708522; //4.15105e-02;
 double electronResponse::m_d2 = 0.00237574; //6.44493e-06;
 
-double electronResponse::m_ma = 0.968;
-double electronResponse::m_mb = 8.08e-3;
-double electronResponse::m_mc = 0;
+double electronResponse::m_ma = 1.25;
+double electronResponse::m_mb = 4.71e-3;
+double electronResponse::m_mc = 2.08;
 
-double electronResponse::m_na = 9.00687e-01;
-double electronResponse::m_nb = 1.15790e-01;
-double electronResponse::m_nc = 1.42189e+00;
+//double electronResponse::m_na = 9.00687e-01;
+//double electronResponse::m_nb = 1.15790e-01;
+//double electronResponse::m_nc = 1.42189e+00;
+double electronResponse::m_na = 0.983;
+double electronResponse::m_nb = 0.016;
+double electronResponse::m_nc = 1.20;
 
 double electronResponse::m_na1 = 6.13396e-01;
 double electronResponse::m_nc1 = 1.15458e+00;
@@ -281,20 +284,28 @@ void electronResponse::SetParameters()
 
 void electronResponse::Plot()
 {
-    cout << ">>> Draw Analytic Electron Nonlinearity Curve <<< "<< endl;
-    if (not m_loadSimFile) loadSimElecNonl();
-    //if (not m_doFit) EmpiricalFit();
+    //cout << ">>> Draw Analytic Electron Nonlinearity Curve <<< "<< endl;
+    //if (not m_loadSimFile) loadSimElecNonl();
+    ////if (not m_doFit) EmpiricalFit();
 
-    gSimData->SetName("elec");
-    gSimData->SetLineColor(kBlue+1);
-    gSimData->SetLineWidth(2);
+    //gSimData->SetName("elec");
+    //gSimData->SetLineColor(kBlue+1);
+    //gSimData->SetLineWidth(2);
 
-    fElecNonl->SetLineColor(kOrange+1);
-    fElecNonl->SetLineWidth(2);
+    //fElecNonl->SetLineColor(kOrange+1);
+    //fElecNonl->SetLineWidth(2);
 
-    TFile* out = new TFile("simElecNonl.root", "recreate");
-    gSimData->Write();
-    fElecNonl->Write();
+    double Y = 450.87 / 2.223;
+    TGraph* gParam = new TGraph(); gParam->SetName("res");
+    for (int i=100; i<1500; i++) {
+        double Evis = i / Y;
+        double sigmaN = fEvisNew->Eval(i);
+        gParam->SetPoint(i-100, Evis, sigmaN/i);
+        cout << Evis << " " << sigmaN/i << endl;
+    }
+
+    TFile* out = new TFile("elecParam.root", "recreate");
+    gParam->Write();
     out->Close();
 }
 
@@ -311,6 +322,8 @@ void electronResponse::EmpiricalFit()
 
 void electronResponse::FitPlot()
 {
+    SetParameters();
+
     TGraph* gNom = new TGraph();
     TGraph* gFit = new TGraph();
     gNom->SetName("nom");

@@ -64,6 +64,8 @@ class gammaResponse
         bool m_loadData;
         bool m_loadPrm;
 
+        double m_Y;
+
         double m_amp; // TF1 gaussian amplitude
 
         const int m_nEvents  = 5000;
@@ -80,6 +82,9 @@ class gammaResponse
 
     private:
         bool m_doSpecFit;
+
+        double m_npeGe68;
+        double m_sigmaGe68;
 };
 
 

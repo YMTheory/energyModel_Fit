@@ -30,6 +30,37 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
     m_loadData  = false;
     m_loadPrm   = false;
     m_doSpecFit = true;
+
+
+    if (junoParameters::expConfig == "DYB") {
+        // DYB Config
+        m_Y = 450.87 /2.223;
+        m_npeGe68 = 188.6;
+        m_sigmaGe68 = 13.92;
+    
+    }
+    
+    if (junoParameters::expConfig == "JUNO") {
+    // JUNO  Config
+    m_npeGe68 = 2*660.8;
+    m_sigmaGe68 = 38.41;
+    m_Y = 3134.078 /2.223;
+    
+    }
+    
+    if (junoParameters::expConfig == "TAO") {
+    // JUNO-TAo  Config
+    m_npeGe68 = 4.14185e+03;
+    m_sigmaGe68 = 7.80287e+01;
+    m_Y = 9.89752e+03 /2.223;
+    }
+
+    if (junoParameters::expConfig == "Det1") {
+        m_npeGe68 = 1.30880e+03;
+        m_sigmaGe68 = 3.80672e+01;
+        m_Y = 3.11144e+03/2.223;
+
+    }
 }
 
 gammaResponse::~gammaResponse()
@@ -45,11 +76,12 @@ void gammaResponse::LoadData()
 {
     cout << " >>> Loading Bared Gamma " << m_name << " Data <<< " << endl;
 
-    ifstream in; in.open(junoParameters::gammaLSNL_File);
+    ifstream in; in.open(junoParameters::gammaLSNL_File);  // JUNO normal
+    //ifstream in; in.open("./data/gamma/gamma_dyb.txt");  // JUNO normal
     if(!in) cout << "Error: No file "<< junoParameters::gammaLSNL_File << std::endl;
     string line;
 
-    double scale = 3134.078/2.223;
+    double scale = m_Y;
     string tmp_name; double tmp_E, tmp_totPE, tmp_totPESigma, tmp_EvisError, tmp_totPEerr, tmp_totPESigmaerr;
     while(getline(in,line)){
         istringstream ss(line);
@@ -70,10 +102,17 @@ void gammaResponse::LoadData()
     in.close();
 
     if (m_doSpecFit and (m_name != "gamma4440" and m_name!="gamma3215" ) ) {
+        TFile* infile;
         //TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
-        TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe_new.root").c_str(), "read");
+        if (junoParameters::expConfig == "JUNO")
+            infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe_new.root").c_str(), "read");   // JUNO normal
+        if (junoParameters::expConfig == "TAO")
+            infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe_tao.root").c_str(), "read");   // JUNO normal
+        if (junoParameters::expConfig == "DYB")
+            infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe_dyb.root").c_str(), "read");   // JUNO normal
         if(!infile) cout << "No such gamma spectrum file!" << endl;
         int m_totpe;
+        //double m_totpe;
         TTree* tt = (TTree*)infile->Get("evt");
         //tt->SetBranchAddress("totalPE", &m_totpe);
         tt->SetBranchAddress("totpe", &m_totpe);
@@ -107,6 +146,9 @@ void gammaResponse::preCalculation()
     //TStopwatch timer;
     //timer.Start();
     //if (not electronResponse::getLoadResol()) electronResponse::loadElecResol();
+    //electronResponse::setna(0.94);
+    //electronResponse::setnb(0.099);
+    //electronResponse::setnc(1.449);
     electronResponse::SetParameters();
 
     for (int index=0; index<m_nSamples; index++) {
@@ -160,8 +202,8 @@ void gammaResponse::preCalculation()
                 tmp_sigma += TMath::Power(electronResponse::fEvisNew->Eval(single_npe), 2);             // consider sigma-NPE relationship
             }
             //tmp_sigma += TMath::Power(electronResponse::gElecResol->Eval(tmp_E), 2);
-            tmp_pe += 2*660.8;
-            tmp_sigma += 2*TMath::Power(27.07, 2);
+            tmp_pe += m_npeGe68;
+            tmp_sigma += TMath::Power(m_sigmaGe68, 2);
 
         }
 
@@ -266,7 +308,8 @@ void gammaResponse::calcGamResponse()
 
 void gammaResponse::preCalculation_onlyNonl()
 {
-    double Y = 3134.078 / 2.223;
+    //double Y = 3134.078 / 2.223;  // JUNO
+    double Y = m_Y;
     double sumpe = 0;
     for (int index=0; index<m_nSamples; index++) {
         double tmp_pe = 0;
@@ -283,7 +326,7 @@ void gammaResponse::preCalculation_onlyNonl()
         for(int iSec=0; iSec<100; iSec++) {
             double tmp_E = hPrmPosi->GetBinContent(index+1, iSec+1);
             if (tmp_E == 0) break;
-            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + 660.8 * 2 ; 
+            double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E) + m_npeGe68; 
             tmp_pe += single_npe;
         }
         sumpe += tmp_pe;
@@ -298,6 +341,7 @@ double gammaResponse::GetChi2_onlyNonl()
 {
     preCalculation_onlyNonl();
     double chi2 = TMath::Power((m_nonlCalc - m_nonlData)/m_nonlDataErr, 2);
+    cout << m_name << " " << m_nonlCalc << " " << m_nonlData << " " << m_nonlDataErr << " " << chi2 << endl;
     return chi2;
 }
 
@@ -313,25 +357,42 @@ double gammaResponse::GetChi2()
     
     func->SetParameters(m_amp, m_totpeCalc, m_totpeSigmaCalc);
 
-    if (not m_doSpecFit) 
-        chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
+    if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="DYB" or junoParameters::expConfig == "TAO") {
+        if (not m_doSpecFit) 
+            chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
 
-    else{
-        for (int i=0; i<m_nBins; i++) {
-            double m_err = hData->GetBinError(i);
-            if (m_err != 0) {
-                double m_bins = hData->GetBinCenter(i);
-                double m_data = hData->GetBinContent(i);
-                //double m_calc = hCalc->GetBinContent(i);
-                double m_calc = func->Eval(m_bins);
-                //cout << "spectrum fitting " << m_bins << " " << m_data << " " << m_calc << " " << m_err<< endl;
+        else{
+            for (int i=0; i<m_nBins; i++) {
+                double m_err = hData->GetBinError(i);
+                if (m_err != 0) {
+                    double m_bins = hData->GetBinCenter(i);
+                    double m_data = hData->GetBinContent(i);
+                    //double m_calc = hCalc->GetBinContent(i);
+                    double m_calc = func->Eval(m_bins);
+                    //cout << "spectrum fitting " << m_bins << " " << m_data << " " << m_calc << " " << m_err<< endl;
 
-                chi2 += TMath::Power((m_calc - m_data)/m_err, 2);
-                //cout << hData->GetBinCenter(i) << " " << hCalc->GetBinCenter(i) << " " << m_calc << " " << m_data << " " << m_err << " " << (m_calc- m_data)*(m_calc-m_data)/m_err/m_err<< " "<<chi2 << endl;
+                    chi2 += TMath::Power((m_calc - m_data)/m_err, 2);
+                    //cout << hData->GetBinCenter(i) << " " << hCalc->GetBinCenter(i) << " " << m_calc << " " << m_data << " " << m_err << " " << (m_calc- m_data)*(m_calc-m_data)/m_err/m_err<< " "<<chi2 << endl;
+                }
             }
         }
     }
-        
+
+
+    //if (junoParameters::expConfig == "TAO")  {
+    //
+    //    m_nonlData = hData->GetMean() / m_Etrue / m_Y;
+    //    m_nonlDataErr = 0.001;
+    //    m_resData = hData->GetStdDev() / hData->GetMean();
+    //    m_resDataErr = 0.01;
+
+    //    m_resCalc = m_totpeSigmaCalc / m_totpeCalc;
+
+    //    chi2 += TMath::Power((m_nonlCalc - m_nonlData)/m_nonlDataErr, 2) + TMath::Power((m_resData-m_resCalc)/m_resDataErr, 2);
+    //
+    //    cout << m_name << " " << m_nonlCalc << " " << m_nonlData << " " << m_resCalc << " " << m_resData << " " << chi2 << endl;
+    //}
+
     //cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }
@@ -339,7 +400,7 @@ double gammaResponse::GetChi2()
 
 void gammaResponse::SaveHist()
 {
-    string fileName = m_name + "hist.root";
+    string fileName = m_name + "_"+junoParameters::expConfig+"_hist.root";
     TFile* outfile = new TFile(fileName.c_str(), "recreate");
     hData->Write();
     //hCalc->Write();

@@ -6,9 +6,11 @@ typedef ScintillatorParameterization SP;
 
 bool JUNOP::doResFit                  = true;
 
+std::string JUNOP::expConfig          = "Det1";
+
 SP JUNOP::scintillatorParameterization = kSimulation; /*kSimulation;*/  /*kEmpirical;*/ /*kIntegralCalc;*/ /*kSimulationCalc*/
 
-std::string JUNOP::cerenkovMode       =  "kAnalyticalNewCer"; //"kSimulationCer" ; //"kAnalyticalCer";   // "kAnalyticalNewCer"
+std::string JUNOP::cerenkovMode       =  "kSimulationCer"; //"kAnalyticalNewCer"; //"kSimulationCer" ; //"kAnalyticalCer";   // "kAnalyticalNewCer"
 std::string JUNOP::pesigmaMode        = "kNew"; //"kSeparate" ; // "kTotal" // "kNPE"  "kNew";
  
 
@@ -27,7 +29,7 @@ std::string JUNOP::electronResol_File = "data/electron/elecResol1.txt";
 
 // Options in Fitter ...
 bool JUNOP::fitGammaSources           = true;
-bool JUNOP::fitB12                    = true;
+bool JUNOP::fitB12                    = false;
 bool JUNOP::fitMichelSpec             = false;
 std::string JUNOP::m_calcOption       = "twolayer";
 std::string JUNOP::m_nonlMode         = "histogram";

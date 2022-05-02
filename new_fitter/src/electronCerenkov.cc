@@ -12,7 +12,7 @@
 
 using namespace std;
 
-double electronCerenkov::m_kC = 1;
+double electronCerenkov::m_kC = 3;
 //double electronCerenkov::m_energyScale = junoParameters::m_energyscale;
 double electronCerenkov::m_energyScale = 1409.84; //3134.078/2.223;
 bool electronCerenkov::m_LoadCerenkov = false;
@@ -27,11 +27,16 @@ double electronCerenkov::m_E0 = 0.2;
 //double electronCerenkov::m_p2 = -0.0165;
 //double electronCerenkov::m_p3 = 3.133;
 //double electronCerenkov::m_p4 = 0.0225;
-double electronCerenkov::m_p0 = 4.1;      
-double electronCerenkov::m_p1 = 3.5;    
-double electronCerenkov::m_p2 = 0.09;      
-double electronCerenkov::m_p3 = 403;    
-double electronCerenkov::m_p4 = -1.96;      
+double electronCerenkov::m_p0 = 0.4;
+double electronCerenkov::m_p1 = 0.122;    
+double electronCerenkov::m_p2 = 0.573;      
+double electronCerenkov::m_p3 = 0.816455 * 8.701754386 * 20;    
+double electronCerenkov::m_p4 =  0.178972;      
+//double electronCerenkov::m_p0 = 0.4;
+//double electronCerenkov::m_p1 = 0.122;    
+//double electronCerenkov::m_p2 = 0.573;      
+//double electronCerenkov::m_p3 = 0.816455 * 8.701754386;    
+//double electronCerenkov::m_p4 =  0.178972;      
 
 vector<double> electronCerenkov::m_Etrue;
 vector<double> electronCerenkov::m_Cerenkov;

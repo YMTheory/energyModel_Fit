@@ -20,7 +20,7 @@ junoB12_simplified::junoB12_simplified(int nBinsData, double fitMinPE, double fi
     m_eMin = 0;
     m_eMax = 15;
     m_peMin = 0;
-    m_peMax = 23000;
+    m_peMax = 3000;
 
     m_loadData = false;
     m_loadTheo = false;
@@ -58,10 +58,12 @@ void junoB12_simplified::LoadDataSpec()
 
     //TFile* ff = new TFile("./data/spectrum/data/B12_data_G4_J19.root", "read");
     //TFile* ff = new TFile("./data/spectrum/data/B12_totpe_gendecay_J19.root", "read");
-    TFile* ff = new TFile("/junofs/users/miaoyu/energy_model/production/J19v1r0-Pre4/B12/B12_totpe_LS_v7.root");
+    //TFile* ff = new TFile("/junofs/users/miaoyu/energy_model/production/J19v1r0-Pre4/B12/B12_totpe_LS_v7.root");
     //if(!ff) cout << "No such B12 data file " <<  endl;
-    TTree* tt = (TTree*)ff->Get("michel");
-    //TTree* tt = (TTree*)ff->Get("B12");
+    //TFile* ff = new TFile("./data/spectrum/data/B12_totpe_LS_tao.root", "read");
+    TFile* ff = new TFile("./data/spectrum/data/B12_totpe_LS_dyb.root", "read");
+    //TTree* tt = (TTree*)ff->Get("michel");
+    TTree* tt = (TTree*)ff->Get("B12");
     double m_totpe;
     tt->SetBranchAddress("totpe", &m_totpe);
     for(int i=0; i<tt->GetEntries(); i++) {

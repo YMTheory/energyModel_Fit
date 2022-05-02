@@ -45,7 +45,9 @@ double electronQuench::m_nonl[1000] = {0.};
 
 double electronQuench::m_simEtrue[900];
 double electronQuench::m_simScintPE[900];
-double electronQuench::m_scale = 1410;
+//double electronQuench::m_scale = 1410;
+//double electronQuench::m_scale = 202;
+double electronQuench::m_scale = 4432;
 
 TGraph* electronQuench::gNPE_elec = new TGraph();
 

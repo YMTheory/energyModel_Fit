@@ -20,6 +20,8 @@ class junoParameters
     public:
         static bool doResFit;
 
+        static std::string expConfig;
+
         static std::string stopPow_File;
         static std::string quenchNL_File;
         static std::string quenchNLint_File;
