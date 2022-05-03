@@ -61,6 +61,12 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
         m_Y = 3.11144e+03/2.223;
 
     }
+    if (junoParameters::expConfig == "Det3") {
+        m_npeGe68 = 2.61736e+03;
+        m_sigmaGe68 = 5.71569e+01;
+        m_Y = 6.22116e+03/2.223;
+
+    }
 }
 
 gammaResponse::~gammaResponse()
@@ -101,7 +107,28 @@ void gammaResponse::LoadData()
     }
     in.close();
 
-    if (m_doSpecFit and (m_name != "gamma4440" and m_name!="gamma3215" ) ) {
+    if (m_doSpecFit and junoParameters::expConfig == "Det1") {
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det1/gamma/"+m_name+".root").c_str(), "read") ; 
+        int m_totpe;
+        TTree* tt = (TTree*)infile->Get("photon");
+        tt->SetBranchAddress("totPE", &m_totpe);
+        for(int i=0; i<tt->GetEntries(); i++) {
+            tt->GetEntry(i);
+            hData->Fill(m_totpe);
+        }
+    }
+    else if (m_doSpecFit and junoParameters::expConfig == "Det3") {
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det3/gamma/"+m_name+".root").c_str(), "read") ; 
+        int m_totpe;
+        TTree* tt = (TTree*)infile->Get("photon");
+        tt->SetBranchAddress("totPE", &m_totpe);
+        for(int i=0; i<tt->GetEntries(); i++) {
+            tt->GetEntry(i);
+            hData->Fill(m_totpe);
+        }
+    }
+
+    else if (m_doSpecFit and (m_name != "gamma4440" and m_name!="gamma3215" ) ) {
         TFile* infile;
         //TFile* infile = new TFile(("./data/gamma/spectrum/" + m_name + "_totpe.root").c_str(), "read");
         if (junoParameters::expConfig == "JUNO")
@@ -357,7 +384,7 @@ double gammaResponse::GetChi2()
     
     func->SetParameters(m_amp, m_totpeCalc, m_totpeSigmaCalc);
 
-    if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="DYB" or junoParameters::expConfig == "TAO") {
+    if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="DYB" or junoParameters::expConfig == "TAO" or junoParameters::expConfig == "Det1" or junoParameters::expConfig=="Det3") {
         if (not m_doSpecFit) 
             chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
 
