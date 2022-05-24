@@ -6,11 +6,11 @@ typedef ScintillatorParameterization SP;
 
 bool JUNOP::doResFit                  = true;
 
-std::string JUNOP::expConfig          = "Det1";
+std::string JUNOP::expConfig          = "Det5";
 
 SP JUNOP::scintillatorParameterization = kSimulation; /*kSimulation;*/  /*kEmpirical;*/ /*kIntegralCalc;*/ /*kSimulationCalc*/
 
-std::string JUNOP::cerenkovMode       =  "kSimulationCer"; //"kAnalyticalNewCer"; //"kSimulationCer" ; //"kAnalyticalCer";   // "kAnalyticalNewCer"
+std::string JUNOP::cerenkovMode       = "kAnalyticalCer"; //"kAnalyticalNewCer"; //"kSimulationCer" // "kAnalyticalCer"; //"kAnalyticalCer";   // "kAnalyticalNewCer"
 std::string JUNOP::pesigmaMode        = "kNew"; //"kSeparate" ; // "kTotal" // "kNPE"  "kNew";
  
 

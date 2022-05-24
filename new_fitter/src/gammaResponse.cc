@@ -67,6 +67,24 @@ gammaResponse::gammaResponse(string name, int nBins, double peMin, double peMax)
         m_Y = 6.22116e+03/2.223;
 
     }
+    if (junoParameters::expConfig == "Det5") {
+        m_npeGe68 = 1.64037e+02;
+        m_sigmaGe68 = 1.28369e+01;
+        m_Y =  3.89414e+02/2.223;
+
+    }
+    if (junoParameters::expConfig == "Det6") {
+        m_npeGe68 = 6.54907e+02;
+        m_sigmaGe68 = 2.64157e+01;
+        m_Y = 1.55597e+03/2.223;
+
+    }
+    if (junoParameters::expConfig == "Det7") {
+        m_npeGe68 = 3.27754e+02;
+        m_sigmaGe68 = 1.82715e+01;
+        m_Y = 7.78459e+02/2.223;
+
+    }
 }
 
 gammaResponse::~gammaResponse()
@@ -108,7 +126,7 @@ void gammaResponse::LoadData()
     in.close();
 
     if (m_doSpecFit and junoParameters::expConfig == "Det1") {
-        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det1/gamma/"+m_name+".root").c_str(), "read") ; 
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det1/gamma/"+m_name+"_new.root").c_str(), "read") ; 
         int m_totpe;
         TTree* tt = (TTree*)infile->Get("photon");
         tt->SetBranchAddress("totPE", &m_totpe);
@@ -117,8 +135,28 @@ void gammaResponse::LoadData()
             hData->Fill(m_totpe);
         }
     }
-    else if (m_doSpecFit and junoParameters::expConfig == "Det3") {
-        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det3/gamma/"+m_name+".root").c_str(), "read") ; 
+    else if (m_doSpecFit and junoParameters::expConfig == "Det5") {
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det5/gamma/"+m_name+"_new.root").c_str(), "read") ; 
+        int m_totpe;
+        TTree* tt = (TTree*)infile->Get("photon");
+        tt->SetBranchAddress("totPE", &m_totpe);
+        for(int i=0; i<tt->GetEntries(); i++) {
+            tt->GetEntry(i);
+            hData->Fill(m_totpe);
+        }
+    }
+    else if (m_doSpecFit and junoParameters::expConfig == "Det6") {
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det6/gamma/"+m_name+"_new.root").c_str(), "read") ; 
+        int m_totpe;
+        TTree* tt = (TTree*)infile->Get("photon");
+        tt->SetBranchAddress("totPE", &m_totpe);
+        for(int i=0; i<tt->GetEntries(); i++) {
+            tt->GetEntry(i);
+            hData->Fill(m_totpe);
+        }
+    }
+    else if (m_doSpecFit and junoParameters::expConfig == "Det7") {
+        TFile* infile  = new TFile(("/junofs/users/miaoyu/simulation/LS_Sim/jobs/Det7/gamma/"+m_name+"_new.root").c_str(), "read") ; 
         int m_totpe;
         TTree* tt = (TTree*)infile->Get("photon");
         tt->SetBranchAddress("totPE", &m_totpe);
@@ -186,6 +224,7 @@ void gammaResponse::preCalculation()
             double tmp_E = hPrmElec->GetBinContent(index+1, iSec+1);    
             if (tmp_E == 0) break;
             double single_npe = electronQuench::ScintillatorPE(tmp_E) + electronCerenkov::getCerPE(tmp_E);
+            //cout << tmp_E << "  " << electronQuench::ScintillatorPE(tmp_E) << " " << electronCerenkov::getCerPE(tmp_E) << " " << single_npe << endl;
             tmp_pe += single_npe;
             if (junoParameters::pesigmaMode == "kTotal" ) {
                 tmp_sigma += TMath::Power(electronResponse::fElecResol->Eval(tmp_E), 2);
@@ -384,7 +423,7 @@ double gammaResponse::GetChi2()
     
     func->SetParameters(m_amp, m_totpeCalc, m_totpeSigmaCalc);
 
-    if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="DYB" or junoParameters::expConfig == "TAO" or junoParameters::expConfig == "Det1" or junoParameters::expConfig=="Det3") {
+    if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="DYB" or junoParameters::expConfig == "TAO" or junoParameters::expConfig == "Det1" or junoParameters::expConfig=="Det5" or junoParameters::expConfig=="Det6" or junoParameters::expConfig=="Det7") {
         if (not m_doSpecFit) 
             chi2 += TMath::Power((m_nonlData - m_nonlCalc)/m_nonlDataErr, 2);
 
@@ -420,6 +459,7 @@ double gammaResponse::GetChi2()
     //    cout << m_name << " " << m_nonlCalc << " " << m_nonlData << " " << m_resCalc << " " << m_resData << " " << chi2 << endl;
     //}
 
+    //cout << electronQuench::getEnergyScale() << " " << electronQuench::getBirk1() << " " << electronCerenkov::getp0() << " " << electronCerenkov::getp1() << " " << electronCerenkov::getp2() << " " << electronCerenkov::getE0() << " " << electronResponse::getna() << " " << electronResponse::getnb() << " " << electronResponse::getnc() << endl;
     //cout << m_name << " " << chi2 << endl;
     return chi2 ;
 }

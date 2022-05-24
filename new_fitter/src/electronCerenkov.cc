@@ -41,10 +41,14 @@ double electronCerenkov::m_p4 =  0.178972;
 vector<double> electronCerenkov::m_Etrue;
 vector<double> electronCerenkov::m_Cerenkov;
 
+vector<double> electronCerenkov::m_Etrue_local;
+vector<double> electronCerenkov::m_Cerenkov_local;
+
 double electronCerenkov::m_E[m_nData];
 double electronCerenkov::m_nonl[m_nData];
 
 TGraph* electronCerenkov::gNPE_elec = new TGraph();
+TGraph* electronCerenkov::gNPE_elec_local = new TGraph();
 
 electronCerenkov::electronCerenkov()
 {}
@@ -75,6 +79,17 @@ void electronCerenkov::LoadCerenkov()
     }
 
     in.close();
+
+    TFile* finCer = new TFile("/junofs/users/miaoyu/energy_model/fitter/energyModel_Fit/pyfitter/data/Ncer_local.root", "read");
+    TGraph* gNcer = (TGraph*)finCer->Get("Ncer");
+    for(int i=0; i<gNcer->GetN(); i++) {
+        m_Etrue_local.push_back(gNcer->GetPointX(i));
+        m_Cerenkov_local.push_back(gNcer->GetPointY(i));
+        gNPE_elec_local->SetPoint(i, gNcer->GetPointX(i), gNcer->GetPointY(i));
+    }
+
+    delete gNcer;
+    delete finCer;
 
     m_LoadCerenkov = true;
 }
@@ -128,6 +143,12 @@ double electronCerenkov::getSimCerPE(double E)
     return m_kC*gNPE_elec->Eval(E);
 }
 
+double electronCerenkov::getLocalSimCerPE(double E)
+{
+    if (!m_LoadCerenkov) LoadCerenkov();
+    return m_kC * gNPE_elec_local->Eval(E);
+
+}
 
 
 void electronCerenkov::Plot()
@@ -150,17 +171,16 @@ void electronCerenkov::Plot()
 double electronCerenkov::getAnaCerPE(double E)
 {
     double x = TMath::Log(1+E/m_E0);
-    double npe = (m_A1*x + m_A2*x*x + m_A3*x*x*x) * (1/E + m_A4) * E   ;
+    double npe = (m_A2*x*x + m_A3*x*x*x) * (1/E + m_A4) * E   ;
     return npe;
 
 }
 
 
 
-
 double electronCerenkov::getNewAnaCerPE(double E)
 {
-    if (E < 0.2)
+    if (E < m_E0)
         return 0;
     else{
         //E = E - 0.2;   // 0.2 MeV threshold
@@ -172,15 +192,32 @@ double electronCerenkov::getNewAnaCerPE(double E)
 }
 
 
+double electronCerenkov::getNewAnaCerPE1(double E)
+{
+    if (E < m_E0)
+        return 0;
+    else{
+        //E = E - 0.2;   // 0.2 MeV threshold
+        // E0 should be a free parameter?
+        E = E - m_E0;
+        double NC = (m_p0*E*E) / (E+m_p1*TMath::Exp(-m_p2*E));
+        return NC;
+    }
+}
+
 
 
 double electronCerenkov::getCerPE(double E) {
     if (junoParameters::cerenkovMode == "kSimulationCer" )
         return getSimCerPE(E);
-    else if (junoParameters::cerenkovMode == "kAnalyticalCer" ) {
+    else if (junoParameters::cerenkovMode == "kSimulationCerLocal" ) {
+        return getLocalSimCerPE(E);
+    } else if (junoParameters::cerenkovMode == "kAnalyticalCer" ) {
         return getAnaCerPE(E);
     } else if (junoParameters::cerenkovMode == "kAnalyticalNewCer") {
         return getNewAnaCerPE(E);
+    } else if (junoParameters::cerenkovMode == "kAnalyticalNewCer1") {
+        return getNewAnaCerPE1(E);
     }
 }
 

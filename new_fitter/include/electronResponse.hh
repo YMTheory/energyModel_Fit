@@ -25,6 +25,8 @@ class electronResponse
 
         static void SaveElecNonl(double* par);
 
+
+
     private:
         static const int m_nSimData = 809;
         static double m_SimEtrue[m_nSimData];

@@ -64,7 +64,7 @@ junoChiFunction::junoChiFunction() {
 
         }
        
-        if (junoParameters::expConfig == "DYB") {
+        if (junoParameters::expConfig == "DYB" ) {
         double init_amp1[10] = {1800, 1600, 1500, 1200, 1800, 1800, 1800, 1800, 2100, 1800};    // DYB
         gamma_array[m_nData] = new gammaResponse("Cs137", 100, 70,  170);         gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;
         gamma_array[m_nData] = new gammaResponse("Mn54",  120, 100, 220);         gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
@@ -92,7 +92,7 @@ junoChiFunction::junoChiFunction() {
 
         if (junoParameters::expConfig == "Det1" ) {
         // JUNO normal
-        double init_amp1[10] = {200, 220, 200, 200, 200, 180, 180, 160, 180, 180}; // Det1
+        double init_amp1[10] = {2000, 2200, 2000, 2000, 2000, 1800, 1800, 1600, 1800, 1800}; // Det1
         gamma_array[m_nData] = new gammaResponse("Cs137", 100, 700, 1000);          gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
         gamma_array[m_nData] = new gammaResponse("Mn54", 100, 900, 1300);           gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
         gamma_array[m_nData] = new gammaResponse("Ge68", 100, 1100, 1500);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
@@ -107,18 +107,64 @@ junoChiFunction::junoChiFunction() {
 
         if (junoParameters::expConfig == "Det3" ) {
         // JUNO normal
-        double init_amp1[10] = {210, 220, 220, 200, 200, 190, 200, 180, 180, 180}; // Det1
-        gamma_array[m_nData] = new gammaResponse("Cs137", 100, 1500, 2000);          gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
-        gamma_array[m_nData] = new gammaResponse("Mn54", 100, 1900, 2500);           gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
-        gamma_array[m_nData] = new gammaResponse("Ge68", 100, 2300, 2900);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
-        gamma_array[m_nData] = new gammaResponse("K40", 100, 3600, 4400);           gamma_name[m_nData] = "K40";      gamma_amp[m_nData] = init_amp1[3]; m_nData++;
-        gamma_array[m_nData] = new gammaResponse("nH", 100, 5600, 6800);            gamma_name[m_nData] = "nH";       gamma_amp[m_nData] = init_amp1[4]; m_nData++;
-        gamma_array[m_nData] = new gammaResponse("Co60", 100, 6300, 7300);          gamma_name[m_nData] = "Co60";     gamma_amp[m_nData] = init_amp1[5]; m_nData++;
-        gamma_array[m_nData] = new gammaResponse("AmBe", 100, 11800, 13500);          gamma_name[m_nData] = "AmBe";     gamma_amp[m_nData] = init_amp1[6]; m_nData++;
+        double init_amp1[10] = {1800, 2000, 2000, 1700, 1700, 1600, 1700, 180, 180, 180}; // Det3
+        gamma_array[m_nData] = new gammaResponse("Cs137", 100, 1300, 1800);          gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
+        gamma_array[m_nData] = new gammaResponse("Mn54", 100, 1700, 2400);           gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Ge68", 100, 2000, 2700);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("K40", 100, 3300, 4200);           gamma_name[m_nData] = "K40";      gamma_amp[m_nData] = init_amp1[3]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nH", 100, 5350, 6450);            gamma_name[m_nData] = "nH";       gamma_amp[m_nData] = init_amp1[4]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Co60", 100, 5800, 6900);          gamma_name[m_nData] = "Co60";     gamma_amp[m_nData] = init_amp1[5]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmBe", 100, 11200, 13200);          gamma_name[m_nData] = "AmBe";     gamma_amp[m_nData] = init_amp1[6]; m_nData++;
         gamma_array[m_nData] = new gammaResponse("nC12", 100, 13000, 15000);          gamma_name[m_nData] = "nC12";     gamma_amp[m_nData] = init_amp1[7]; m_nData++;
         gamma_array[m_nData] = new gammaResponse("AmC", 100, 16800, 18800);           gamma_name[m_nData] = "AmC";      gamma_amp[m_nData] = init_amp1[8]; m_nData++;
+        }
+
+        if (junoParameters::expConfig == "Det5" ) {
+        // JUNO normal
+        double init_amp1[10] = {2100, 1800, 1600, 1300, 1800, 1900, 1600, 1400, 1800, 1800}; // Det3
+        gamma_array[m_nData] = new gammaResponse("Cs137", 80, 70, 150);             gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
+        gamma_array[m_nData] = new gammaResponse("Mn54", 100, 90, 190);          gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Ge68", 100, 110, 210);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("K40", 130, 180, 310);           gamma_name[m_nData] = "K40";      gamma_amp[m_nData] = init_amp1[3]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nH", 100, 300, 500);            gamma_name[m_nData] = "nH";       gamma_amp[m_nData] = init_amp1[4]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Co60", 90, 330, 510);          gamma_name[m_nData] = "Co60";     gamma_amp[m_nData] = init_amp1[5]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmBe", 120, 660, 900);          gamma_name[m_nData] = "AmBe";     gamma_amp[m_nData] = init_amp1[6]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nC12", 115, 760, 990);          gamma_name[m_nData] = "nC12";     gamma_amp[m_nData] = init_amp1[7]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmC", 100, 940, 1240);           gamma_name[m_nData] = "AmC";      gamma_amp[m_nData] = init_amp1[8]; m_nData++;
 
         }
+
+        if (junoParameters::expConfig == "Det6" ) {
+        // JUNO normal
+        double init_amp1[10] = {1800, 1700, 1500, 1700, 1800, 1800, 1800, 1800, 2000, 2000}; // Det3
+        gamma_array[m_nData] = new gammaResponse("Cs137", 100, 330, 530);             gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
+        gamma_array[m_nData] = new gammaResponse("Mn54", 100, 450, 650);          gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Ge68", 100, 550, 750);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("K40", 100, 850, 1150);           gamma_name[m_nData] = "K40";      gamma_amp[m_nData] = init_amp1[3]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nH", 100, 1350, 1750);            gamma_name[m_nData] = "nH";       gamma_amp[m_nData] = init_amp1[4]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Co60", 100, 1500, 1900);          gamma_name[m_nData] = "Co60";     gamma_amp[m_nData] = init_amp1[5]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmBe", 100, 2900, 3500);          gamma_name[m_nData] = "AmBe";     gamma_amp[m_nData] = init_amp1[6]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nC12", 100, 3200, 3900);          gamma_name[m_nData] = "nC12";     gamma_amp[m_nData] = init_amp1[7]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmC", 100, 4000, 4800);           gamma_name[m_nData] = "AmC";      gamma_amp[m_nData] = init_amp1[8]; m_nData++;
+
+        }
+
+        if (junoParameters::expConfig == "Det7" ) {
+        // JUNO normal
+        double init_amp1[10] = {1328, 2347, 2156, 1712, 1994, 1983, 1807, 1624, 1925, 1800}; // Det3
+        gamma_array[m_nData] = new gammaResponse("Cs137", 150, 150, 300);             gamma_name[m_nData] = "Cs137";    gamma_amp[m_nData] = init_amp1[0]; m_nData++;    
+        gamma_array[m_nData] = new gammaResponse("Mn54", 100, 180, 380);          gamma_name[m_nData] = "Mn54";     gamma_amp[m_nData] = init_amp1[1]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Ge68", 100, 230, 430);          gamma_name[m_nData] = "Ge68";     gamma_amp[m_nData] = init_amp1[2]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("K40", 100, 400, 600);           gamma_name[m_nData] = "K40";      gamma_amp[m_nData] = init_amp1[3]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nH", 100, 650, 950);            gamma_name[m_nData] = "nH";       gamma_amp[m_nData] = init_amp1[4]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("Co60", 100, 650, 950);          gamma_name[m_nData] = "Co60";     gamma_amp[m_nData] = init_amp1[5]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmBe", 100, 1400, 1800);          gamma_name[m_nData] = "AmBe";     gamma_amp[m_nData] = init_amp1[6]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("nC12", 100, 1550, 1950);          gamma_name[m_nData] = "nC12";     gamma_amp[m_nData] = init_amp1[7]; m_nData++;
+        gamma_array[m_nData] = new gammaResponse("AmC", 100, 2000, 2500);           gamma_name[m_nData] = "AmC";      gamma_amp[m_nData] = init_amp1[8]; m_nData++;
+
+        }
+
+
 
     }
 
@@ -243,36 +289,52 @@ void junoChiFunction::SetParameters(double *par)
 
     if (junoParameters::scintillatorParameterization == kSimulation or junoParameters::scintillatorParameterization == kIntegralCalc ) {
         //electronQuench::setkA(par[iPar]);                           iPar++;
-        cout << par[iPar] << " " ;
         electronQuench::setEnergyScale(par[iPar]);                  iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronQuench::setBirk1(par[iPar]);                        iPar++;
+        cout << par[iPar-1] << " " ;
     }
 
-    if (junoParameters::cerenkovMode == "kSimulationCer") {
-        cout << par[iPar] << " " ;
+    if (junoParameters::cerenkovMode == "kSimulationCer" or junoParameters::cerenkovMode=="kSimulationCerLocal") {
         electronCerenkov::setkC(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
     }
     
     if (junoParameters::cerenkovMode == "kAnalyticalCer") {
         electronCerenkov::setA2(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setA3(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setA4(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
+        electronCerenkov::setE0(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
     }
 
     if (junoParameters::cerenkovMode == "kAnalyticalNewCer") {
-        cout << par[iPar] << " " ;
         electronCerenkov::setp0(par[iPar]);                         iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setp1(par[iPar]);                         iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setp2(par[iPar]);                         iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setp3(par[iPar]);                         iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setp4(par[iPar]);                         iPar++;
-        cout << par[iPar] << " " ;
+        cout << par[iPar-1] << " " ;
         electronCerenkov::setE0(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
+    }
+
+    if (junoParameters::cerenkovMode == "kAnalyticalNewCer1") {
+        electronCerenkov::setp0(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
+        electronCerenkov::setp1(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
+        electronCerenkov::setp2(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
+        electronCerenkov::setE0(par[iPar]);                         iPar++;
+        cout << par[iPar-1] << " " ;
     }
 
     if (junoParameters::doResFit) {
@@ -346,6 +408,7 @@ double junoChiFunction::GetChiSquare(double maxChi2)
     int ierrflag = 0;
 
     int iPar = 0;
+    int nPhysPar = 0;
     junoMinuit->mnexcm("CLEAR", arglist, 0, ierrflag);
 
     if (junoParameters::scintillatorParameterization == kSimulation ) {
@@ -353,8 +416,8 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         //junoMinuit->mnparm(iPar, "kA", 1.00, 0.001, 0.9, 1.1, ierrflag);          iPar++;
         //junoMinuit->mnparm(iPar, "scale", 1408, 1, 1200, 1600, ierrflag);         iPar++; // JUNO Normal
         if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="Det1"){
-        junoMinuit->mnparm(iPar, "scale",1406, 1, 1350, 1450, ierrflag);         iPar++; // JUNO LY / 8
-        junoMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.0e-3, 7.5e-3, ierrflag);     iPar++;
+        junoMinuit->mnparm(iPar, "scale",1400, 1, 1350, 1450, ierrflag);         iPar++; // JUNO LY / 8
+        junoMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.5e-3, 7.5e-3, ierrflag);     iPar++;
         }
 
         if (junoParameters::expConfig=="Det3"){
@@ -362,9 +425,18 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         junoMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.0e-3, 7.5e-3, ierrflag);     iPar++;
         }
         
-        if (junoParameters::expConfig == "DYB"){
-        junoMinuit->mnparm(iPar, "scale", 205, 1, 200, 210, ierrflag);         iPar++; // JUNO LY / 8
+        if (junoParameters::expConfig=="Det6"){
+        junoMinuit->mnparm(iPar, "scale",700, 1, 500, 800, ierrflag);            iPar++; // JUNO LY / 8
         junoMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.0e-3, 7.5e-3, ierrflag);     iPar++;
+        }
+        if (junoParameters::expConfig=="Det7"){
+        junoMinuit->mnparm(iPar, "scale", 347.4, 1, 250, 450, ierrflag);            iPar++; // JUNO LY / 8
+        junoMinuit->mnparm(iPar, "kB", 6.5e-3, 1e-5, 5.0e-3, 7.5e-3, ierrflag);     iPar++;
+        }
+        
+        if (junoParameters::expConfig == "DYB" or junoParameters::expConfig == "Det5"){
+        junoMinuit->mnparm(iPar, "scale", 174.3, 1, 150, 200, ierrflag);         iPar++; // JUNO LY / 8
+        junoMinuit->mnparm(iPar, "kB", 6.0e-3, 1e-5, 5.0e-3, 7.5e-3, ierrflag);     iPar++;
         }
         
         if (junoParameters::expConfig == "TAO"){
@@ -381,12 +453,18 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         junoMinuit->mnparm(iPar, "kB", 5.2e-3, 1e-5, 5.1e-3, 7.5e-3, ierrflag);     iPar++;
     }
 
-    if (junoParameters::cerenkovMode == "kSimulationCer") {
-        if (junoParameters::expConfig == "DYB") {
-            junoMinuit->mnparm(iPar, "kC", 0.125, 0.001, 0.0, 1.0, ierrflag);            iPar++;
+    if (junoParameters::cerenkovMode == "kSimulationCer" or junoParameters::cerenkovMode=="kSimulationCerLocal") {
+        if (junoParameters::expConfig == "DYB" or junoParameters::expConfig == "Det5") {
+            junoMinuit->mnparm(iPar, "kC", 0.124, 0.001, 0.0, 1.0, ierrflag);            iPar++;
         }
         if (junoParameters::expConfig == "JUNO" or junoParameters::expConfig=="Det1"){
             junoMinuit->mnparm(iPar, "kC", 1.00, 0.001, 0.5, 1.5, ierrflag);            iPar++;
+        }
+        if ( junoParameters::expConfig=="Det6"){
+            junoMinuit->mnparm(iPar, "kC", 0.50, 0.001, 0.0, 1.5, ierrflag);            iPar++;
+        }
+        if ( junoParameters::expConfig=="Det7"){
+            junoMinuit->mnparm(iPar, "kC", 0.265, 0.001, 0.0, 1.5, ierrflag);            iPar++;
         }
         if (junoParameters::expConfig == "TAO") {
             junoMinuit->mnparm(iPar, "kC", 2.70, 0.001, 2.0, 4.5, ierrflag);            iPar++;
@@ -397,35 +475,79 @@ double junoChiFunction::GetChiSquare(double maxChi2)
     }
 
     if (junoParameters::cerenkovMode == "kAnalyticalCer") {
-        junoMinuit->mnparm(iPar, "A2", -7.90, 0.001, -20, 0, ierrflag);           iPar++;
-        junoMinuit->mnparm(iPar, "A3", 13.84, 0.01, 0.0, 50, ierrflag);           iPar++;
-        junoMinuit->mnparm(iPar, "A4", 0.0364, 0.0001, 0.0, 0.1, ierrflag);       iPar++;
+        if (junoParameters::expConfig == "Det1") {
+            junoMinuit->mnparm(iPar, "A2", -10.20, 0.001, -20, 0, ierrflag);          iPar++;
+            junoMinuit->mnparm(iPar, "A3", 14.33, 0.01, 0.0, 30, ierrflag);           iPar++;
+            junoMinuit->mnparm(iPar, "A4", 0.0364, 0.0001, 0.0, 0.1, ierrflag);       iPar++;
+            junoMinuit->mnparm(iPar, "E0",  0.183,  0.001,  0., 0.3,  ierrflag);      iPar++;
+        }
+        if (junoParameters::expConfig == "Det5") {
+            junoMinuit->mnparm(iPar, "A2", -1.275, 0.001, -20, 0, ierrflag);          iPar++;
+            junoMinuit->mnparm(iPar, "A3", 1.79, 0.01, 0.0, 10, ierrflag);           iPar++;
+            junoMinuit->mnparm(iPar, "A4", 0.0364, 0.0001, 0.0, 0.1, ierrflag);       iPar++;
+            junoMinuit->mnparm(iPar, "E0",  0.183,  0.001,  0., 0.3,  ierrflag);      iPar++;
+        }
     }
 
     if (junoParameters::cerenkovMode == "kAnalyticalNewCer") {
-        //junoMinuit->mnparm(iPar, "p0", -0.41,   0.001,  -10., 50,  ierrflag);       iPar++;
-        //junoMinuit->mnparm(iPar, "p1",  0.42,   0.001,  -10., 50,  ierrflag);       iPar++;
-        //junoMinuit->mnparm(iPar, "p2", -0.016,  0.0001, -10., 50,  ierrflag);       iPar++;
-        //junoMinuit->mnparm(iPar, "p3", 3.13,    0.001,  -10., 50,  ierrflag);       iPar++;
-        //junoMinuit->mnparm(iPar, "p4",  0.022,  0.001,  -10., 50,  ierrflag);       iPar++;
-        junoMinuit->mnparm(iPar, "p0",  0.4,    0.001,  0.2, 0.6,  ierrflag);       iPar++;
+
+        // JUNO Sim
+        if(junoParameters::expConfig == "JUNO") {
+            junoMinuit->mnparm(iPar, "p0",  0.9,    0.001,  0.6, 1.2,  ierrflag);       iPar++;
+            junoMinuit->mnparm(iPar, "p1",  10.21,   0.001, 5, 15,  ierrflag);       iPar++;   // Det1
+            junoMinuit->mnparm(iPar, "p2",  0.010,  0.001, 0., 0.02,  ierrflag);       iPar++;   // Det1
+            junoMinuit->mnparm(iPar, "p3",  71.6,   0.001,    50., 100, ierrflag);       iPar++;  // JUNO normal
+            junoMinuit->mnparm(iPar, "p4",  -9.9,  0.001,  -15, -5,  ierrflag);       iPar++;
+            junoMinuit->mnparm(iPar, "E0",  0.134,  0.001,  0., 0.3,  ierrflag);          iPar++;
+        }
+        
+        // Det1 Sim
+        if (junoParameters::expConfig == "Det1") {
+            junoMinuit->mnparm(iPar, "p0", 121 , 0.1, 100 ,  140 , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p1", 0.68, 0.001, 0.4   ,0.9  , ierrflag);      iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "p2", -0.083 , 0.001, -0.1 , -0.04, ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p3", 73.410, 0.001, 60  , 90  , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p4", -9.82 , 0.001, -15 , -5  , ierrflag);      iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "E0", 0.267 , 0.001, 0.1 , 0.4 , ierrflag);      iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+        }
+
         //junoMinuit->FixParameter(iPar-1);
         //junoMinuit->mnparm(iPar, "p1",  0.122,   0.001, 0, 0.2,  ierrflag);       iPar++; 
-        junoMinuit->mnparm(iPar, "p1",  0.016,   0.001, 0, 0.2,  ierrflag);       iPar++;   // Det1
         //junoMinuit->FixParameter(iPar-1);
         //junoMinuit->mnparm(iPar, "p2",  0.573,  0.0001, 0.3, 0.8,  ierrflag);       iPar++;
-        junoMinuit->mnparm(iPar, "p2",  0.325,  0.0001, 0.1, 0.8,  ierrflag);       iPar++;   // Det1
         //junoMinuit->FixParameter(iPar-1);
         //junoMinuit->mnparm(iPar, "p3",  7.0,   0.01,    5., 10, ierrflag);       iPar++;  // JUNO LY / 8
+        //junoMinuit->mnparm(iPar, "p3",  49,   0.001,    0., 800, ierrflag);       iPar++;  // Det1
         //junoMinuit->FixParameter(iPar-1);
-        //junoMinuit->mnparm(iPar, "p3",  77.2,   0.001,    0., 800, ierrflag);       iPar++;  // JUNO normal
-        junoMinuit->mnparm(iPar, "p3",  49,   0.001,    0., 800, ierrflag);       iPar++;  // Det1
-        junoMinuit->mnparm(iPar, "p4",  0.179,  0.001,  0.1, 0.3,  ierrflag);       iPar++;
-        //junoMinuit->FixParameter(iPar-1);
-        junoMinuit->mnparm(iPar, "E0",  0.200,  0.001,  0., 0.4,  ierrflag);          iPar++;
         //junoMinuit->FixParameter(iPar-1);
     
     }
+
+    if (junoParameters::cerenkovMode == "kAnalyticalNewCer1" ) {
+        if (junoParameters::expConfig == "JUNO") {
+            junoMinuit->mnparm(iPar, "p0", 121 , 0.1, 100 ,  140 , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p1", 0.54, 0.001, 0.4   ,0.9  , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p2", -0.130 , 0.001, -0.4 , -0.04, ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "E0", 0.154 , 0.001, 0.1 , 0.4 , ierrflag);      iPar++;
+        }
+        if (junoParameters::expConfig == "Det1") {
+            junoMinuit->mnparm(iPar, "p0", 121 , 0.1, 100 ,  140 , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p1", 0.68, 0.001, 0.4   ,0.9  , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p2", 0.083 , 0.001, -0.4 , 0.4, ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "E0", 0.267 , 0.001, 0.1 , 0.4 , ierrflag);      iPar++;
+        }
+        if (junoParameters::expConfig == "Det5") {
+            junoMinuit->mnparm(iPar, "p0", 17.2 , 0.1, 0 ,  40 , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p1", 1.50, 0.001, 0.4   ,5.5  , ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "p2", -0.162 , 0.001, -0.4 , -0.04, ierrflag);      iPar++;
+            junoMinuit->mnparm(iPar, "E0", 0.137 , 0.001, 0.1 , 0.4 , ierrflag);      iPar++;
+        }
+    }
+
+
 
     if (junoParameters::doResFit) {
 
@@ -445,15 +567,28 @@ double junoChiFunction::GetChiSquare(double maxChi2)
         }
 
         if (junoParameters::pesigmaMode == "kNew") {
-            if(junoParameters::expConfig == "DYB") {
+            if( junoParameters::expConfig == "Det6") {
+            junoMinuit->mnparm(iPar, "a", 0.990, 1e-4, 0.8, 1.2, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "b", 0.088, 1e-5, 0.005, 0.155, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "n", 1.50, 0.01, 1.0, 2.2, ierrflag);          iPar++;
+            }
+            if( junoParameters::expConfig == "Det7") {
+            junoMinuit->mnparm(iPar, "a", 0.989, 1e-4, 0.5, 1.5, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "b", 0.045, 1e-5, 0.005, 0.205, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "n", 1.500, 0.01, 1.0, 2.2, ierrflag);          iPar++;
+            }
+            if(junoParameters::expConfig == "DYB" or junoParameters::expConfig == "Det5") {
             junoMinuit->mnparm(iPar, "a", 0.987, 1e-4, 0.8, 1.2, ierrflag);             iPar++;
-            junoMinuit->mnparm(iPar, "b", 0.036, 1e-5, 0.005, 0.055, ierrflag);             iPar++;
-            junoMinuit->mnparm(iPar, "n", 1.62, 0.01, 1.3, 2.2, ierrflag);          iPar++;
+            junoMinuit->mnparm(iPar, "b", 0.092, 1e-5, 0.005, 1.0, ierrflag);             iPar++;
+            junoMinuit->mnparm(iPar, "n", 1.30, 0.01, 1.0, 2.2, ierrflag);          iPar++;
             }
             if(junoParameters::expConfig == "JUNO" or junoParameters::expConfig == "Det1") {
-            junoMinuit->mnparm(iPar, "a", 0.96, 1e-4, 0.8, 1.2, ierrflag);             iPar++;
-            junoMinuit->mnparm(iPar, "b", 0.056, 1e-5, 0.005, 0.095, ierrflag);             iPar++;
-            junoMinuit->mnparm(iPar, "n", 1.57, 0.01, 1.3, 2.2, ierrflag);          iPar++;
+            junoMinuit->mnparm(iPar, "a", 0.991, 1e-4, 0.8, 1.2, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "b", 0.034, 1e-5, 0.005, 0.095, ierrflag);             iPar++;
+            //junoMinuit->FixParameter(iPar-1);
+            junoMinuit->mnparm(iPar, "n", 1.59, 0.01, 1.2, 2.0, ierrflag);          iPar++;
+            //junoMinuit->FixParameter(iPar-1);
             }
             if(junoParameters::expConfig == "TAO") {
             junoMinuit->mnparm(iPar, "a", 0.803, 1e-4, 0.8, 1.5, ierrflag);             iPar++;
@@ -465,6 +600,7 @@ double junoChiFunction::GetChiSquare(double maxChi2)
             }
         
         }
+        nPhysPar = iPar;
 
         if (junoParameters::pesigmaMode == "kSeparate") {
             junoMinuit->mnparm(iPar, "c0", 0, 1, -200, 200, ierrflag);         iPar++;
@@ -524,11 +660,11 @@ double junoChiFunction::GetChiSquare(double maxChi2)
     cout << "    minChi2: " << min << " with nData = " << m_nData << " and nPar = " << m_nParameter << endl;
     cout << " ====================== " << endl;
 
-    for(int i=0; i<9; i++) {
+    for(int i=0; i<nPhysPar; i++) {
         cout << m_bestFit[i]  << " " ;
     }
     cout << endl;
-    for(int i=0; i<9; i++) {
+    for(int i=0; i<nPhysPar; i++) {
         cout << m_bestFitError[i]  << " " ;
     }
     cout << endl;

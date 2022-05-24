@@ -26,7 +26,9 @@ class electronCerenkov
 
         static double getAnaCerPE(double E);
         static double getSimCerPE(double E);
+        static double getLocalSimCerPE(double E);
         static double getNewAnaCerPE(double E);
+        static double getNewAnaCerPE1(double E);
 
         static void Plot();
 
@@ -39,11 +41,15 @@ class electronCerenkov
         static std::vector<double> m_Etrue;
         static std::vector<double> m_Cerenkov;
 
+        static std::vector<double> m_Etrue_local;
+        static std::vector<double> m_Cerenkov_local;
+
         static const int m_nData = 900;
         static double m_E[m_nData];
         static double m_nonl[m_nData];
 
         static TGraph* gNPE_elec;
+        static TGraph* gNPE_elec_local;
 
         static double m_A1;
         static double m_A2;
